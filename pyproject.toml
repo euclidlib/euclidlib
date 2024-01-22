@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "euclid_data_products"
+description = "Read data products from the Euclid mission"
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "Nicolas Tessore", email = "n.tessore@ucl.ac.uk"},
+]
+maintainers = [
+    {name = "Nicolas Tessore", email = "n.tessore@ucl.ac.uk"},
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.7"
+dynamic = ["version"]
+dependencies = [
+    "fitsio",
+    "numpy",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=6.0",
+]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "euclid_data_products/_version.py"
+
+[tool.black]
+target-version = ["py312"]
+preview = true
+
+[tool.coverage.run]
+omit = [
+    "**/test_*",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:",
+]
