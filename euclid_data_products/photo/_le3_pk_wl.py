@@ -48,7 +48,8 @@ def _read_twopoint(fits: fitsio.FITS, ext: str) -> NDArray[Any]:
     arr: NDArray[Any] = fits[ext].read()
     # attach metadata to dtype
     dt = np.dtype(arr.dtype, metadata=_read_metadata(fits[ext]))
-    return arr.astype(dt, casting="no", copy=False)
+    # return a copy (unfortunately) with changed dtype
+    return arr.astype(dt, casting="no", copy=True)
 
 
 def angular_power_spectra(
