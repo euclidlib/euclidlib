@@ -9,11 +9,11 @@ readme = "README.md"
 license = "MIT"
 authors = [
     {name = "Nicolas Tessore", email = "n.tessore@ucl.ac.uk"},
-    {name = "Guadalupe Canas-Herre", email = "guadalupe.canasherrera@esa.int"},
+    {name = "Guadalupe Canas-Herrera", email = "guadalupe.canasherrera@esa.int"},
 ]
 maintainers = [
     {name = "Nicolas Tessore", email = "n.tessore@ucl.ac.uk"},
-    {name = "Guadalupe Canas-Herre", email = "guadalupe.canasherrera@esa.int"},
+    {name = "Guadalupe Canas-Herrera", email = "guadalupe.canasherrera@esa.int"},
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
