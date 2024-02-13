@@ -3,8 +3,8 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "euclid_data_products"
-description = "Read data products from the Euclid mission"
+name = "euclidlib"
+description = "Unofficial package to read data from the Euclid mission"
 readme = "README.md"
 license = "MIT"
 authors = [
@@ -34,7 +34,7 @@ test = [
 source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "euclid_data_products/_version.py"
+version-file = "euclidlib/_version.py"
 
 [tool.black]
 target-version = ["py312"]

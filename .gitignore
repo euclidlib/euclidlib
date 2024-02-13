@@ -1,3 +1,4 @@
 __pycache__
-euclid_data_products/_version.py
+euclidlib/_version.py
 node_modules
+dist
