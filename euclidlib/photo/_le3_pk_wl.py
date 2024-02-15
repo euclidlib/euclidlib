@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from os import PathLike
-from typing import Any, Tuple, TypeAlias
+from typing import TYPE_CHECKING, Any, Tuple
 
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 from numpy.typing import NDArray
+
+if TYPE_CHECKING:
+    from typing import TypeAlias
 
 
 # type alias
