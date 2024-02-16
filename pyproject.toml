@@ -27,6 +27,9 @@ dependencies = [
     "numpy",
 ]
 
+[project.urls]
+Repository = "https://github.com/euclidlib/euclidlib"
+Issues = "https://github.com/euclidlib/euclidlib/issues"
 [project.optional-dependencies]
 test = [
     "pytest>=6.0",
@@ -52,6 +55,3 @@ exclude_also = [
     "if TYPE_CHECKING:",
 ]
 
-[project.urls]
-Repository = "https://github.com/euclidlib/euclidlib"
-Issues = "https://github.com/euclidlib/euclidlib/issues"
