@@ -30,6 +30,7 @@ dependencies = [
 [project.urls]
 Repository = "https://github.com/euclidlib/euclidlib"
 Issues = "https://github.com/euclidlib/euclidlib/issues"
+
 [project.optional-dependencies]
 test = [
     "pytest>=6.0",
@@ -54,4 +55,3 @@ omit = [
 exclude_also = [
     "if TYPE_CHECKING:",
 ]
-
