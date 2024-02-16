@@ -51,3 +51,7 @@ omit = [
 exclude_also = [
     "if TYPE_CHECKING:",
 ]
+
+[project.urls]
+Repository = "https://github.com/euclidlib/euclidlib"
+Issues = "https://github.com/euclidlib/euclidlib/issues"
