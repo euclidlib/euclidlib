@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tw:DpdLE3gcTwoPointAutoCorrPol xmlns:dss="http://euclid.esa.org/schema/sys/dss" xmlns:fit="http://euclid.esa.org/schema/bas/fit" xmlns:utd="http://euclid.esa.org/schema/bas/utd" xmlns:impfits="http://euclid.esa.org/schema/bas/imp/fits" xmlns:dtd="http://euclid.esa.org/schema/bas/dtd" xmlns:sys="http://euclid.esa.org/schema/sys" xmlns:gc="http://euclid.esa.org/schema/pro/le3/gc" xmlns:dqc="http://euclid.esa.org/schema/bas/dqc" xmlns:ppr="http://euclid.esa.org/schema/bas/ppr" xmlns:tw="http://euclid.esa.org/schema/dpd/le3/gc/twopcfautopol" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://euclid.esa.org/schema/dpd/le3/gc/twopcfautopol file:/home/dtava/Projects/Euclid/Software/ST_DataModel/ST_DM_Schema/auxdir/ST_DM_Schema/dpd/le3/gc/euc-test-le3-gc-2pcf-auto-pol.xsd">
+    <Header>
+        <ProductId>abfebe7b-15cb-46df-b240-763dca2e6e2d</ProductId>
+        <ProductType>DpdLE3gcTwoPointAutoCorrPol</ProductType>
+        <SoftwareName>LE3_GC_TwoPointCorrelation</SoftwareName>
+        <SoftwareRelease>1.0</SoftwareRelease>
+        <ProdSDC>UNKNOWN</ProdSDC>
+        <DataSetRelease>UNKNOWN</DataSetRelease>
+        <Purpose>UNKNOWN</Purpose>
+        <PlanId>041c5491-b3b9-499a-97d3-fde77d4636d8</PlanId>
+        <PPOId>0c9242c8-be7f-407b-8358-f500d87aa7ee</PPOId>
+        <PipelineDefinitionId>UNKNOWN</PipelineDefinitionId>
+        <PpoStatus>UNKNOWN</PpoStatus>
+        <ManualValidationStatus>UNKNOWN</ManualValidationStatus>
+        <Curator>UNKNOWN</Curator>
+        <CreationDate>2063-04-05T12:00:00.000000Z</CreationDate>
+    </Header>
+    <Data>
+        <DataCatalog>galaxy_DR12v5_CMASSLOWZTOT_North_bin1.fits</DataCatalog>
+        <RandCatalog>random0_DR12v5_CMASSLOWZTOT_North_bin1.fits</RandCatalog>
+        <CountingMethod>LINKED_LIST</CountingMethod>
+        <BinTypeDim1>LIN</BinTypeDim1>
+        <BinNumberDim1>40</BinNumberDim1>
+        <BinMinValueDim1>0.</BinMinValueDim1>
+        <BinMaxValueDim1>200.</BinMaxValueDim1>
+        <BinTypeDim2>LIN</BinTypeDim2>
+        <BinNumberDim2>200</BinNumberDim2>
+        <BinMinValueDim2>-1.</BinMinValueDim2>
+        <BinMaxValueDim2>1.</BinMaxValueDim2>
+        <UseWeight>true</UseWeight>
+        <SplitFactor>50</SplitFactor>
+        <CosmologyID>LCDM</CosmologyID>
+        <ReleaseName>BOSS_DR12v5_CMASSLOWZTOT_North_bin1</ReleaseName>
+        <LosDef>mid-point</LosDef>
+        <PairsFile format="le3.gc.2pcf.auto.pair.2D" version="0.3">
+            <DataContainer filestatus="PROPOSED">
+                <FileName>EUC_LE3_GCL_2PCF_BOSS_DR12v5_CMASSLOWZTOT_North_bin1_PAIRS_AUTO_2DPOL_763DCA2E6E2D_20240220T235142.0Z.fits</FileName>
+            </DataContainer>
+        </PairsFile>
+        <CorrelationFile format="le3.gc.2pcf.auto.corr.2D" version="0.3">
+            <DataContainer filestatus="PROPOSED">
+                <FileName>EUC_LE3_GCL_2PCF_BOSS_DR12v5_CMASSLOWZTOT_North_bin1_Correlation_AUTO_2DPOL_763DCA2E6E2D_20240220T235142.0Z.fits</FileName>
+            </DataContainer>
+        </CorrelationFile>
+        <CorrelationFileMultipole format="le3.gc.2pcf.auto.corr.mul" version="0.3">
+            <DataContainer filestatus="PROPOSED">
+                <FileName>EUC_LE3_GCL_2PCF_BOSS_DR12v5_CMASSLOWZTOT_North_bin1_Correlation_MULTIPOLES_763DCA2E6E2D_20240220T235142.0Z.fits</FileName>
+            </DataContainer>
+        </CorrelationFileMultipole>
+    </Data>
+</tw:DpdLE3gcTwoPointAutoCorrPol>
