@@ -43,7 +43,6 @@ source = "vcs"
 version-file = "euclidlib/_version.py"
 
 [tool.black]
-target-version = ["py312"]
 preview = true
 
 [tool.coverage.report]
