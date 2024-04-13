@@ -7,7 +7,7 @@ __all__ = [
 
 # generated version information
 try:
-    from ._version import __version__, __version_tuple__
+    from ._version import __version__, __version_tuple__  # type: ignore [import-not-found, unused-ignore]
 except ModuleNotFoundError:
     pass
 
