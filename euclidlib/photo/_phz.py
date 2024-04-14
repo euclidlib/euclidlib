@@ -25,7 +25,7 @@ def _hist2dist(x: NDArray[Any], y: NDArray[Any]) -> NDArray[Any]:
 
 # this is the dtype for n(z) data in the Euclid SGS format
 NZ_DTYPE = [
-    ("BIN_ID", ">i8"),
+    ("BIN_ID", ">i4"),
     ("MEAN_REDSHIFT", ">f4"),
     ("N_Z", ">f4", (3000,)),
 ]
