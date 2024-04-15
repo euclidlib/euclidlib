@@ -74,14 +74,13 @@ def write_nz(
     if hist:
         # rebin the histogram as necessary
 
-        # compute the mean redshifts
-        zbar = (z[..., :-1] + z[..., 1:]) / 2
-        out["MEAN_REDSHIFT"] = np.sum(zbar * nz, axis=-1) / np.sum(nz, axis=-1)
-
         # shorthand for the left and right z boundaries, respectively
         zl, zr = z[:-1], z[1:]
 
-        # compute resummed bin counts in each bins
+        # compute the mean redshifts
+        out["MEAN_REDSHIFT"] = np.sum((zl + zr) / 2 * nz, axis=-1) / np.sum(nz, axis=-1)
+
+        # compute resummed bin counts
         for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
             frac = (np.clip(z2, zl, zr) - np.clip(z1, zl, zr)) / (zr - zl)
             out["N_Z"][:, j] = np.dot(nz, frac)

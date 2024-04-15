@@ -15,7 +15,7 @@ def test_redshift_distributions(tmp_path, write_hist, read_hist):
         return nz
 
     # write test data from higher redshift resolution
-    z = np.linspace(0.0, 6.0, 6001)
+    z = np.linspace(0.0, 6.0, 10001)
     nz = fn(z, write_hist)
 
     path = tmp_path / "nz.fits"
