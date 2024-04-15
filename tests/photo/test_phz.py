@@ -15,8 +15,7 @@ def test_redshift_distributions(tmp_path, write_hist, read_hist):
         return nz
 
     # write test data from higher redshift resolution
-
-    z = np.linspace(0.0, 6.0, 10001)
+    z = np.linspace(0.0, 6.0, 6001)
     nz = fn(z, write_hist)
 
     path = tmp_path / "nz.fits"
@@ -33,4 +32,22 @@ def test_redshift_distributions(tmp_path, write_hist, read_hist):
     assert list(nz.keys()) == [1]
 
     nz_ = fn(z, read_hist)
-    np.testing.assert_allclose(nz[1], nz_, rtol=0.01, atol=1e-4)
+    np.testing.assert_allclose(nz[1], nz_, rtol=1e-2, atol=1e-4)
+
+
+def test_redshift_distributions_ident(tmp_path):
+    """
+    Test that writing a histogram in the correct format returns the data
+    unchanged.
+    """
+    z_ = np.linspace(0.0, 6.0, 3001)
+    zmid = (z_[:-1] + z_[1:]) / 2
+    nz_ = np.exp(-((zmid - 1.0) ** 2) / (0.5) ** 2 / 2)
+
+    path = tmp_path / "nz.fits"
+
+    el.photo._phz.write_nz(path, z_, nz_, hist=True)
+    z, nz = el.photo.redshift_distributions(path, hist=True)
+
+    np.testing.assert_array_equal(z, z_)
+    np.testing.assert_array_equal(nz[1], nz_.astype(nz[1].dtype))

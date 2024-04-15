@@ -23,14 +23,6 @@ def _hist2dist(x: NDArray[Any], y: NDArray[Any]) -> NDArray[Any]:
     return result
 
 
-# this is the dtype for n(z) data in the Euclid SGS format
-NZ_DTYPE = [
-    ("BIN_ID", ">i4"),
-    ("MEAN_REDSHIFT", ">f4"),
-    ("N_Z", ">f4", (3000,)),
-]
-
-
 def write_nz(
     path: str | PathLike[str],
     z: ArrayLike,
@@ -48,42 +40,69 @@ def write_nz(
     nz = np.asanyarray(nz)
 
     if z.ndim != 1:
-        raise ValueError("redshift array must be 1D")
-
+        raise ValueError("z array must be 1D")
+    if nz.ndim == 0:
+        raise ValueError("nz array must be at least 1D")
     if not hist and z.shape[-1] == nz.shape[-1]:
         pass
     elif hist and z.shape[-1] == nz.shape[-1] + 1:
-        nz = _hist2dist(z, nz)
+        pass
     else:
         raise ValueError("shape mismatch between redshifts and values")
 
     # PHZ uses a fixed binning scheme with z bins in [0, 6] and dz=0.002
-    zbinedges = np.linspace(0.0, 6.0, 3001, dtype=np.float32)
+    zbinedges = np.linspace(0.0, 6.0, 3001)
 
-    # compute the combined set of z grid points from data and binning
-    zp = np.union1d(z, zbinedges)
+    # turn nz into a 2D array with NBIN rows
+    nz = nz.reshape(-1, nz.shape[-1])
+    nbin = nz.shape[0]
 
     # create the output data in the correct format
-    dims = nz.shape[:-1]
-    nbin = np.prod(dims, dtype=int)
-    out = np.empty(nbin, dtype=NZ_DTYPE)
+    out = np.empty(
+        nbin,
+        dtype=[
+            ("BIN_ID", ">i4"),
+            ("MEAN_REDSHIFT", ">f4"),
+            ("N_Z", ">f4", (3000,)),
+        ],
+    )
+
+    # set increasing bin IDs
+    out["BIN_ID"] = np.arange(1, nbin + 1)
 
     # convert every nz into the PHZ format
-    for i, index in enumerate(np.ndindex(*dims)):
-        # compute mean redshift
-        mean_z = np.trapz(z * nz[index], z)
+    if hist:
+        # rebin the histogram as necessary
 
-        # interpolate dndz onto the unified grid
-        nzp = np.interp(zp, z, nz[index], left=0.0, right=0.0)
+        # compute the mean redshifts
+        zbar = (z[..., :-1] + z[..., 1:]) / 2
+        out["MEAN_REDSHIFT"] = np.sum(zbar * nz, axis=-1) / np.sum(nz, axis=-1)
 
-        # integrate the number of sources in each bin
-        n_z = []
-        for z1, z2 in zip(zbinedges, zbinedges[1:]):
-            sel = (z1 <= zp) & (zp <= z2)
-            n_z.append(np.trapz(nzp[sel], zp[sel]))
+        # shorthand for the left and right z boundaries, respectively
+        zl, zr = z[:-1], z[1:]
 
-        # set the output data row
-        out[i] = (i + 1, mean_z, n_z)
+        # compute resummed bin counts in each bins
+        for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
+            frac = (np.clip(z2, zl, zr) - np.clip(z1, zl, zr)) / (zr - zl)
+            out["N_Z"][:, j] = np.dot(nz, frac)
+    else:
+        # integrate the n(z) over each histogram bin
+
+        # compute mean redshifts
+        out["MEAN_REDSHIFT"] = np.trapz(z * nz, z, axis=-1) / np.trapz(nz, z, axis=-1)
+
+        # compute the combined set of z grid points from data and binning
+        zp = np.union1d(z, zbinedges)
+
+        # integrate over each bin
+        for i in range(nbin):
+            # interpolate dndz onto the unified grid
+            nzp = np.interp(zp, z, nz[i], left=0.0, right=0.0)
+
+            # integrate the distribution over each bin
+            for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
+                sel = (z1 <= zp) & (zp <= z2)
+                out["N_Z"][i, j] = np.trapz(nzp[sel], zp[sel])
 
     # metadata
     header = {
