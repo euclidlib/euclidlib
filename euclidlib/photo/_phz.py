@@ -33,7 +33,9 @@ def write_nz(
     hist: bool = False,
 ) -> None:
     """
-    Write n(z) data in Euclid SGS format.
+    Write n(z) data in Euclid SGS format.  Supports both distributions
+    (when *hist* is false, the default) and histograms (when *hist* is
+    true).
     """
 
     z = np.asanyarray(z)
