@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 
+from .._util import writer
+
 if TYPE_CHECKING:
     from typing import Any
     from numpy.typing import ArrayLike, NDArray
@@ -23,7 +25,60 @@ def _hist2dist(x: NDArray[Any], y: NDArray[Any]) -> NDArray[Any]:
     return result
 
 
-def write_nz(
+def redshift_distributions(
+    path: str | PathLike[str],
+    *,
+    ext: str | int | None = "BIN_INFO",
+    hist: bool = False,
+) -> tuple[NDArray[Any], Mapping[int, NDArray[Any]]]:
+    """Read redshift distributions in Euclid format.
+
+    Parameters
+    ----------
+    path : str
+        Path to a FITS file in Euclid format.
+    ext : str or int or None, optional
+        The FITS extension to read.  If ``None``, the first extension
+        with data is used.
+    hist : bool, optional
+        By default, the histograms are converted to distributions.  If
+        true, return the redshift histograms unmodified.
+
+    Returns
+    -------
+    z : ndarray
+        Redshift values.
+    nz: dict of int and ndarray
+        Dictionary where keys are tomographic bin IDs and values are the
+        redshift distributions.
+
+    """
+
+    # data and header from file
+    data = fitsio.read(path, ext=ext, lower=True)
+
+    # this is the fixed binning scheme used by PHZ
+    z = np.linspace(0.0, 6.0, 3001)
+
+    # check format
+    shape = (z.size - 1,)
+    if "n_z" not in data.dtype.fields or data.dtype.fields["n_z"][0].shape != shape:
+        msg = f"{path}: requires column N_Z of shape {shape}"
+        raise ValueError(msg)
+
+    # read each n(z) histogram into a dict
+    out = {}
+    for row in data:
+        bin_id, n_z = row["bin_id"], row["n_z"]
+        if not hist:
+            n_z = _hist2dist(z, n_z)
+        out[bin_id] = n_z
+
+    return z, out
+
+
+@writer(redshift_distributions)
+def _(
     path: str | PathLike[str],
     z: ArrayLike,
     nz: ArrayLike,
@@ -115,55 +170,3 @@ def write_nz(
     # write output data to FITS
     with fitsio.FITS(path, "rw", clobber=True) as fits:
         fits.write(out, extname="BIN_INFO", header=header)
-
-
-def redshift_distributions(
-    path: str | PathLike[str],
-    *,
-    ext: str | int | None = "BIN_INFO",
-    hist: bool = False,
-) -> tuple[NDArray[Any], Mapping[int, NDArray[Any]]]:
-    """Read redshift distributions in Euclid format.
-
-    Parameters
-    ----------
-    path : str
-        Path to a FITS file in Euclid format.
-    ext : str or int or None, optional
-        The FITS extension to read.  If ``None``, the first extension
-        with data is used.
-    hist : bool, optional
-        By default, the histograms are converted to distributions.  If
-        true, return the redshift histograms unmodified.
-
-    Returns
-    -------
-    z : ndarray
-        Redshift values.
-    nz: dict of int and ndarray
-        Dictionary where keys are tomographic bin IDs and values are the
-        redshift distributions.
-
-    """
-
-    # data and header from file
-    data = fitsio.read(path, ext=ext, lower=True)
-
-    # this is the fixed binning scheme used by PHZ
-    z = np.linspace(0.0, 6.0, 3001)
-
-    # check format
-    shape = (z.size - 1,)
-    if "n_z" not in data.dtype.fields or data.dtype.fields["n_z"][0].shape != shape:
-        msg = f"{path}: requires column N_Z of shape {shape}"
-        raise ValueError(msg)
-
-    # read each n(z) histogram into a dict
-    out = {}
-    for row in data:
-        bin_id, n_z = row["bin_id"], row["n_z"]
-        if not hist:
-            n_z = _hist2dist(z, n_z)
-        out[bin_id] = n_z
-
-    return z, out

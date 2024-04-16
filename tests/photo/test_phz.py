@@ -20,7 +20,7 @@ def test_redshift_distributions(tmp_path, write_hist, read_hist):
 
     path = tmp_path / "nz.fits"
 
-    el.photo._phz.write_nz(path, z, nz, hist=write_hist)
+    el.photo.redshift_distributions.write(path, z, nz, hist=write_hist)
 
     # read test data
 
@@ -46,7 +46,7 @@ def test_redshift_distributions_ident(tmp_path):
 
     path = tmp_path / "nz.fits"
 
-    el.photo._phz.write_nz(path, z_, nz_, hist=True)
+    el.photo.redshift_distributions.write(path, z_, nz_, hist=True)
     z, nz = el.photo.redshift_distributions(path, hist=True)
 
     np.testing.assert_array_equal(z, z_)
