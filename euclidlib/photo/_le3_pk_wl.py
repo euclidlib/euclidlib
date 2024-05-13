@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import re
-from os import PathLike, path
+from os import PathLike
 from typing import TYPE_CHECKING, Tuple, Union
 
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 from numpy.typing import NDArray
 
-from euclidlib.photo import photo_data
+import photo_data
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
@@ -110,6 +110,7 @@ def angular_power_spectra(
         cls[key] = _read_twopoint(hdu)
     return cls
 
+
 def xi_tpcf(
     path: str | PathLike[str],
     *,
@@ -136,9 +137,9 @@ def xi_tpcf(
     for component in ("+", "-"):
         xis[component] = {}
         for i, z_comb in enumerate(z_combinations):
-            xis[component][z_comb]= tpcf_le3.get_xi_component(component,
-                                                             z_comb)
+            xis[component][z_comb] = tpcf_le3.get_xi_component(component, z_comb)
     return xis
+
 
 def mixing_matrices(
     path: str | PathLike[str],

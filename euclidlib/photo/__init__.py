@@ -1,6 +1,6 @@
 __all__ = [
     "angular_power_spectra",
-    "two_point_correlation_xi"
+    "two_point_correlation_xi",
     "mixing_matrices",
     "redshift_distributions",
 ]
