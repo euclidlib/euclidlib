@@ -1,5 +1,5 @@
 """
-  
+
 :Name: photo_data.py
 
 :Description: This script contains classes that read and

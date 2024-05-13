@@ -8,7 +8,7 @@ import fitsio  # type: ignore [import-not-found]
 import numpy as np
 from numpy.typing import NDArray
 
-import photo_data
+from euclidlib.photo import photo_data
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
@@ -133,7 +133,6 @@ def xi_tpcf(
 
     # Get LE3 data
     xis = {}
-
     for component in ("+", "-"):
         xis[component] = {}
         for i, z_comb in enumerate(z_combinations):
