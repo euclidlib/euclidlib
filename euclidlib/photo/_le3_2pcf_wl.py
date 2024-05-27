@@ -15,7 +15,8 @@ if TYPE_CHECKING:
 _DictKey: "TypeAlias" = Union[str, int, Tuple["_DictKey", ...]]
 
 
-def xi_tpcf(path: str | PathLike[str]) -> dict[_DictKey, NDArray[Any]]:
+def two_point_correlation(path: str | PathLike[str]
+                          ) -> dict[_DictKey, NDArray[Any]]:
     """
     Read the Weak Lensing two-point correlation functions for LE3.
     """
@@ -37,11 +38,12 @@ def xi_tpcf(path: str | PathLike[str]) -> dict[_DictKey, NDArray[Any]]:
     for i, z_comb in enumerate(z_combinations):
         tpcf[z_comb] = {}
         for component in ("+", "-"):
-            tpcf[z_comb][component] = tpcf_le3.get_xi_component(component, z_comb)
+            tpcf[z_comb][component] = tpcf_le3.get_xi_component(component,
+                                                                z_comb)
         tpcf[z_comb]["WEIGHT"] = fitsio.read(path, columns="WEIGHT")
 
     header = fitsio.read_header(path)
     tpcf["THMIN"] = header["THMIN"]
     tpcf["THMAX"] = header["THMAX"]
-    print(tpcf)
+
     return tpcf
