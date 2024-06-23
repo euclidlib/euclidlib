@@ -30,7 +30,7 @@ def writer(func: Any) -> Callable[[AnyT], AnyT]:
 
     return decorator
 
-def trapezoidal_integration(y: np.ndarray, x: Optional[np.ndarray] = None, axis: int = -1) -> Union[float, np.ndarray]:
+def trapezoidal_integration(y: np.ndarray[Any, Any], x: Optional[np.ndarray[Any, Any]] = None, axis: int = -1) -> Union[float, np.ndarray[Any, Any]]:
     """
     Compute the integral of `y` values using the trapezoidal rule.
     
