@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 
-from .._util import writer
+from .._util import writer, trapezoidal_integration
 
 if TYPE_CHECKING:
     from typing import Any
@@ -145,7 +145,8 @@ def _(
         # integrate the n(z) over each histogram bin
 
         # compute mean redshifts
-        out["MEAN_REDSHIFT"] = np.trapz(z * nz, z, axis=-1) / np.trapz(nz, z, axis=-1)
+        out["MEAN_REDSHIFT"] = \
+            trapezoidal_integration(z * nz, z, axis=-1) / trapezoidal_integration(nz, z, axis=-1)
 
         # compute the combined set of z grid points from data and binning
         zp = np.union1d(z, zbinedges)
@@ -158,7 +159,7 @@ def _(
             # integrate the distribution over each bin
             for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
                 sel = (z1 <= zp) & (zp <= z2)
-                out["N_Z"][i, j] = np.trapz(nzp[sel], zp[sel])
+                out["N_Z"][i, j] = trapezoidal_integration(nzp[sel], zp[sel])
 
     # metadata
     header = {
