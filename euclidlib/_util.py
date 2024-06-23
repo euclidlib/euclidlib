@@ -49,16 +49,17 @@ def trapezoidal_integration(y: np.ndarray[Any, Any], x: Optional[np.ndarray[Any,
     float or np.ndarray
         Definite integral as approximated by the trapezoidal rule.
     """
+    result: Union[float, np.ndarray[Any, Any]]
+    
     if NumpyVersion(np.__version__) >= NumpyVersion('2.0.0'):
         # NumPy version is 2.0.0 or later
         if hasattr(np, 'trapezoid'):
-            return np.trapezoid(y, x, axis=axis)  # Ensure that `np.trapezoid` exists
+            result = np.trapezoid(y, x, axis=axis)  # Ensure that `np.trapezoid` exists
         else:
             raise AttributeError("NumPy version is >= 2.0.0 but 'trapezoid' function is not available.")
     else:
         # NumPy version is older than 2.0.0
-        if hasattr(np, 'trapz'):
-            return np.trapz(y, x, axis=axis)
-        else:
-            raise AttributeError("NumPy version is < 2.0.0 and 'trapz' function is not available.")
+        result = np.trapz(y, x, axis=axis)
+    
+    return result
         
