@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from typing import Union
 import numpy as np
 from numpy.lib import NumpyVersion
 
@@ -29,7 +30,7 @@ def writer(func: Any) -> Callable[[AnyT], AnyT]:
 
     return decorator
 
-def trapezoidal_integration(y, x, axis=-1):
+def trapezoidal_integration(y: np.ndarray, x: np.ndarray = None, axis: int = -1) -> Union[float, np.ndarray]:
     """
     Compute the integral of `y` values using the trapezoidal rule.
 
@@ -55,8 +56,15 @@ def trapezoidal_integration(y, x, axis=-1):
         Definite integral as approximated by the trapezoidal rule.
     """
     if NumpyVersion(np.__version__) >= NumpyVersion('2.0.0'):
-        # NumPy version is 2.0.0' or later
-        return np.trapezoid(y, x, axis=axis)
+        # NumPy version is 2.0.0 or later
+        if hasattr(np, 'trapezoid'):
+            return np.trapezoid(y, x, axis=axis)
+        else:
+            raise AttributeError("NumPy version is >= 2.0.0 but 'trapezoid' function is not available.")
     else:
-        # NumPy version is older than 2.0.0'
-        return np.trapz(y, x, axis=axis)
+        # NumPy version is older than 2.0.0
+        if hasattr(np, 'trapz'):
+            return np.trapz(y, x, axis=axis)
+        else:
+            raise AttributeError("NumPy version is < 2.0.0 and 'trapz' function is not available.")
+
