@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from typing import Union
+from typing import Union, Optional
 import numpy as np
 from numpy.lib import NumpyVersion
 
@@ -30,7 +30,7 @@ def writer(func: Any) -> Callable[[AnyT], AnyT]:
 
     return decorator
 
-def trapezoidal_integration(y: np.ndarray, x: np.ndarray = None, axis: int = -1) -> Union[float, np.ndarray]:
+def trapezoidal_integration(y: np.ndarray, x: Optional[np.ndarray] = None, axis: int = -1) -> Union[float, np.ndarray]:
     """
     Compute the integral of `y` values using the trapezoidal rule.
 
