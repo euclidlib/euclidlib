@@ -7,11 +7,16 @@ from typing import TYPE_CHECKING
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 
-from .._util import writer, trapezoidal_integration
+from .._util import writer
 
 if TYPE_CHECKING:
     from typing import Any
     from numpy.typing import ArrayLike, NDArray
+
+if np.lib.NumpyVersion(np.__version__) >= "2.0.0b1":
+    trapezoid = np.trapezoid  # type: ignore
+else:
+    trapezoid = np.trapz  # type: ignore
 
 
 def _hist2dist(x: NDArray[Any], y: NDArray[Any]) -> NDArray[Any]:
@@ -145,8 +150,7 @@ def _(
         # integrate the n(z) over each histogram bin
 
         # compute mean redshifts
-        out["MEAN_REDSHIFT"] = \
-            trapezoidal_integration(z * nz, z, axis=-1) / trapezoidal_integration(nz, z, axis=-1)
+        out["MEAN_REDSHIFT"] = trapezoid(z * nz, z, axis=-1) / trapezoid(nz, z, axis=-1)
 
         # compute the combined set of z grid points from data and binning
         zp = np.union1d(z, zbinedges)
@@ -159,7 +163,7 @@ def _(
             # integrate the distribution over each bin
             for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
                 sel = (z1 <= zp) & (zp <= z2)
-                out["N_Z"][i, j] = trapezoidal_integration(nzp[sel], zp[sel])
+                out["N_Z"][i, j] = trapezoid(nzp[sel], zp[sel])
 
     # metadata
     header = {
