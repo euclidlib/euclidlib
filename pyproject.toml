@@ -25,6 +25,7 @@ dynamic = ["version"]
 dependencies = [
     "fitsio",
     "numpy",
+    "astropy",
 ]
 
 [project.urls]
