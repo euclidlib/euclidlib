@@ -1,22 +1,11 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import TYPE_CHECKING, Tuple, Union
-from numpy.typing import NDArray
 import fitsio
-
 from euclidlib.photo import photo_data
 
-if TYPE_CHECKING:
-    from typing import Any, TypeAlias
 
-
-# type alias
-_DictKey: "TypeAlias" = Union[str, int, Tuple["_DictKey", ...]]
-
-
-def two_point_correlation(path: str | PathLike[str]
-                          ) -> dict[_DictKey, NDArray[Any]]:
+def correlation_functions(path: str | PathLike[str]) -> dict:
     """
     Read the Weak Lensing two-point correlation functions for LE3.
     """
@@ -38,8 +27,7 @@ def two_point_correlation(path: str | PathLike[str]
     for i, z_comb in enumerate(z_combinations):
         tpcf[z_comb] = {}
         for component in ("+", "-"):
-            tpcf[z_comb][component] = tpcf_le3.get_xi_component(component,
-                                                                z_comb)
+            tpcf[z_comb][component] = tpcf_le3.get_xi_component(component, z_comb)
         tpcf[z_comb]["WEIGHT"] = fitsio.read(path, columns="WEIGHT")
 
     header = fitsio.read_header(path)

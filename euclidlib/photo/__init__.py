@@ -1,6 +1,6 @@
 __all__ = [
     "angular_power_spectra",
-    "two_point_correlation",
+    "correlation_functions",
     "mixing_matrices",
     "redshift_distributions",
 ]
@@ -11,7 +11,7 @@ from ._le3_pk_wl import (
 )
 
 from ._le3_2pcf_wl import (
-    two_point_correlation,
+    correlation_functions,
 )
 
 from ._phz import (
