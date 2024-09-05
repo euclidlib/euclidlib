@@ -1,5 +1,7 @@
 # euclidlib
 
+[![Documentation Status](https://readthedocs.org/projects/euclidlib/badge/?version=latest)](https://euclidlib.readthedocs.io/en/latest/?badge=latest)
+
 ## Table of Contents
 
 - [Introduction](#introduction)
