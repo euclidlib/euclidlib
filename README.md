@@ -31,7 +31,7 @@ pip install euclidlib
 
 ## Usage
 
-Soon to be announced.
+Check the [getting started](https://euclidlib.readthedocs.io/en/latest/getting_started.html) section of the docs.
 
 ## Contributing
 
