@@ -2,7 +2,7 @@
 # Learn more at https://jupyterbook.org/customize/config.html
 
 title: euclidlib
-author: G. Cañas-Herrera & N. Tessore
+author: euclidlib team
 logo: euclidlib-patch.png
 
 # Force re-execution of notebooks on each build.

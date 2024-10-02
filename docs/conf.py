@@ -3,10 +3,10 @@
 # If you wish to continue using _config.yml, make edits to that file and
 # re-generate this one.
 ###############################################################################
-author = 'G. Cañas-Herrera & N. Tessore'
+author = 'euclidlib team'
 bibtex_bibfiles = ['references.bib']
 comments_config = {'hypothesis': False, 'utterances': False}
-copyright = '2023'
+copyright = '2024'
 exclude_patterns = ['**.ipynb_checkpoints', '.DS_Store', 'Thumbs.db', '_build']
 extensions = ['sphinx_togglebutton', 'sphinx_copybutton', 'myst_nb', 'jupyter_book', 'sphinx_thebe', 'sphinx_comments', 'sphinx_external_toc', 'sphinx.ext.intersphinx', 'sphinx_design', 'sphinx_book_theme', 'sphinxcontrib.bibtex', 'sphinx_jupyterbook_latex', 'sphinx_multitoc_numbering']
 external_toc_exclude_missing = False
