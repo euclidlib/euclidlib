@@ -3,7 +3,7 @@
 # If you wish to continue using _config.yml, make edits to that file and
 # re-generate this one.
 ###############################################################################
-author = 'euclidlib team'
+author = 'the euclidlib team'
 bibtex_bibfiles = ['references.bib']
 comments_config = {'hypothesis': False, 'utterances': False}
 copyright = '2024'
