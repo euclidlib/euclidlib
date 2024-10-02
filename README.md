@@ -58,4 +58,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgements
 
-- Thanks to the `euclidlib` contributors so far: Will Hartley & Florian Dubath (redshift bin distribution schema), Felicitas Keil & Martin Kilbinger (photometric 2-point correlation functions reading routines), Nicolas Tessore (photometric power spectra reading routines).
+- The full list of `euclidlib` contributors so far can be found in [the acknowledgement section of the docs](https://euclidlib.readthedocs.io/en/latest/acknowledgments.html).
