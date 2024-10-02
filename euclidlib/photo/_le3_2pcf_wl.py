@@ -25,6 +25,9 @@ def _key_from_string(s: str) -> _DictKey:
     if 'POSSHEAR' in s:
         name_split = s.split('_')
         tuple_key_dict = ('POSSHEAR', name_split[-2], name_split[-1])
+    if 'SHEAR' in s:
+        name_split = s.split('_')
+        tuple_key_dict = ('SHEAR', name_split[-2], name_split[-1])
     else:
         pass
     return tuple_key_dict
@@ -32,10 +35,7 @@ def _key_from_string(s: str) -> _DictKey:
 
 def correlation_functions(
     path: str | PathLike[str],
-    *,
-    include: Sequence[tuple[Any, ...]] | None = None,
-    exclude: Sequence[tuple[Any, ...]] | None = None,
-) -> dict[_DictKey, NDArray[Any]]:
+  ) -> dict[_DictKey, NDArray[Any]]:
     """
     Read correlation functions from a Euclid data product.
     """
