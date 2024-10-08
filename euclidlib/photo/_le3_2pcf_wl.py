@@ -1,16 +1,10 @@
 from __future__ import annotations
 
-import re
 from os import PathLike
 from typing import TYPE_CHECKING, Tuple, Union
 
 import fitsio  # type: ignore [import-not-found]
-import numpy as np
 from numpy.typing import NDArray
-
-if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
-    from typing import Any, TypeAlias
 
 
 # type alias
@@ -62,7 +56,7 @@ def correlation_functions(
     xi = {}
     with fitsio.FITS(path) as fits:
         for hdu in fits:
-            if not '2D' in hdu.get_extname():
+            if '2D' not in hdu.get_extname():
                 continue
             tuple_key = _key_from_string(hdu.get_extname())
             data = hdu.read()
@@ -97,7 +91,7 @@ def bandpowers(
     bandp = {}
     with fitsio.FITS(path) as fits:
         for hdu in fits:
-            if not '2D' in hdu.get_extname():
+            if '2D' not in hdu.get_extname():
                 continue
             if 'POSPOS' in hdu.get_extname():
                 tuple_key = _key_from_string(hdu.get_extname())
@@ -152,7 +146,7 @@ def cosebis(
     cb = {}
     with fitsio.FITS(path) as fits:
         for hdu in fits:
-            if not '2D' in hdu.get_extname():
+            if '2D' not in hdu.get_extname():
                 continue
             tuple_key = _key_from_string(hdu.get_extname())
             data = hdu.read()
