@@ -22,10 +22,10 @@ def _key_from_string(s: str) -> _DictKey:
     if 'POSPOS' in s:
         name_split = s.split('_')
         tuple_key_dict = ('POS', 'POS', int(name_split[-2]), int(name_split[-1]))
-    if 'POSSHEAR' in s:
+    elif 'POSSHEAR' in s:
         name_split = s.split('_')
         tuple_key_dict = ('POS', 'SHE', int(name_split[-2]), int(name_split[-1]))
-    if 'SHEAR' in s:
+    elif 'SHEAR' in s:
         name_split = s.split('_')
         tuple_key_dict = ('SHE', 'SHE', int(name_split[-2]), int(name_split[-1]))
     else:
@@ -106,14 +106,14 @@ def bandpowers(
                 dtype_common = ([('L', '>f8'), ('CL', '>f8'), 
                                  ('LMIN', '>f8'), ('LMAX', '>f8')])
                 bandp[tuple_key].dtype = dtype_common
-            if 'POSSHEAR' in hdu.get_extname():
+            elif 'POSSHEAR' in hdu.get_extname():
                 tuple_key = _key_from_string(hdu.get_extname())
                 data = hdu.read()
                 bandp[tuple_key] = data
                 dtype_common = ([('L', '>f8'), ('CL_E', '>f8'), ('CL_B', '>f8'), 
                                  ('LMIN', '>f8'), ('LMAX', '>f8')])
                 bandp[tuple_key].dtype = dtype_common
-            if 'SHEARSHEAR' in hdu.get_extname():
+            elif 'SHEARSHEAR' in hdu.get_extname():
                 tuple_key = _key_from_string(hdu.get_extname())
                 data = hdu.read()
                 bandp[tuple_key] = data
