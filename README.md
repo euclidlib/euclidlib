@@ -1,5 +1,7 @@
 # euclidlib
 
+[![Documentation Status](https://readthedocs.org/projects/euclidlib/badge/?version=latest)](https://euclidlib.readthedocs.io/en/latest/?badge=latest)
+
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -29,7 +31,7 @@ pip install euclidlib
 
 ## Usage
 
-Soon to be announced.
+Check the [getting started](https://euclidlib.readthedocs.io/en/latest/getting_started.html) section of the docs.
 
 ## Contributing
 
@@ -56,4 +58,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgements
 
-- Thanks to the `euclidlib` contributors so far: Will Hartley & Florian Dubath (redshift bin distribution schema), Felicitas Keil & Martin Kilbinger (photometric 2-point correlation functions reading routines), Nicolas Tessore (photometric power spectra reading routines).
+- The full list of `euclidlib` contributors so far can be found in [the acknowledgement section of the docs](https://euclidlib.readthedocs.io/en/latest/acknowledgments.html).
