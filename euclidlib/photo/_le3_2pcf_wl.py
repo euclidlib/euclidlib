@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import TYPE_CHECKING, Tuple, Union
+from typing import TYPE_CHECKING, Tuple, Union, Any
 
 import fitsio  # type: ignore [import-not-found]
-from numpy.typing import NDArray
+from numpy.typing import NDArray # type: ignore
 
 
 # type alias
