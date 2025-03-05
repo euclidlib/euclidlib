@@ -43,7 +43,7 @@ def _get_powerspectrum_header(hdu: fitsio.TableHDU) -> Dict[str, Any]:
     pk_head: Dict[str, Any] = dict(hdu.read_header())
     return pk_head
 
-def read_powerspectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any], NDArray[Any]]:
+def _read_powerspectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any], NDArray[Any]]:
     """
     Reads power spectrum from Euclid LE3-GC fits file
 
