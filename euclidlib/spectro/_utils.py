@@ -24,7 +24,7 @@ def _verify_input_file(path: Union[str, PathLike[str]]) -> None:
     if not any((isinstance(path, str), isinstance(path, PathLike))):
         raise TypeError("Provided fits file name must be a string or a PathLike object.")
     if not os.path.isfile(path):
-        raise FileNotFoundError("Could not find file {}.".format(str(path)))
+        raise FileNotFoundError("Could not find file '{}'.".format(str(path)))
     try:
         with fitsio.FITS(path) as fits_input:
             assert len(fits_input) > 1
