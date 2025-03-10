@@ -21,6 +21,8 @@ def _verify_input_file(path: Union[str, PathLike[str]]) -> None:
     ValueError
         if file is not a fits file or is it a fits file with an incompatible structure
     """
+    if not any((isinstance(path, str), isinstance(path, PathLike))):
+        raise TypeError("Provided fits file name must be a string or a PathLike object.")
     if not os.path.isfile(path):
         raise FileNotFoundError("Could not find file {}.".format(str(path)))
     try:
