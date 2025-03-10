@@ -19,17 +19,19 @@ def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any
     -------
     header, data : Dict, NDArray
     """
+    # File quality check
     _verify_input_file(path)
+    # Read file and verify it contains information on the pk
     with fitsio.FITS(path) as fits_input:
         header = _get_hdu_header(fits_input[1])
-        if header["EXTNAME"] == "SPECTRUM":
+        if ("EXTNAME" not in header) or ("SPECTRUM" not in header["EXTNAME"]):
+            raise ValueError(
+                "Invalid fits file provided, cannot locate Power Spectrum data."
+            )
+        elif header["EXTNAME"] == "SPECTRUM":
             data = _get_hdu_data(fits_input[1])
         # If Bispectrum file provided, retrieve pk from next hdu (yet to be tested!)
         elif header["EXTNAME"] == "BISPECTRUM":
             header = _get_hdu_header(fits_input[2])
             data = _get_hdu_data(fits_input[2])
-        else:
-            raise ValueError(
-                "Invalid fits file provided, cannot locate Power Spectrum data."
-            )
     return header, data
