@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, Tuple, Union
+from typing import Any, Dict, Tuple, Sequence, Union
 from os import PathLike
 import numpy as np
 import fitsio
@@ -35,3 +35,46 @@ def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any
             header = _get_hdu_header(fits_input[2])
             data = _get_hdu_data(fits_input[2])
     return header, data
+
+def power_spectrum(
+        path: Union[str, PathLike[str], Sequence[str], Sequence[PathLike[str]]]
+    ) -> Dict[Tuple[str, str, int, int], NDArray]:
+    """
+    Returns power spectrum data in the cloe-compatible euclidlib data format
+
+    Parameters
+    ----------
+    path : str | PathLike | Sequence[str] | Sequence[PathLike]
+        path(s) to the pk file(s) (see notes for more info on providing more than one file)
+
+    Returns
+    -------
+    pk_dict : dict[NDArray]
+        dictionaty containing the pk data
+
+    Notes
+    -----
+    Multiple-file input is intended to load multiple redshift bins, not any collection of measurements.
+    When passing multiple redshift bins, provide them as a sequence of filenames ordered by growing value of z.
+
+    Examples
+    --------
+    >>> filename = "pk_z0.9-1.1.fits"
+    >>> pk = power_spectrum(filename)
+    >>> pk.keys() # returns dict_keys([('POS', 'POS', 1, 1)])
+    >>> filenames = ["pk_z0.9-1.1.fits", "pk_1.1-1.3.fits"]
+    >>> pk = power_spectrum(filenames)
+    >>> pk.keys() # returns dict_keys([('POS', 'POS', 1, 1), ('POS', POS', 2, 2)])
+    """
+    if (not isinstance(path, Sequence)) or isinstance(path, str):
+        path = (path,)
+    pk_dict = dict()
+    for n, filename in enumerate(path):
+        # TODO
+        # For now, header data is ignored.
+        # It could be necessary to read the effective z for each bin...
+        _, pk = _read_power_spectrum(filename)
+        pk_dict["POS", "POS", (n+1), (n+1)] = pk
+    return pk_dict
+    
+
