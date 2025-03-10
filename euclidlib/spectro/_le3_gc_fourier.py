@@ -4,7 +4,7 @@ from os import PathLike
 import numpy as np
 import fitsio
 from numpy.typing import NDArray
-from ._utils import _get_hdu_header, _get_hdu_data
+from ._utils import _verify_input_file, _get_hdu_header, _get_hdu_data
 
 def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any], NDArray[Any]]:
     """
@@ -19,6 +19,7 @@ def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any
     -------
     header, data : Dict, NDArray
     """
+    _verify_input_file(path)
     with fitsio.FITS(path) as fits_input:
         header = _get_hdu_header(fits_input[1])
         if header["EXTNAME"] == "SPECTRUM":
