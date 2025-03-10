@@ -1,7 +1,41 @@
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Any, Dict, Union
+import os
+from os import PathLike
 import fitsio
 from numpy.typing import NDArray
+
+def _verify_input_file(path: Union[str, PathLike[str]]) -> None:
+    """
+    Verifies that input file is a compatible LE3-GC fits file
+
+    Parameters
+    ----------
+    path : str | PathLike 
+        path to the (hopefully) fits file
+
+    Raises
+    ------
+    FileNotFoundError
+        if file does not exist
+    ValueError
+        if file is not a fits file or is it a fits file with an incompatible structure
+    """
+    if not os.path.isfile(path):
+        raise FileNotFoundError("Could not find file {}.".format(str(path)))
+    try:
+        with fitsio.FITS(path) as fits_input:
+            assert len(fits_input) > 1
+    except OSError:
+        raise ValueError(
+            "Provided file is not a valid fits file."
+        )
+    except AssertionError:
+        raise ValueError(
+            "Provided fits file does not match the structure of a valid LE3-GC product."
+        )
+    except:
+        raise RuntimeError("Invalid file provided.")
 
 def _get_hdu_header(hdu: fitsio.TableHDU) -> Dict[str, Any]:
     """
