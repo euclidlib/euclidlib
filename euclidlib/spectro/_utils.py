@@ -16,6 +16,8 @@ def _verify_input_file(path: Union[str, PathLike[str]]) -> None:
 
     Raises
     ------
+    TypeError
+        if `path` is not a valid string or PathLike object
     FileNotFoundError
         if file does not exist
     ValueError
