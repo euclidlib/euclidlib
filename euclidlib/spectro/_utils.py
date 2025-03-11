@@ -5,7 +5,7 @@ from os import PathLike
 import fitsio
 from numpy.typing import NDArray
 
-def _verify_input_file(path: Union[str, PathLike[str]]) -> None:
+def _verify_input_file(path: Union[str, PathLike[str]], check_extra_hdu: bool = False) -> None:
     """
     Verifies that input file is a compatible LE3-GC fits file
 
@@ -13,6 +13,8 @@ def _verify_input_file(path: Union[str, PathLike[str]]) -> None:
     ----------
     path : str | PathLike 
         path to the (hopefully) fits file
+    check_extra_hdu : bool
+        verify file contains information on two different hdu (e.g. bispectrum and power spectrum)
 
     Raises
     ------
@@ -23,14 +25,15 @@ def _verify_input_file(path: Union[str, PathLike[str]]) -> None:
     ValueError
         if file is not a fits file or is it a fits file with an incompatible structure
     """
+    hdul_target_length = 3 if check_extra_hdu else 2
     if not any((isinstance(path, str), isinstance(path, PathLike))):
         raise TypeError("Provided fits file name must be a string or a PathLike object.")
     if not os.path.isfile(path):
         raise FileNotFoundError("Could not find file '{}'.".format(str(path)))
     try:
         with fitsio.FITS(path) as fits_input:
-            assert len(fits_input) > 1
-            assert "EXTNAME" in _get_hdu_header(fits_input[1])
+            assert len(fits_input) > hdul_target_length - 1
+            assert "EXTNAME" in _get_hdu_header(fits_input[hdul_target_length - 1])
     except OSError:
         raise ValueError(
             "Provided file is not a valid fits file."
