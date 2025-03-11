@@ -36,7 +36,7 @@ def _verify_input_file(path: Union[str, PathLike[str]]) -> None:
         raise ValueError(
             "Provided fits file does not match the structure of a valid LE3-GC product."
         )
-    except:
+    except Exception:
         raise RuntimeError("Invalid file provided.")
 
 def _get_hdu_header(hdu: fitsio.TableHDU) -> Dict[str, Any]:
