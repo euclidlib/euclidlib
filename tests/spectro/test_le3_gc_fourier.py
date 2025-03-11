@@ -9,10 +9,9 @@ class TestPkReadingRoutine(unittest.TestCase):
             pk = spectro.power_spectrum("random_filename.nothing")
 
     def test_invalid_filename_type(self):
-        with self.assertRaises(TypeError):
-            pk = spectro.power_spectrum(1)
-            pk = spectro.power_spectrum([])
-            pk = spectro.power_spectrum({})
+        for bad_input in (0, [], {}):
+            with self.assertRaises(TypeError):
+                pk = spectro.power_spectrum(bad_input)
 
     def test_not_fits(self):
         with self.assertRaises(ValueError):
