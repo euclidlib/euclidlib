@@ -28,6 +28,7 @@ def _verify_input_file(path: Union[str, PathLike[str]]) -> None:
     try:
         with fitsio.FITS(path) as fits_input:
             assert len(fits_input) > 1
+            assert "EXTNAME" in _get_hdu_header(fits_input[1])
     except OSError:
         raise ValueError(
             "Provided file is not a valid fits file."
