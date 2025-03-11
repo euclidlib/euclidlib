@@ -66,6 +66,8 @@ def power_spectrum(
     >>> pk = power_spectrum(filenames)
     >>> pk.keys() # returns dict_keys([('POS', 'POS', 1, 1), ('POS', POS', 2, 2)])
     """
+    if isinstance(path, Sequence) and (len(path) == 0):
+        raise TypeError("Invalid input provided, it cannot be an empty sequence.")
     if (not isinstance(path, Sequence)) or isinstance(path, str):
         path = (path,)
     pk_dict = dict()
