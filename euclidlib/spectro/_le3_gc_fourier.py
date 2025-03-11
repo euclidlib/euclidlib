@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, Dict, Tuple, Sequence, Union
 from os import PathLike
-import numpy as np
 import fitsio
 from numpy.typing import NDArray
 from ._utils import _verify_input_file, _get_hdu_header, _get_hdu_data
