@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, Tuple, Sequence, Union
+from typing import Any, Dict, Tuple, Iterable, Union
 from os import PathLike
 import fitsio
 from numpy.typing import NDArray
@@ -36,14 +36,14 @@ def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any
     return header, data
 
 def power_spectrum(
-        path: Union[str, PathLike[str], Sequence[str], Sequence[PathLike[str]]]
+        path: Union[str, PathLike[str], Iterable[str], Iterable[PathLike[str]]]
     ) -> Dict[Tuple[str, str, int, int], NDArray]:
     """
     Returns power spectrum data in the cloe-compatible euclidlib data format
 
     Parameters
     ----------
-    path : str | PathLike | Sequence[str] | Sequence[PathLike]
+    path : str | PathLike | Iterable[str] | Iterable[PathLike]
         path(s) to the pk file(s) (see notes for more info on providing more than one file)
 
     Returns
@@ -65,9 +65,9 @@ def power_spectrum(
     >>> pk = power_spectrum(filenames)
     >>> pk.keys() # returns dict_keys([('POS', 'POS', 1, 1), ('POS', POS', 2, 2)])
     """
-    if isinstance(path, Sequence) and (len(path) == 0):
+    if isinstance(path, Iterable) and (len(path) == 0):
         raise TypeError("Invalid input provided, it cannot be an empty sequence.")
-    if (not isinstance(path, Sequence)) or isinstance(path, str):
+    if (not isinstance(path, Iterable)) or isinstance(path, str):
         path = (path,)
     pk_dict = dict()
     for n, filename in enumerate(path):
