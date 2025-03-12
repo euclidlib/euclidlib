@@ -1,4 +1,5 @@
 from __future__ import annotations
+from warnings import warn
 from typing import Any, Dict, Tuple, Iterable, Union
 from os import PathLike
 import fitsio
@@ -18,20 +19,27 @@ def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any
     -------
     header, data : Dict, NDArray
     """
+    # Multiply-used error message
+    pk_not_found_message = "Invalid fits file provided, cannot locate power spectrum data."
     # File quality check
     _verify_input_file(path)
     # Read file and verify it contains information on the pk
     with fitsio.FITS(path) as fits_input:
         header = _get_hdu_header(fits_input[1])
         if "SPECTRUM" not in header["EXTNAME"]:
-            raise ValueError(
-                "Invalid fits file provided, cannot locate power spectrum data."
-            )
+           raise ValueError(pk_not_found_message)
         elif header["EXTNAME"] == "SPECTRUM":
             data = _get_hdu_data(fits_input[1])
-        # If Bispectrum file provided, retrieve pk from next hdu (yet to be tested!)
+        # If a bispectrum file was provided, retrieve pk from next hdu and warn the user
         elif header["EXTNAME"] == "BISPECTRUM":
+            warn(
+                "\n\033[0;31m[!]\033[0m This looks to be a bispectrum file. "
+                "Falling back to next HDU looking for data on the power spectrum."
+            )
+            _verify_input_file(path, check_extra_hdu=True)
             header = _get_hdu_header(fits_input[2])
+            if header["EXTNAME"] != "SPECTRUM":
+                raise ValueError(pk_not_found_message)
             data = _get_hdu_data(fits_input[2])
     return header, data
 
