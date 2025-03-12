@@ -23,6 +23,7 @@ class TestPkReadingRoutine(unittest.TestCase):
         test_file_names_list_pkbk = [
             [
                 ["data/dummy_{}.fits".format(stat), "data/dummy_noextname_{}.fits".format(stat)],
+                ["data/dummy_{}.fits".format(stat), "data/dummy_badextname_{}.fits".format(stat)],
                 ["data/dummy_{}.fits".format(stat), "data/dummy_nopk_{}.fits".format(stat)]
             ] for stat in ("pk", "bk")
         ]
