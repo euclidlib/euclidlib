@@ -1,5 +1,5 @@
-import numpy as np # type: ignore
-import pytest # type: ignore
+import numpy as np  # type: ignore
+import pytest  # type: ignore
 
 import euclidlib as el
 
