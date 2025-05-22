@@ -5,16 +5,16 @@ from os import PathLike
 from typing import TYPE_CHECKING
 
 import fitsio  # type: ignore [import-not-found]
-import numpy as np # type: ignore
+import numpy as np
 
 from .._util import writer
 
 if TYPE_CHECKING:
     from typing import Any
-    from numpy.typing import ArrayLike, NDArray # type: ignore
+    from numpy.typing import ArrayLike, NDArray
 
 if np.lib.NumpyVersion(np.__version__) >= "2.0.0b1":
-    trapezoid = np.trapezoid  # type: ignore
+    trapezoid = np.trapezoid
 else:
     trapezoid = np.trapz  # type: ignore
 
