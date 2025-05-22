@@ -33,7 +33,7 @@ def _hist2dist(x: NDArray[Any], y: NDArray[Any]) -> NDArray[Any]:
 def redshift_distributions(
     path: str | PathLike[str],
     *,
-    ext: str | int | None = "BIN_INFO",
+    ext: str | int | None = None,
     hist: bool = False,
 ) -> tuple[NDArray[Any], Mapping[int, NDArray[Any]]]:
     """Read redshift distributions in Euclid format.
