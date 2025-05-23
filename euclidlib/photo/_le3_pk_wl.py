@@ -1,30 +1,31 @@
 from __future__ import annotations
 
 import re
-from os import PathLike
-from typing import TYPE_CHECKING, Tuple, Union
 
 import fitsio  # type: ignore [import-not-found]
-import numpy as np # type: ignore
-from numpy.typing import NDArray, DTypeLike # type: ignore
+import numpy as np
 
 from dataclasses import dataclass
 
+TYPE_CHECKING = False
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence
-    from typing import Any, TypeAlias # type: ignore
+    from os import PathLike
+    from typing import Any, TypeAlias
+    from numpy.typing import NDArray
+
+    _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
 
 
-# type alias
-_DictKey: "TypeAlias" = Union[str, int, Tuple["_DictKey", ...]]
-
-
-def normalize_result_axis(axis, result, ell):
+def normalize_result_axis(
+    axis: tuple[int, ...] | int | None,
+    result: NDArray[Any],
+    ell: tuple[NDArray[Any], ...] | NDArray[Any] | None,
+) -> tuple[int, ...]:
     """Return an axis tuple for a result."""
     try:
-        from numpy.lib.array_utils import normalize_axis_tuple # type: ignore
+        from numpy.lib.array_utils import normalize_axis_tuple
     except ModuleNotFoundError:
-        from numpy.lib.stride_tricks import normalize_axis_tuple # type: ignore
+        from numpy.lib.stride_tricks import normalize_axis_tuple  # type: ignore
 
     if axis is None:
         if result.ndim == 0:
@@ -35,11 +36,13 @@ def normalize_result_axis(axis, result, ell):
             axis = -1
     return normalize_axis_tuple(axis, result.ndim, "axis")
 
+
 @dataclass(frozen=True, repr=False)
 class Result:
     """
     Container for results.
     """
+
     array: NDArray[Any]
     ell: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
     axis: int | tuple[int, ...] | None = None
@@ -59,12 +62,17 @@ class Result:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(axis={self.axis!r})"
 
-    def __array__(self, dtype=None, *, copy=None) -> NDArray[Any]:
+    def __array__(
+        self,
+        dtype: np.dtype[Any] | None = None,
+        *,
+        copy: np.bool[bool] | None = None,
+    ) -> NDArray[Any]:
         if copy is not None:
             return self.array.__array__(dtype, copy=copy)
         return self.array.__array__(dtype)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Any) -> Any:
         return self.array[key]
 
     @property
@@ -76,8 +84,9 @@ class Result:
         return self.array.shape
 
     @property
-    def dtype(self) -> DTypeLike:
+    def dtype(self) -> np.dtype[Any]:
         return self.array.dtype
+
 
 def _key_from_string(s: str) -> _DictKey:
     """
@@ -91,7 +100,8 @@ def _key_from_string(s: str) -> _DictKey:
     key = key.replace("\0", "\\")
     return int(key) if key.removeprefix("-").isdigit() else key
 
-def _read_metadata(hdu):
+
+def _read_metadata(hdu: Any) -> dict[str, Any]:
     """read array metadata from FITS HDU"""
     h = hdu.read_header()
     md = {}
@@ -100,7 +110,8 @@ def _read_metadata(hdu):
             md[key[5:].lower()] = h[key]
     return md
 
-def _read_result(hdu):
+
+def _read_result(hdu: Any) -> Result:
     """
     Read a result array from FITS.
     """
@@ -158,7 +169,8 @@ def _read_result(hdu):
         weight=weight,
     )
 
-def read(path) -> dict[_DictKey, NDArray[Any]]:
+
+def read(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     """
     Read a set of results from a FITS file.
     """
@@ -181,7 +193,8 @@ def read(path) -> dict[_DictKey, NDArray[Any]]:
 
     return results
 
-def angular_power_spectra(path) -> dict[_DictKey, NDArray[Any]]:
+
+def angular_power_spectra(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     """
     Read a set of results from a FITS file.
     """
@@ -190,12 +203,12 @@ def angular_power_spectra(path) -> dict[_DictKey, NDArray[Any]]:
     results = read(path)
     return results
 
-def mixing_matrices(path) -> dict[_DictKey, NDArray[Any]]:
+
+def mixing_matrices(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     """
     Read a set of results from a FITS file.
     """
 
     # the returned set of mixing matrices
     results = read(path)
-    results
     return results
