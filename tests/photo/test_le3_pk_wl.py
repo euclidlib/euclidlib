@@ -2,7 +2,9 @@ import euclidlib as el
 
 
 def test_angular_power_spectra(data_path):
-    cls = el.photo.harmonic_space.angular_power_spectra(data_path / "angular_power_spectra.fits")
+    cls = el.photo.harmonic_space.angular_power_spectra(
+        data_path / "angular_power_spectra.fits"
+    )
 
     expected_keys = {
         ("POS", "POS", 2, 2),
