@@ -189,16 +189,30 @@ def _read_result(hdu: Any) -> Result:
     order = np.argsort(axis)
 
     _ell = data["ELL"]
-    ell = _ell if _ell.ndim == 1 else tuple(_ell[: arr.shape[axis[i]], i] for i in order)
+    ell = (
+        _ell if _ell.ndim == 1 else tuple(_ell[: arr.shape[axis[i]], i] for i in order)
+    )
 
     _lower = data["LOWER"]
-    lower = _lower if _lower.ndim == 1 else tuple(_lower[: arr.shape[axis[i]], i] for i in order)
+    lower = (
+        _lower
+        if _lower.ndim == 1
+        else tuple(_lower[: arr.shape[axis[i]], i] for i in order)
+    )
 
     _upper = data["UPPER"]
-    upper = _upper if _upper.ndim == 1 else tuple(_upper[: arr.shape[axis[i]], i] for i in order)
+    upper = (
+        _upper
+        if _upper.ndim == 1
+        else tuple(_upper[: arr.shape[axis[i]], i] for i in order)
+    )
 
     _weight = data["WEIGHT"]
-    weight = _weight if _weight.ndim == 1 else tuple(_weight[: arr.shape[axis[i]], i] for i in order)
+    weight = (
+        _weight
+        if _weight.ndim == 1
+        else tuple(_weight[: arr.shape[axis[i]], i] for i in order)
+    )
 
     return Result(
         arr.view(np.dtype(arr.dtype, metadata=_read_metadata(hdu))),
