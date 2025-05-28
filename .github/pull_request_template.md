@@ -37,7 +37,8 @@ Closes #
 - [ ] I’ve tested the code manually
 - [ ] I’ve added comments/docstrings where needed (i.e: README)
 - [ ] I’ve updated relevant docs if necessary
-- [ ] There are no breaking changes in the interface/api
+- [ ] I've checked that there are no breaking changes in the interface/api
+- [ ] I’ve added corresponding unit tests
 
 ## 🎯 Checklist for maintainers
 
