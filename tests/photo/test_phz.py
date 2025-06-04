@@ -9,15 +9,17 @@ import euclidlib as el
 def test_redshift_distributions(tmp_path, write_hist, read_hist):
     def fn(z, hist):
         """produce a mock n(z), optionally binned into a histogram"""
+        dict = {}
         nz = np.exp(-((z - 1.0) ** 2) / (0.5) ** 2 / 2)
         if hist:
             nz = (nz[:-1] + nz[1:]) / 2 * np.diff(z)
-        return nz
+        dict[1] = nz.astype(np.float32)
+        
+        return dict
 
     # write test data from higher redshift resolution
     z = np.linspace(0.0, 6.0, 10001)
     nz = fn(z, write_hist)
-
     path = tmp_path / "nz.fits"
 
     el.photo.redshift_distributions.write(path, z, nz, hist=write_hist)
@@ -43,10 +45,10 @@ def test_redshift_distributions_ident(tmp_path):
     z_ = np.linspace(0.0, 6.0, 3001)
     zmid = (z_[:-1] + z_[1:]) / 2
     nz_ = np.exp(-((zmid - 1.0) ** 2) / (0.5) ** 2 / 2)
-
+    dict_nz = {1: nz_.astype(np.float32)}
     path = tmp_path / "nz.fits"
 
-    el.photo.redshift_distributions.write(path, z_, nz_, hist=True)
+    el.photo.redshift_distributions.write(path, z_, dict_nz, hist=True)
     z, nz = el.photo.redshift_distributions(path, hist=True)
 
     np.testing.assert_array_equal(z, z_)

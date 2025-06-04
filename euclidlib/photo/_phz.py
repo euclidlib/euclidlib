@@ -120,6 +120,7 @@ def _(
 
     z = np.asanyarray(z)
     nz = np.asanyarray(np.array(list(nz.values())).T)
+    print(nz.shape)
 
     if nz.shape[0] == z.shape[0]:
         nz = nz.T  # Flip axes if shape is (z, bins)
@@ -154,11 +155,15 @@ def _(
         zl, zr = z[:-1], z[1:]
 
         # compute the mean redshifts
-        out["MEAN_REDSHIFT"] = np.sum((zl + zr) / 2 * nz, axis=-1) / np.sum(nz, axis=-1)
+        mid_z = (zl + zr) / 2
+        nz = nz.reshape(nbin, -1)  # Ensure nz shape is (NBIN, 3000)
+        out["MEAN_REDSHIFT"] = np.sum(mid_z * nz, axis=1) / np.sum(nz, axis=1)
 
         # compute resummed bin counts
+        print(z.shape)
         for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
             frac = (np.clip(z2, zl, zr) - np.clip(z1, zl, zr)) / (zr - zl)
+            print(frac.shape)
             out["N_Z"][:, j] = np.dot(nz, frac)
     else:
         # integrate the n(z) over each histogram bin
