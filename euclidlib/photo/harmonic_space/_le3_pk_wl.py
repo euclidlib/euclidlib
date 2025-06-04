@@ -285,20 +285,3 @@ def mixing_matrices(path: str | PathLike[str]) -> dict[_DictKey, Result]:
         Dictionary of mixing matrix Result objects.
     """
     return read(path)
-
-
-def covariance_matrices(path: str | PathLike[str]) -> dict[_DictKey, Result]:
-    """
-    Read covariance matrices from a FITS file.
-
-    Parameters
-    ----------
-    path : str or PathLike
-        Path to the FITS file.
-
-    Returns
-    -------
-    matrices : dict
-        Dictionary of covariance matrix Result objects.
-    """
-    return read(path)
