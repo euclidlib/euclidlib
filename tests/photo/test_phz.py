@@ -14,7 +14,7 @@ def test_redshift_distributions(tmp_path, write_hist, read_hist):
         if hist:
             nz = (nz[:-1] + nz[1:]) / 2 * np.diff(z)
         dict[1] = nz.astype(np.float32)
-        
+
         return dict
 
     # write test data from higher redshift resolution
@@ -46,7 +46,7 @@ def test_redshift_distributions_ident(tmp_path):
     zmid = (z_[:-1] + z_[1:]) / 2
     nz_ = np.exp(-((zmid - 1.0) ** 2) / (0.5) ** 2 / 2)
     dict_nz = {1: nz_.astype(np.float32)}
-    
+
     path = tmp_path / "nz.fits"
 
     el.photo.redshift_distributions.write(path, z_, dict_nz, hist=True)
