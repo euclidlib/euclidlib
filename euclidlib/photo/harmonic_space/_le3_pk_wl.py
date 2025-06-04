@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import re, os
+import re
+import os
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 from datetime import datetime
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
     _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
+
 
 def normalize_result_axis(
     axis: tuple[int, ...] | int | None,
@@ -143,12 +145,14 @@ def _key_from_string(s: str) -> _DictKey:
     key = key.replace("\0", "\\")
     return int(key) if key.removeprefix("-").isdigit() else key
 
+
 def _key_to_string(key: _DictKey) -> str:
     if isinstance(key, tuple):
         return "-".join(_key_to_string(k).replace("-", "\\-") for k in key)
     if isinstance(key, int):
         return str(key)
     return key.replace("-", "\\-").replace("\\", "\\\\")
+
 
 def _read_metadata(hdu: Any) -> dict[str, Any]:
     """
@@ -310,6 +314,7 @@ def covariance_matrices(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     """
     return read(path)
 
+
 @writer(angular_power_spectra)
 def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
     """
@@ -321,6 +326,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
     results : dict
         Dictionary mapping keys to Result objects containing the data to write.
     """
+
     def _key_to_string(key):
         return "-".join(map(str, key))
 
@@ -365,7 +371,11 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             upper = get_tuple_or_default("upper", np.int64)
             weight = get_tuple_or_default("weight", np.float64)
 
-            array_shape = tuple(map(int, tdim.strip("()").split(","))) if tdim else reshaped_arr.shape[1:]
+            array_shape = (
+                tuple(map(int, tdim.strip("()").split(",")))
+                if tdim
+                else reshaped_arr.shape[1:]
+            )
 
             dtype = [
                 ("ARRAY", "f8", array_shape),
@@ -393,9 +403,8 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             }
             if tdim is not None:
                 header["TDIM1"] = tdim
-            if (meta := arr.dtype.metadata):
+            if meta := arr.dtype.metadata:
                 for k, v in meta.items():
                     header[f"META {k.upper()}"] = str(v)
 
             fits.write(structured_array, extname=name, header=header)
-
