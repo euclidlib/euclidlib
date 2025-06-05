@@ -177,7 +177,7 @@ def _(
         "WEIGHT_METHOD": weight_method,
         "BIN_TYPE": bin_type,
         "NBIN": nbin,
-        "HISTORY": _._history
+        "HISTORY": _._history,
     }
 
     # write output data to FITS
