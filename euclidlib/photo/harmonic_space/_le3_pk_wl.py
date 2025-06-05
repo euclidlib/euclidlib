@@ -355,7 +355,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             else:
                 raise ValueError(f"Unsupported array shape: {arr.shape}")
 
-            def get_tuple_or_default(attr: str, default_dtype: np.dtype[Any]) -> np.ndarray[Any]:
+            def get_tuple_or_default(attr: str, default_dtype: np.dtype) -> np.ndarray[Any, Any]:
                 val = getattr(result, attr, None)
                 if val is None:
                     return np.zeros(nrows, dtype=default_dtype)
