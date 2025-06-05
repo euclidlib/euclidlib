@@ -2,6 +2,7 @@ import numpy as np  # type: ignore
 import pytest  # type: ignore
 import euclidlib as el
 
+
 @pytest.mark.parametrize("read_hist", [True, False])
 @pytest.mark.parametrize("write_hist", [True, False])
 def test_redshift_distributions(tmp_path, write_hist, read_hist):
