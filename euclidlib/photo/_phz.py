@@ -146,7 +146,9 @@ def _(
         mid_z = (zl + zr) / 2
         nz_bins = 0.5 * (nz_array[:, :-1] + nz_array[:, 1:])
         mid_z = mid_z[-nz_bins.shape[1] :]
-        out["MEAN_REDSHIFT"] = np.sum(mid_z * nz_bins, axis=1) / np.sum(nz_array, axis=1)
+        out["MEAN_REDSHIFT"] = np.sum(mid_z * nz_bins, axis=1) / np.sum(
+            nz_array, axis=1
+        )
         # compute resummed bin counts
         for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
             frac = (np.clip(z2, zl, zr) - np.clip(z1, zl, zr)) / (zr - zl)

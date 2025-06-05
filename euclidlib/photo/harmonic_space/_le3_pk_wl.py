@@ -5,7 +5,6 @@ import os
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 from ..._util import writer
-from typing import Union
 from dataclasses import dataclass
 
 TYPE_CHECKING = False
@@ -371,7 +370,9 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             weight = get_tuple_or_default("weight", np.dtype(np.float64))
 
             array_shape = (
-                tuple(map(int, tdim.strip("()").split(","))) if tdim else reshaped_arr.shape[1:]
+                tuple(map(int, tdim.strip("()").split(",")))
+                if tdim
+                else reshaped_arr.shape[1:]
             )
 
             dtype = [
