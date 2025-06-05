@@ -356,19 +356,19 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             else:
                 raise ValueError(f"Unsupported array shape: {arr.shape}")
 
-            def get_tuple_or_default(attr, default_dtype):
+            def get_tuple_or_default(attr: str, default_dtype: np.dtype) -> np.ndarray:
                 val = getattr(result, attr, None)
                 if val is None:
                     return np.zeros(nrows, dtype=default_dtype)
                 val = np.asarray(val)
-                if val.ndim > 1:
-                    val = np.stack(val, axis=-1)
+                if isinstance(val, (tuple, list)):
+                    val = np.stack([np.asarray(v) for v in val], axis=-1)
                 return val.reshape(nrows).astype(default_dtype)
 
-            ell = get_tuple_or_default("ell", np.int64)
-            lower = get_tuple_or_default("lower", np.int64)
-            upper = get_tuple_or_default("upper", np.int64)
-            weight = get_tuple_or_default("weight", np.float64)
+            ell = get_tuple_or_default("ell", np.dtype(np.int64))
+            lower = get_tuple_or_default("lower", np.dtype(np.int64))
+            upper = get_tuple_or_default("upper", np.dtype(np.int64))
+            weight = get_tuple_or_default("weight", np.dtype(np.float64))
 
             array_shape = (
                 tuple(map(int, tdim.strip("()").split(","))) if tdim else reshaped_arr.shape[1:]
@@ -397,6 +397,9 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             if meta := arr.dtype.metadata:
                 for k, v in meta.items():
                     header[f"META {k.upper()}"] = str(v)
-
-            header["HISTORY"] = _._history
+            
+            # Write the header to the FITS file
+            history = getattr(_, "_history", None)
+            if history is not None:
+                header["HISTORY"] = history
             fits.write(structured_array, extname=name, header=header)

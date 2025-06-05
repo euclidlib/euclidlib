@@ -144,7 +144,7 @@ def _(
         zl, zr = z[:-1], z[1:]
         # compute the mean redshifts
         mid_z = (zl + zr) / 2
-        nz_bins = 0.5 * (nz[:, :-1] + nz[:, 1:])
+        nz_bins = 0.5 * (nz_array[:, :-1] + nz_array[:, 1:])
         mid_z = mid_z[-nz_bins.shape[1] :]
         out["MEAN_REDSHIFT"] = np.sum(mid_z * nz_bins, axis=1) / np.sum(nz_array, axis=1)
         # compute resummed bin counts
@@ -155,7 +155,7 @@ def _(
     else:
         # integrate the n(z) over each histogram bin
         # compute mean redshifts
-        out["MEAN_REDSHIFT"] = trapezoid(z * nz, z, axis=-1) / trapezoid(nz, z, axis=-1)
+        out["MEAN_REDSHIFT"] = trapezoid(z * nz_array, z, axis=-1) / trapezoid(nz_array, z, axis=-1)
 
         # compute the combined set of z grid points from data and binning
         zp = np.union1d(z, zbinedges)
@@ -163,7 +163,7 @@ def _(
         # integrate over each bin
         for i in range(nbin):
             # interpolate dndz onto the unified grid
-            nzp = np.interp(zp, z, nz[i], left=0.0, right=0.0)
+            nzp = np.interp(zp, z, nz_array[i], left=0.0, right=0.0)
 
             # integrate the distribution over each bin
             for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
@@ -175,9 +175,11 @@ def _(
         "WEIGHT_METHOD": weight_method,
         "BIN_TYPE": bin_type,
         "NBIN": nbin,
-        "HISTORY": _._history,
     }
-
+    # Write the header to the FITS file
+    history = getattr(_, "_history", None)
+    if history is not None:
+        header["HISTORY"] = history
     # write output data to FITS
     with fitsio.FITS(path, "rw", clobber=True) as fits:
         fits.write(out, extname="BIN_INFO", header=header)
