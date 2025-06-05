@@ -16,6 +16,7 @@ def test_writable():
     assert func.write.__name__ == "write"
     assert func.write.__qualname__ == f"{func.__qualname__}.write"
 
+
 def test_writer_decorator_sets_history(monkeypatch):
     called = {}
 
@@ -23,10 +24,13 @@ def test_writer_decorator_sets_history(monkeypatch):
         def wrapper(*args, **kwargs):
             called["called"] = True
             return func(*args, **kwargs)
+
         wrapper._history = "test history"
         return wrapper
 
-    monkeypatch.setattr(el.photo.harmonic_space.angular_power_spectra, "write", fake_writer)
+    monkeypatch.setattr(
+        el.photo.harmonic_space.angular_power_spectra, "write", fake_writer
+    )
 
     @el.photo.harmonic_space.angular_power_spectra.write
     def dummy_writer(path, results):
