@@ -86,7 +86,7 @@ def redshift_distributions(
 def _(
     path: str | PathLike[str],
     z: ArrayLike,
-    nz: dict,
+    nz: dict[int, NDArray[Any]],
     *,
     weight_method: str = "NO_WEIGHT",
     bin_type: str = "TOM_BIN",
