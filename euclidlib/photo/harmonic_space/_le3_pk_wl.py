@@ -5,7 +5,7 @@ import os
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 from ..._util import writer
-
+from typing import Union
 from dataclasses import dataclass
 
 TYPE_CHECKING = False
@@ -318,6 +318,7 @@ def covariance_matrices(path: str | PathLike[str]) -> dict[_DictKey, Result]:
 def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
     """
     Write angular power spectra results to a FITS file.
+
     Parameters
     ----------
     path : str or PathLike
@@ -326,8 +327,8 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
         Dictionary mapping keys to Result objects containing the data to write.
     """
 
-    def _key_to_string(key):
-        return "-".join(map(str, key))
+    def _key_to_string(key: _DictKey) -> str:
+        return "-".join(str(k) for k in (key if isinstance(key, tuple) else (key,)))
 
     if os.path.exists(path):
         os.remove(path)
@@ -337,11 +338,12 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             name = _key_to_string(key)
             arr = np.asarray(result.array)
             axis = result.axis
-            if not isinstance(axis, tuple):
+            if isinstance(axis, int):
                 axis = (axis,)
+            elif axis is None:
+                axis = ()
             order = np.argsort(axis)
 
-            # Determine the shape of one row and reshape arr
             if arr.ndim == 1:
                 nrows = arr.shape[0]
                 reshaped_arr = arr
@@ -369,9 +371,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             weight = get_tuple_or_default("weight", np.float64)
 
             array_shape = (
-                tuple(map(int, tdim.strip("()").split(",")))
-                if tdim
-                else reshaped_arr.shape[1:]
+                tuple(map(int, tdim.strip("()").split(","))) if tdim else reshaped_arr.shape[1:]
             )
 
             dtype = [
@@ -383,17 +383,12 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             ]
 
             structured_array = np.empty(nrows, dtype=dtype)
-            if tdim:
-                structured_array["ARRAY"] = reshaped_arr.reshape((nrows,) + array_shape)
-            else:
-                structured_array["ARRAY"] = reshaped_arr
-
+            structured_array["ARRAY"] = reshaped_arr.reshape((nrows,) + array_shape)
             structured_array["ELL"] = ell
             structured_array["LOWER"] = lower
             structured_array["UPPER"] = upper
             structured_array["WEIGHT"] = weight
 
-            # Build header
             header = {
                 "ELLAXIS": repr(axis),
             }
@@ -402,5 +397,6 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             if meta := arr.dtype.metadata:
                 for k, v in meta.items():
                     header[f"META {k.upper()}"] = str(v)
+
             header["HISTORY"] = _._history
             fits.write(structured_array, extname=name, header=header)

@@ -118,10 +118,10 @@ def _(
     """
 
     z = np.asanyarray(z)
-    nz = np.asanyarray(np.array(list(nz.values())).T)
-    nz = nz.T  # Flip axes if shape is (z, bins)
-    nz = nz.reshape(-1, nz.shape[-1])
-    nbin = nz.shape[0]
+    nz_array = np.asanyarray(np.array(list(nz.values())).T)
+    nz_array = nz_array.T
+    nz_array = nz_array.reshape(-1, nz_array.shape[-1])
+    nbin = nz_array.shape[0]
     # PHZ uses a fixed binning scheme with z bins in [0, 6] and dz=0.002
     zbinedges = np.linspace(0.0, 6.0, 3001)
 
@@ -146,7 +146,7 @@ def _(
         mid_z = (zl + zr) / 2
         nz_bins = 0.5 * (nz[:, :-1] + nz[:, 1:])
         mid_z = mid_z[-nz_bins.shape[1] :]
-        out["MEAN_REDSHIFT"] = np.sum(mid_z * nz_bins, axis=1) / np.sum(nz, axis=1)
+        out["MEAN_REDSHIFT"] = np.sum(mid_z * nz_bins, axis=1) / np.sum(nz_array, axis=1)
         # compute resummed bin counts
         for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
             frac = (np.clip(z2, zl, zr) - np.clip(z1, zl, zr)) / (zr - zl)
