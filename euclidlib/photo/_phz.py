@@ -120,19 +120,11 @@ def _(
 
     z = np.asanyarray(z)
     nz = np.asanyarray(np.array(list(nz.values())).T)
-    print(nz.shape)
-
-    if nz.shape[0] == z.shape[0]:
-        nz = nz.T  # Flip axes if shape is (z, bins)
+    nz = nz.T  # Flip axes if shape is (z, bins)
     nz = nz.reshape(-1, nz.shape[-1])
     nbin = nz.shape[0]
-
     # PHZ uses a fixed binning scheme with z bins in [0, 6] and dz=0.002
     zbinedges = np.linspace(0.0, 6.0, 3001)
-
-    # turn nz into a 2D array with NBIN rows
-    nz = nz.reshape(-1, nz.shape[-1])
-    nbin = nz.shape[0]
 
     # create the output data in the correct format
     out = np.empty(
@@ -149,25 +141,20 @@ def _(
 
     # convert every nz into the PHZ format
     if hist:
-        # rebin the histogram as necessary
-
         # shorthand for the left and right z boundaries, respectively
         zl, zr = z[:-1], z[1:]
-
         # compute the mean redshifts
         mid_z = (zl + zr) / 2
-        nz = nz.reshape(nbin, -1)  # Ensure nz shape is (NBIN, 3000)
-        out["MEAN_REDSHIFT"] = np.sum(mid_z * nz, axis=1) / np.sum(nz, axis=1)
-
+        nz_bins = 0.5 * (nz[:, :-1] + nz[:, 1:]) 
+        mid_z = mid_z[-nz_bins.shape[1]:]
+        out["MEAN_REDSHIFT"] = np.sum(mid_z * nz_bins, axis=1) / np.sum(nz, axis=1)
         # compute resummed bin counts
-        print(z.shape)
         for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
             frac = (np.clip(z2, zl, zr) - np.clip(z1, zl, zr)) / (zr - zl)
-            print(frac.shape)
-            out["N_Z"][:, j] = np.dot(nz, frac)
+            frac = frac[-nz_bins.shape[1]:]
+            out["N_Z"][:, j] = np.dot(nz_bins, frac)
     else:
         # integrate the n(z) over each histogram bin
-
         # compute mean redshifts
         out["MEAN_REDSHIFT"] = trapezoid(z * nz, z, axis=-1) / trapezoid(nz, z, axis=-1)
 
