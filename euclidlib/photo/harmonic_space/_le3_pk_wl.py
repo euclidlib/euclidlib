@@ -404,4 +404,3 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
                     header[f"META {k.upper()}"] = str(v)
             header["HISTORY"] = _._history
             fits.write(structured_array, extname=name, header=header)
-
