@@ -1,6 +1,5 @@
 import numpy as np  # type: ignore
 import pytest  # type: ignore
-from scipy.interpolate import interp1d
 import euclidlib as el
 
 

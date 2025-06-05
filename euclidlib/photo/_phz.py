@@ -145,13 +145,13 @@ def _(
         zl, zr = z[:-1], z[1:]
         # compute the mean redshifts
         mid_z = (zl + zr) / 2
-        nz_bins = 0.5 * (nz[:, :-1] + nz[:, 1:]) 
-        mid_z = mid_z[-nz_bins.shape[1]:]
+        nz_bins = 0.5 * (nz[:, :-1] + nz[:, 1:])
+        mid_z = mid_z[-nz_bins.shape[1] :]
         out["MEAN_REDSHIFT"] = np.sum(mid_z * nz_bins, axis=1) / np.sum(nz, axis=1)
         # compute resummed bin counts
         for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
             frac = (np.clip(z2, zl, zr) - np.clip(z1, zl, zr)) / (zr - zl)
-            frac = frac[-nz_bins.shape[1]:]
+            frac = frac[-nz_bins.shape[1] :]
             out["N_Z"][:, j] = np.dot(nz_bins, frac)
     else:
         # integrate the n(z) over each histogram bin
