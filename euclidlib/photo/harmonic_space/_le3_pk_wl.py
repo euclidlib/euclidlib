@@ -352,7 +352,6 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
                 tdim = f"({','.join(map(str, dim_shape[::-1]))})"
             else:
                 raise ValueError(f"Unsupported array shape: {arr.shape}")
-
             def get_tuple_or_default(
                 attr: str, default_dtype: np.dtype[Any]
             ) -> np.ndarray[Any, Any]:
@@ -403,4 +402,116 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             history = getattr(_, "_history", None)
             if history is not None:
                 header["HISTORY"] = history
+            fits.write(structured_array, extname=name, header=header)
+
+@writer(mixing_matrices)
+def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
+    """
+    Write mixing matrix results to a FITS file.
+
+    Parameters
+    ----------
+    path : str or PathLike
+        Path to the output FITS file.
+    results : dict
+        Dictionary mapping keys to Result objects containing the data to write.
+    """
+
+    def _key_to_string(key: _DictKey) -> str:
+        return "-".join(str(k) for k in (key if isinstance(key, tuple) else (key,)))
+
+    if os.path.exists(path):
+        os.remove(path)
+
+    with fitsio.FITS(path, "rw") as fits:
+        for key, result in results.items():
+            name = _key_to_string(key)
+            arr = np.asarray(result.array)
+            axis = result.axis
+            if isinstance(axis, int):
+                axis = (axis,)
+            elif axis is None:
+                axis = ()
+
+            if arr.ndim == 2:
+                nrows = arr.shape[0]
+                reshaped_arr = arr
+                tdim = None
+                tform1 = f"{arr.shape[1]}D"
+            elif arr.ndim == 3:
+                reshaped_arr = arr.transpose(1, 2, 0).reshape(arr.shape[1], -1)
+                nrows = arr.shape[1]
+                tdim = f"({arr.shape[2]},{arr.shape[0]})"
+                tform1 = f"{arr.shape[0] * arr.shape[2]}D"
+            else:
+                raise ValueError(f"Unsupported array shape: {arr.shape}")
+
+            def get_tuple_or_default(
+                attr: str, default_dtype: np.dtype[Any]
+            ) -> np.ndarray[Any, Any]:
+                val = getattr(result, attr, None)
+                if val is None:
+                    return np.zeros(nrows, dtype=default_dtype)
+                val = np.asarray(val)
+                if isinstance(val, (tuple, list)):
+                    val = np.stack([np.asarray(v) for v in val], axis=-1)
+                return val.reshape(nrows).astype(default_dtype)
+
+            ell = get_tuple_or_default("ell", np.dtype(np.int64))
+            lower = get_tuple_or_default("lower", np.dtype(np.int64))
+            upper = get_tuple_or_default("upper", np.dtype(np.int64))
+            weight = get_tuple_or_default("weight", np.dtype(np.float64))
+
+            dtype = [
+               ("ARRAY", "f8", reshaped_arr.shape[1:]),
+                ("ELL", "i8"),
+                ("LOWER", "i8"),
+                ("UPPER", "i8"),
+                ("WEIGHT", "f8"),
+            ]
+
+            structured_array = np.empty(nrows, dtype=dtype)
+            structured_array["ARRAY"] = reshaped_arr
+            structured_array["ELL"] = ell
+            structured_array["LOWER"] = lower
+            structured_array["UPPER"] = upper
+            structured_array["WEIGHT"] = weight
+
+            header = {
+                "XTENSION": "BINTABLE",
+                "BITPIX": 8,
+                "NAXIS": 2,
+                "NAXIS1": reshaped_arr.strides[0],
+                "NAXIS2": nrows,
+                "PCOUNT": 0,
+                "GCOUNT": 1,
+                "TFIELDS": 5,
+                "TTYPE1": "ARRAY",
+                "TFORM1": tform1,
+                "TTYPE2": "ELL",
+                "TFORM2": "K",
+                "TTYPE3": "LOWER",
+                "TFORM3": "K",
+                "TTYPE4": "UPPER",
+                "TFORM4": "K",
+                "TTYPE5": "WEIGHT",
+                "TFORM5": "D",
+                "EXTNAME": name,
+                "ELLAXIS": repr(axis),
+            }
+
+            if meta := arr.dtype.metadata:
+                for k, v in meta.items():
+                    header[f"META {k.upper()}"] = str(v)
+
+            if hasattr(_, "_history"):
+                header["HISTORY"] = getattr(_, "_history")
+
+            if tdim is not None:
+                header["TDIM1"] = tdim
+
+            print(f"Writing extension {name} with header keys: {list(header.keys())}")
+            print(f"TDIM1 = {header.get('TDIM1')}")
+
+
             fits.write(structured_array, extname=name, header=header)
