@@ -407,6 +407,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             header["HISTORY"] = _._history
             fits.write(structured_array, extname=name, header=header)
 
+
 @writer(mixing_matrices)
 def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
     """
