@@ -352,6 +352,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
                 tdim = f"({','.join(map(str, dim_shape[::-1]))})"
             else:
                 raise ValueError(f"Unsupported array shape: {arr.shape}")
+
             def get_tuple_or_default(
                 attr: str, default_dtype: np.dtype[Any]
             ) -> np.ndarray[Any, Any]:
@@ -403,6 +404,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             if history is not None:
                 header["HISTORY"] = history
             fits.write(structured_array, extname=name, header=header)
+
 
 @writer(mixing_matrices)
 def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
@@ -463,7 +465,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             weight = get_tuple_or_default("weight", np.dtype(np.float64))
 
             dtype = [
-               ("ARRAY", "f8", reshaped_arr.shape[1:]),
+                ("ARRAY", "f8", reshaped_arr.shape[1:]),
                 ("ELL", "i8"),
                 ("LOWER", "i8"),
                 ("UPPER", "i8"),
@@ -512,6 +514,5 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
 
             print(f"Writing extension {name} with header keys: {list(header.keys())}")
             print(f"TDIM1 = {header.get('TDIM1')}")
-
 
             fits.write(structured_array, extname=name, header=header)
