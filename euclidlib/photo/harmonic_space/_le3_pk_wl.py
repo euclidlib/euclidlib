@@ -398,7 +398,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             if meta := arr.dtype.metadata:
                 for k, v in meta.items():
                     header[f"META {k.upper()}"] = str(v)
-            
+
             # Write the header to the FITS file
             history = getattr(_, "_history", None)
             if history is not None:

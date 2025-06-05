@@ -157,7 +157,9 @@ def _(
     else:
         # integrate the n(z) over each histogram bin
         # compute mean redshifts
-        out["MEAN_REDSHIFT"] = trapezoid(z * nz_array, z, axis=-1) / trapezoid(nz_array, z, axis=-1)
+        out["MEAN_REDSHIFT"] = trapezoid(z * nz_array, z, axis=-1) / trapezoid(
+            nz_array, z, axis=-1
+        )
 
         # compute the combined set of z grid points from data and binning
         zp = np.union1d(z, zbinedges)
