@@ -1,8 +1,6 @@
 import numpy as np  # type: ignore
 import pytest  # type: ignore
-from scipy.interpolate import interp1d
 import euclidlib as el
-
 
 @pytest.mark.parametrize("read_hist", [True, False])
 @pytest.mark.parametrize("write_hist", [True, False])
