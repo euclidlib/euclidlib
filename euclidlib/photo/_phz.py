@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from os import PathLike
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 import fitsio  # type: ignore [import-not-found]
@@ -172,7 +171,6 @@ def _(
                 out["N_Z"][i, j] = trapezoid(nzp[sel], zp[sel])
 
     # metadata
-    timestamp = datetime.now().isoformat(timespec="seconds")
     header = {
         "WEIGHT_METHOD": weight_method,
         "BIN_TYPE": bin_type,

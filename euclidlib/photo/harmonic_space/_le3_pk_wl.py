@@ -4,7 +4,6 @@ import re
 import os
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
-from datetime import datetime
 from ..._util import writer
 
 from dataclasses import dataclass
@@ -319,6 +318,99 @@ def covariance_matrices(path: str | PathLike[str]) -> dict[_DictKey, Result]:
 def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
     """
     Write angular power spectra results to a FITS file.
+    Parameters
+    ----------
+    path : str or PathLike
+        Path to the output FITS file.
+    results : dict
+        Dictionary mapping keys to Result objects containing the data to write.
+    """
+
+    def _key_to_string(key):
+        return "-".join(map(str, key))
+
+    if os.path.exists(path):
+        os.remove(path)
+
+    timestamp = datetime.now().isoformat(timespec="seconds")
+
+    with fitsio.FITS(path, "rw") as fits:
+        for key, result in results.items():
+            name = _key_to_string(key)
+            arr = np.asarray(result.array)
+            axis = result.axis
+            if not isinstance(axis, tuple):
+                axis = (axis,)
+            order = np.argsort(axis)
+
+            # Determine the shape of one row and reshape arr
+            if arr.ndim == 1:
+                nrows = arr.shape[0]
+                reshaped_arr = arr
+                tdim = None
+            elif arr.ndim in (2, 3):
+                dim_shape = arr.shape[:-1]
+                nrows = arr.shape[-1]
+                reshaped_arr = arr.reshape(-1, nrows).T
+                tdim = f"({','.join(map(str, dim_shape[::-1]))})"
+            else:
+                raise ValueError(f"Unsupported array shape: {arr.shape}")
+
+            def get_tuple_or_default(attr, default_dtype):
+                val = getattr(result, attr, None)
+                if val is None:
+                    return np.zeros(nrows, dtype=default_dtype)
+                val = np.asarray(val)
+                if val.ndim > 1:
+                    val = np.stack(val, axis=-1)
+                return val.reshape(nrows).astype(default_dtype)
+
+            ell = get_tuple_or_default("ell", np.int64)
+            lower = get_tuple_or_default("lower", np.int64)
+            upper = get_tuple_or_default("upper", np.int64)
+            weight = get_tuple_or_default("weight", np.float64)
+
+            array_shape = (
+                tuple(map(int, tdim.strip("()").split(",")))
+                if tdim
+                else reshaped_arr.shape[1:]
+            )
+
+            dtype = [
+                ("ARRAY", "f8", array_shape),
+                ("ELL", "i8"),
+                ("LOWER", "i8"),
+                ("UPPER", "i8"),
+                ("WEIGHT", "f8"),
+            ]
+
+            structured_array = np.empty(nrows, dtype=dtype)
+            if tdim:
+                structured_array["ARRAY"] = reshaped_arr.reshape((nrows,) + array_shape)
+            else:
+                structured_array["ARRAY"] = reshaped_arr
+
+            structured_array["ELL"] = ell
+            structured_array["LOWER"] = lower
+            structured_array["UPPER"] = upper
+            structured_array["WEIGHT"] = weight
+
+            # Build header
+            header = {
+                "ELLAXIS": repr(axis),
+            }
+            if tdim is not None:
+                header["TDIM1"] = tdim
+            if meta := arr.dtype.metadata:
+                for k, v in meta.items():
+                    header[f"META {k.upper()}"] = str(v)
+            header["HISTORY"] = _._history
+            fits.write(structured_array, extname=name, header=header)
+
+@writer(mixing_matrices)
+def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
+    """
+    Write mixing matrices results to a FITS file.
     Parameters
     ----------
     path : str or PathLike
