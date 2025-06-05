@@ -341,8 +341,6 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
                 axis = (axis,)
             elif axis is None:
                 axis = ()
-            order = np.argsort(axis)
-
             if arr.ndim == 1:
                 nrows = arr.shape[0]
                 reshaped_arr = arr
@@ -355,7 +353,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             else:
                 raise ValueError(f"Unsupported array shape: {arr.shape}")
 
-            def get_tuple_or_default(attr: str, default_dtype: np.dtype) -> np.ndarray[Any, Any]:
+            def get_tuple_or_default(attr: str, default_dtype: np.dtype[Any]) -> np.ndarray[Any, Any]:
                 val = getattr(result, attr, None)
                 if val is None:
                     return np.zeros(nrows, dtype=default_dtype)
