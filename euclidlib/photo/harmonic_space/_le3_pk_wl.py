@@ -433,6 +433,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             elif axis is None:
                 axis = ()
 
+            # Prepare array depending on dimensionality
             if arr.ndim == 2:
                 nrows = arr.shape[0]
                 reshaped_arr = arr
@@ -463,7 +464,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             weight = get_tuple_or_default("weight", np.dtype(np.float64))
 
             dtype = [
-               ("ARRAY", "f8", reshaped_arr.shape[1:]),
+                ("ARRAY", "f8", reshaped_arr.shape[1:]),
                 ("ELL", "i8"),
                 ("LOWER", "i8"),
                 ("UPPER", "i8"),
@@ -481,7 +482,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
                 "XTENSION": "BINTABLE",
                 "BITPIX": 8,
                 "NAXIS": 2,
-                "NAXIS1": reshaped_arr.strides[0],
+                "NAXIS1": structured_array.dtype.itemsize,  # FIXED here: total bytes per row
                 "NAXIS2": nrows,
                 "PCOUNT": 0,
                 "GCOUNT": 1,
@@ -507,11 +508,8 @@ def _(path: str | PathLike[str], results: dict[_DictKey, Result]) -> None:
             if hasattr(_, "_history"):
                 header["HISTORY"] = getattr(_, "_history")
 
-            if tdim is not None:
+            # Only add TDIM1 if array was originally 3D
+            if arr.ndim == 3:
                 header["TDIM1"] = tdim
-
-            print(f"Writing extension {name} with header keys: {list(header.keys())}")
-            print(f"TDIM1 = {header.get('TDIM1')}")
-
 
             fits.write(structured_array, extname=name, header=header)
