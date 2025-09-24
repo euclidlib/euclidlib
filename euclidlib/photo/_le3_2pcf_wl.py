@@ -119,7 +119,7 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
             elif "2PCF-WL-GGL" in path:
                 array = np.array([data['GAMMA_T'], data['GAMMA_X']])
                 axis = (1,)
-            elif "2PCF-WL-SA" in path_file:
+            elif "2PCF-WL-SA" in path:
                 array = np.array(data['WTHETA'])
                 axis = (0,)
             else:
