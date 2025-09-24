@@ -12,10 +12,12 @@ if TYPE_CHECKING:
 
     _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
 
+
 def normalize_result_axis(
     axis: tuple[int, ...] | int | None,
     result: NDArray[Any],
-    ell: tuple[NDArray[Any], ...] | NDArray[Any] | None,) -> tuple[int, ...]:
+    ell: tuple[NDArray[Any], ...] | NDArray[Any] | None,
+) -> tuple[int, ...]:
     """Return an axis tuple for a result."""
     try:
         from numpy.lib.array_utils import normalize_axis_tuple
@@ -45,6 +47,7 @@ def _key_from_string(s: str) -> tuple[str, str, int, int] | None:
         name_split = s.split("_")
         tuple_key_dict = ("SHE", "SHE", int(name_split[-2]), int(name_split[-1]))
     return tuple_key_dict
+
 
 @dataclass(frozen=True, repr=False)
 class Result:
@@ -127,24 +130,26 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
             extname = hdu.get_extname()
             key = _key_from_string(extname)
             data = hdu.read()
-            THETA = data['THETA']
+            THETA = data["THETA"]
             bin_size = np.log(THETA[1]) - np.log(THETA[0])
             half_bins = np.exp(0.5 * bin_size)
             LOWER = THETA / half_bins
             UPPER = THETA * half_bins
-            WEIGHT = data['WEIGHT']
+            WEIGHT = data["WEIGHT"]
             if "2PCF-WL-CS" in path:
-                array = np.array([[data['XI_P'], data['XI_X']], [data['XI_X'], data['XI_M']]])
+                array = np.array(
+                    [[data["XI_P"], data["XI_X"]], [data["XI_X"], data["XI_M"]]]
+                )
                 axis = (2,)
             elif "2PCF-WL-GGL" in path:
-                array = np.array([data['GAMMA_T'], data['GAMMA_X']])
+                array = np.array([data["GAMMA_T"], data["GAMMA_X"]])
                 axis = (1,)
             elif "2PCF-WL-SA" in path:
-                array = np.array(data['WTHETA'])
+                array = np.array(data["WTHETA"])
                 axis = (0,)
             else:
                 print("Unknown file type")
-            
+
             xi[key] = Result(array, THETA, axis, LOWER, UPPER, WEIGHT)
     return xi
 
