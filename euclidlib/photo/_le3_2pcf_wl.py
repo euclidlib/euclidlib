@@ -27,6 +27,56 @@ def _key_from_string(s: str) -> tuple[str, str, int, int] | None:
     return tuple_key_dict
 
 
+class Result:
+    """
+    Container for results.
+    """
+
+    array: NDArray[Any]
+    ell: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
+    axis: int | tuple[int, ...] | None = None
+    lower: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
+    upper: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
+    weight: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
+
+    def __post_init__(self) -> None:
+        # Ensure array is of float dtype
+        float_array = np.asarray(self.array, dtype=float)
+        object.__setattr__(self, "array", float_array)
+
+        # Normalize the axis after setting the array
+        axis = normalize_result_axis(self.axis, self.array, self.ell)
+        object.__setattr__(self, "axis", axis)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(axis={self.axis!r})"
+
+    def __array__(
+        self,
+        dtype: np.dtype[Any] | None = None,
+        *,
+        copy: np.bool[bool] | None = None,
+    ) -> NDArray[Any]:
+        if copy is not None:
+            return self.array.__array__(dtype, copy=copy)
+        return self.array.__array__(dtype)
+
+    def __getitem__(self, key: Any) -> Any:
+        return self.array[key]
+
+    @property
+    def ndim(self) -> int:
+        return self.array.ndim
+
+    @property
+    def shape(self) -> tuple[int, ...]:
+        return self.array.shape
+
+    @property
+    def dtype(self) -> np.dtype[Any]:
+        return self.array.dtype
+
+
 def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[Any]]:
     """
     Reads 2D correlation functions from a Euclid data product.
@@ -53,13 +103,29 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
 
     xi: dict[_DictKey, NDArray[Any]] = {}
     with fitsio.FITS(path) as fits:
-        for hdu in fits:
-            if "2D" not in hdu.get_extname():
-                continue
-            key = _key_from_string(hdu.get_extname())
-            if key is None:
-                continue
-            xi[key] = hdu.read()
+        for hdu in fits[1:]:
+            extname = hdu.get_extname()
+            key = _key_from_string(extname)
+            data = hdu.read()
+            THETA = data['THETA']
+            bin_size = np.log(THETA[1]) - np.log(THETA[0])
+            half_bins = np.exp(0.5 * bin_size)
+            LOWER = THETA / half_bins
+            UPPER = THETA * half_bins
+            WEIGHT = data['WEIGHT']
+            if "2PCF-WL-CS" in path:
+                array = np.array([[data['XI_P'], data['XI_X']], [data['XI_X'], data['XI_M']]])
+                axis = (2,)
+            elif "2PCF-WL-GGL" in path:
+                array = np.array([data['GAMMA_T'], data['GAMMA_X']])
+                axis = (1,)
+            elif "2PCF-WL-SA" in path_file:
+                array = np.array(data['WTHETA'])
+                axis = (0,)
+            else:
+                print("Unknown file type")
+            
+            xi[key] = Result(array, THETA, axis, LOWER, UPPER, WEIGHT)
     return xi
 
 
