@@ -123,6 +123,7 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
 
     xi: dict[_DictKey, NDArray[Any]] = {}
     with fitsio.FITS(path) as fits:
+    
         for hdu in fits[1:]:
             extname = hdu.get_extname()
             key = _key_from_string(extname)
@@ -136,13 +137,13 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
             UPPER = THETA * half_bins
             WEIGHT = data['WEIGHT']
             print(path)
-            if "2PCF-WL-CS" in str(path):
+            if "SHEARSHEAR" in extname:
                 array = np.array([[data['XI_P'], data['XI_X']], [data['XI_X'], data['XI_M']]])
                 axis = (2,)
-            elif "2PCF-WL-GGL" in str(path):
+            elif "POSSHEAR" in extname:
                 array = np.array([data['GAMMA_T'], data['GAMMA_X']])
                 axis = (1,)
-            elif "2PCF-WL-SA" in str(path):
+            elif "POSPOS" in extname:
                 array = np.array(data['WTHETA'])
                 axis = (0,)
             else:
