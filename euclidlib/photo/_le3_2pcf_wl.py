@@ -136,15 +136,15 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
             LOWER = THETA / half_bins
             UPPER = THETA * half_bins
             WEIGHT = data["WEIGHT"]
-            if "2PCF-WL-CS" in path:
+            if "2PCF-WL-CS" in str(path):
                 array = np.array(
                     [[data["XI_P"], data["XI_X"]], [data["XI_X"], data["XI_M"]]]
                 )
                 axis = (2,)
-            elif "2PCF-WL-GGL" in path:
+            elif "2PCF-WL-GGL" in str(path):
                 array = np.array([data["GAMMA_T"], data["GAMMA_X"]])
                 axis = (1,)
-            elif "2PCF-WL-SA" in path:
+            elif "2PCF-WL-SA" in str(path):
                 array = np.array(data["WTHETA"])
                 axis = (0,)
             else:
