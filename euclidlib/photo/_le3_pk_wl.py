@@ -62,7 +62,7 @@ class Result:
         self,
         dtype: np.dtype[Any] | None = None,
         *,
-        copy: np.bool[bool] | None = None,
+        copy: bool | None = None,
     ) -> NDArray[Any]:
         if copy is not None:
             return self.array.__array__(dtype, copy=copy)
