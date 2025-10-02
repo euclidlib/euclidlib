@@ -5,7 +5,6 @@ from os import PathLike
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
 from numpy.typing import NDArray
-from dataclasses import dataclass
 
 TYPE_CHECKING = False
 if TYPE_CHECKING:
