@@ -126,6 +126,8 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
         for hdu in fits[1:]:
             extname = hdu.get_extname()
             key = _key_from_string(extname)
+            if key is None:
+                continue
             data = hdu.read()
             THETA = data['THETA']
             bin_size = np.log(THETA[1]) - np.log(THETA[0])
@@ -133,13 +135,14 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
             LOWER = THETA / half_bins
             UPPER = THETA * half_bins
             WEIGHT = data['WEIGHT']
-            if "2PCF-WL-CS" in path:
+            print(path)
+            if "2PCF-WL-CS" in str(path):
                 array = np.array([[data['XI_P'], data['XI_X']], [data['XI_X'], data['XI_M']]])
                 axis = (2,)
-            elif "2PCF-WL-GGL" in path:
+            elif "2PCF-WL-GGL" in str(path):
                 array = np.array([data['GAMMA_T'], data['GAMMA_X']])
                 axis = (1,)
-            elif "2PCF-WL-SA" in path:
+            elif "2PCF-WL-SA" in str(path):
                 array = np.array(data['WTHETA'])
                 axis = (0,)
             else:
