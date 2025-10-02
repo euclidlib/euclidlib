@@ -5,34 +5,12 @@ from os import PathLike
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
 from numpy.typing import NDArray
-from dataclasses import dataclass
 
 TYPE_CHECKING = False
 if TYPE_CHECKING:
     from typing import TypeAlias, Any
 
     _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
-
-
-def normalize_result_axis(
-    axis: tuple[int, ...] | int | None,
-    result: NDArray[Any],
-    ell: tuple[NDArray[Any], ...] | NDArray[Any] | None,
-) -> tuple[int, ...]:
-    """Return an axis tuple for a result."""
-    try:
-        from numpy.lib.array_utils import normalize_axis_tuple
-    except ModuleNotFoundError:
-        from numpy.lib.stride_tricks import normalize_axis_tuple  # type: ignore
-
-    if axis is None:
-        if result.ndim == 0:
-            axis = ()
-        elif isinstance(ell, tuple):
-            axis = tuple(range(-len(ell), 0))
-        else:
-            axis = -1
-    return normalize_axis_tuple(axis, result.ndim, "axis")
 
 
 def _key_from_string(s: str) -> tuple[str, str, int, int] | None:

@@ -9,9 +9,9 @@ __all__ = [
 ]
 
 from ._le3_pk_wl import (
+    Result,
     angular_power_spectra,
     mixing_matrices,
-    Result,
 )
 
 from ._le3_2pcf_wl import (
