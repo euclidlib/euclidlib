@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ._le3_2pcf_wl import Result
 from os import PathLike
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
@@ -47,57 +48,6 @@ def _key_from_string(s: str) -> tuple[str, str, int, int] | None:
         name_split = s.split("_")
         tuple_key_dict = ("SHE", "SHE", int(name_split[-2]), int(name_split[-1]))
     return tuple_key_dict
-
-
-@dataclass(frozen=True, repr=False)
-class Result:
-    """
-    Container for results.
-    """
-
-    array: NDArray[Any]
-    ell: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    axis: int | tuple[int, ...] | None = None
-    lower: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    upper: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    weight: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-
-    def __post_init__(self) -> None:
-        # Ensure array is of float dtype
-        float_array = np.asarray(self.array, dtype=float)
-        object.__setattr__(self, "array", float_array)
-
-        # Normalize the axis after setting the array
-        axis = normalize_result_axis(self.axis, self.array, self.ell)
-        object.__setattr__(self, "axis", axis)
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(axis={self.axis!r})"
-
-    def __array__(
-        self,
-        dtype: np.dtype[Any] | None = None,
-        *,
-        copy: np.bool[bool] | None = None,
-    ) -> NDArray[Any]:
-        if copy is not None:
-            return self.array.__array__(dtype, copy=copy)
-        return self.array.__array__(dtype)
-
-    def __getitem__(self, key: Any) -> Any:
-        return self.array[key]
-
-    @property
-    def ndim(self) -> int:
-        return self.array.ndim
-
-    @property
-    def shape(self) -> tuple[int, ...]:
-        return self.array.shape
-
-    @property
-    def dtype(self) -> np.dtype[Any]:
-        return self.array.dtype
 
 
 def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[Any]]:

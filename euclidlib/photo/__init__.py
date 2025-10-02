@@ -1,4 +1,5 @@
 __all__ = [
+    "Result",
     "angular_power_spectra",
     "correlation_functions",
     "bandpowers",
@@ -10,6 +11,7 @@ __all__ = [
 from ._le3_pk_wl import (
     angular_power_spectra,
     mixing_matrices,
+    Result,
 )
 
 from ._le3_2pcf_wl import (
