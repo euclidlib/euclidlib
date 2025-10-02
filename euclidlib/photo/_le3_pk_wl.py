@@ -51,10 +51,6 @@ class Result:
     weight: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
 
     def __post_init__(self) -> None:
-        # Ensure array is of float dtype
-        float_array = np.asarray(self.array, dtype=float)
-        object.__setattr__(self, "array", float_array)
-
         # Normalize the axis after setting the array
         axis = normalize_result_axis(self.axis, self.array, self.ell)
         object.__setattr__(self, "axis", axis)
