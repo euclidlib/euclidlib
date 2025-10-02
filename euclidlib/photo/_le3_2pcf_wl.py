@@ -1,35 +1,16 @@
 from __future__ import annotations
 
+from ._le3_2pcf_wl import Result
 from os import PathLike
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
 from numpy.typing import NDArray
-from dataclasses import dataclass
 
 TYPE_CHECKING = False
 if TYPE_CHECKING:
     from typing import TypeAlias, Any
 
     _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
-
-def normalize_result_axis(
-    axis: tuple[int, ...] | int | None,
-    result: NDArray[Any],
-    ell: tuple[NDArray[Any], ...] | NDArray[Any] | None,) -> tuple[int, ...]:
-    """Return an axis tuple for a result."""
-    try:
-        from numpy.lib.array_utils import normalize_axis_tuple
-    except ModuleNotFoundError:
-        from numpy.lib.stride_tricks import normalize_axis_tuple  # type: ignore
-
-    if axis is None:
-        if result.ndim == 0:
-            axis = ()
-        elif isinstance(ell, tuple):
-            axis = tuple(range(-len(ell), 0))
-        else:
-            axis = -1
-    return normalize_axis_tuple(axis, result.ndim, "axis")
 
 
 def _key_from_string(s: str) -> tuple[str, str, int, int] | None:
@@ -45,56 +26,6 @@ def _key_from_string(s: str) -> tuple[str, str, int, int] | None:
         name_split = s.split("_")
         tuple_key_dict = ("SHE", "SHE", int(name_split[-2]), int(name_split[-1]))
     return tuple_key_dict
-
-@dataclass(frozen=True, repr=False)
-class Result:
-    """
-    Container for results.
-    """
-
-    array: NDArray[Any]
-    ell: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    axis: int | tuple[int, ...] | None = None
-    lower: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    upper: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    weight: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-
-    def __post_init__(self) -> None:
-        # Ensure array is of float dtype
-        float_array = np.asarray(self.array, dtype=float)
-        object.__setattr__(self, "array", float_array)
-
-        # Normalize the axis after setting the array
-        axis = normalize_result_axis(self.axis, self.array, self.ell)
-        object.__setattr__(self, "axis", axis)
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(axis={self.axis!r})"
-
-    def __array__(
-        self,
-        dtype: np.dtype[Any] | None = None,
-        *,
-        copy: np.bool[bool] | None = None,
-    ) -> NDArray[Any]:
-        if copy is not None:
-            return self.array.__array__(dtype, copy=copy)
-        return self.array.__array__(dtype)
-
-    def __getitem__(self, key: Any) -> Any:
-        return self.array[key]
-
-    @property
-    def ndim(self) -> int:
-        return self.array.ndim
-
-    @property
-    def shape(self) -> tuple[int, ...]:
-        return self.array.shape
-
-    @property
-    def dtype(self) -> np.dtype[Any]:
-        return self.array.dtype
 
 
 def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[Any]]:
@@ -123,32 +54,31 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
 
     xi: dict[_DictKey, NDArray[Any]] = {}
     with fitsio.FITS(path) as fits:
-    
         for hdu in fits[1:]:
             extname = hdu.get_extname()
             key = _key_from_string(extname)
             if key is None:
                 continue
             data = hdu.read()
-            THETA = data['THETA']
+            THETA = data["THETA"]
             bin_size = np.log(THETA[1]) - np.log(THETA[0])
             half_bins = np.exp(0.5 * bin_size)
             LOWER = THETA / half_bins
             UPPER = THETA * half_bins
-            WEIGHT = data['WEIGHT']
-            print(path)
+            WEIGHT = data["WEIGHT"]
             if "SHEARSHEAR" in extname:
-                array = np.array([[data['XI_P'], data['XI_X']], [data['XI_X'], data['XI_M']]])
+                array = np.array(
+                    [[data["XI_P"], data["XI_X"]], [data["XI_X"], data["XI_M"]]])
                 axis = (2,)
             elif "POSSHEAR" in extname:
-                array = np.array([data['GAMMA_T'], data['GAMMA_X']])
+                array = np.array([data["GAMMA_T"], data["GAMMA_X"]])
                 axis = (1,)
             elif "POSPOS" in extname:
-                array = np.array(data['WTHETA'])
+                array = np.array(data["WTHETA"])
                 axis = (0,)
             else:
                 print("Unknown file type")
-            
+
             xi[key] = Result(array, THETA, axis, LOWER, UPPER, WEIGHT)
     return xi
 
