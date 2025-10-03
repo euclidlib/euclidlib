@@ -68,7 +68,8 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
             WEIGHT = data["WEIGHT"]
             if "SHEARSHEAR" in extname:
                 array = np.array(
-                    [[data["XI_P"], data["XI_X"]], [data["XI_X"], data["XI_M"]]])
+                    [[data["XI_P"], data["XI_X"]], [data["XI_X"], data["XI_M"]]]
+                )
                 axis = (2,)
             elif "POSSHEAR" in extname:
                 array = np.array([data["GAMMA_T"], data["GAMMA_X"]])
