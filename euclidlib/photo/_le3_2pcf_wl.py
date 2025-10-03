@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from ._le3_pk_wl import Result
 from os import PathLike
-
+import numpy as np
 import fitsio  # type: ignore [import-not-found]
 from numpy.typing import NDArray
 
@@ -27,7 +28,7 @@ def _key_from_string(s: str) -> tuple[str, str, int, int] | None:
     return tuple_key_dict
 
 
-def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[Any]]:
+def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     """
     Reads 2D correlation functions from a Euclid data product.
 
@@ -51,15 +52,35 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
       for the output dictionary.
     """
 
-    xi: dict[_DictKey, NDArray[Any]] = {}
+    xi: dict[_DictKey, Result] = {}
     with fitsio.FITS(path) as fits:
-        for hdu in fits:
-            if "2D" not in hdu.get_extname():
-                continue
-            key = _key_from_string(hdu.get_extname())
+        for hdu in fits[1:]:
+            extname = hdu.get_extname()
+            key = _key_from_string(extname)
             if key is None:
                 continue
-            xi[key] = hdu.read()
+            data = hdu.read()
+            THETA = data["THETA"]
+            bin_size = np.log(THETA[1]) - np.log(THETA[0])
+            half_bins = np.exp(0.5 * bin_size)
+            LOWER = THETA / half_bins
+            UPPER = THETA * half_bins
+            WEIGHT = data["WEIGHT"]
+            if "SHEARSHEAR" in extname:
+                array = np.array(
+                    [[data["XI_P"], data["XI_X"]], [data["XI_X"], data["XI_M"]]]
+                )
+                axis = (2,)
+            elif "POSSHEAR" in extname:
+                array = np.array([data["GAMMA_T"], data["GAMMA_X"]])
+                axis = (1,)
+            elif "POSPOS" in extname:
+                array = np.array(data["WTHETA"])
+                axis = (0,)
+            else:
+                print("Unknown file type")
+
+            xi[key] = Result(array, THETA, axis, LOWER, UPPER, WEIGHT)
     return xi
 
 
