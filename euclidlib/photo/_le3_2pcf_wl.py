@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ._le3_2pcf_wl import Result
+from ._le3_pk_wl import Result
 from os import PathLike
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
