@@ -28,7 +28,7 @@ def _key_from_string(s: str) -> tuple[str, str, int, int] | None:
     return tuple_key_dict
 
 
-def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[Any]]:
+def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     """
     Reads 2D correlation functions from a Euclid data product.
 
@@ -52,7 +52,7 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
       for the output dictionary.
     """
 
-    xi: dict[_DictKey, NDArray[Any]] = {}
+    xi: dict[_DictKey, Result] = {}
     with fitsio.FITS(path) as fits:
         for hdu in fits[1:]:
             extname = hdu.get_extname()
