@@ -58,7 +58,7 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
             extname = hdu.get_extname()
             key = _key_from_string(extname)
             if key is None:
-                continue
+                raise ValueError("Encountered None for key")
             data = hdu.read()
             THETA = data["THETA"]
             WEIGHT = data["WEIGHT"]
@@ -75,7 +75,7 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
                 axis = (0,)
             else:
                 raise ValueError(f"Unknown file type: {key}")
-                break
+                
 
             xi[key] = Result(array, ell=THETA, axis=axis, weight=WEIGHT)
     return xi
