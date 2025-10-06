@@ -61,10 +61,6 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
                 continue
             data = hdu.read()
             THETA = data["THETA"]
-            bin_size = np.log(THETA[1]) - np.log(THETA[0])
-            half_bins = np.exp(0.5 * bin_size)
-            LOWER = THETA / half_bins
-            UPPER = THETA * half_bins
             WEIGHT = data["WEIGHT"]
             if "SHEARSHEAR" in extname:
                 array = np.array(
@@ -78,9 +74,10 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
                 array = np.array(data["WTHETA"])
                 axis = (0,)
             else:
-                print("Unknown file type")
+                raise ValueError(f"Unknown file type: {key}")
+                break
 
-            xi[key] = Result(array, THETA, axis, LOWER, UPPER, WEIGHT)
+            xi[key] = Result(array, ell=THETA, axis=axis, weight=WEIGHT)
     return xi
 
 
