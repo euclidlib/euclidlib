@@ -75,7 +75,6 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
                 axis = (0,)
             else:
                 raise ValueError(f"Unknown file type: {key}")
-                
 
             xi[key] = Result(array, ell=THETA, axis=axis, weight=WEIGHT)
     return xi
