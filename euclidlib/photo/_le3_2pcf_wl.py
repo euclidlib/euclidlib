@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from ._le3_pk_wl import Result
 from os import PathLike
-
+import numpy as np
 import fitsio  # type: ignore [import-not-found]
 from numpy.typing import NDArray
 
@@ -27,7 +28,7 @@ def _key_from_string(s: str) -> tuple[str, str, int, int] | None:
     return tuple_key_dict
 
 
-def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[Any]]:
+def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     """
     Reads 2D correlation functions from a Euclid data product.
 
@@ -51,15 +52,31 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, NDArray[A
       for the output dictionary.
     """
 
-    xi: dict[_DictKey, NDArray[Any]] = {}
+    xi: dict[_DictKey, Result] = {}
     with fitsio.FITS(path) as fits:
-        for hdu in fits:
-            if "2D" not in hdu.get_extname():
-                continue
-            key = _key_from_string(hdu.get_extname())
+        for hdu in fits[1:]:
+            extname = hdu.get_extname()
+            key = _key_from_string(extname)
             if key is None:
-                continue
-            xi[key] = hdu.read()
+                raise ValueError("Encountered None for key")
+            data = hdu.read()
+            THETA = data["THETA"]
+            WEIGHT = data["WEIGHT"]
+            if "SHEARSHEAR" in extname:
+                array = np.array(
+                    [[data["XI_P"], data["XI_X"]], [data["XI_X"], data["XI_M"]]]
+                )
+                axis = (2,)
+            elif "POSSHEAR" in extname:
+                array = np.array([data["GAMMA_T"], data["GAMMA_X"]])
+                axis = (1,)
+            elif "POSPOS" in extname:
+                array = np.array(data["WTHETA"])
+                axis = (0,)
+            else:
+                raise ValueError(f"Unknown file type: {key}")
+
+            xi[key] = Result(array, ell=THETA, axis=axis, weight=WEIGHT)
     return xi
 
 
