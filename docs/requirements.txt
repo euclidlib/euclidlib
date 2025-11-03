@@ -6,6 +6,7 @@ sphinx_copybutton
 sphinx-thebe
 sphinx-comments
 sphinx_external_toc
+jupyter_book
 # Optional, if you use design elements:
 # sphinx-design
 # And if your docs use examples or figures:
