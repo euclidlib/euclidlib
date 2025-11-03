@@ -8,6 +8,7 @@ We recognize all kinds of contributions with the help of the [@all-contributors]
 
 ```{code-cell} ipython3
 from pathlib import Path
+from IPython.display import Markdown, display
 
 # Adjust the path if needed (assuming docs/ is next to README.md)
 readme = Path("../README.md").read_text(encoding="utf-8")
@@ -17,7 +18,7 @@ end_tag = "<!-- ALL-CONTRIBUTORS-LIST:END -->"
 
 if start_tag in readme and end_tag in readme:
     contributors = readme.split(start_tag)[1].split(end_tag)[0].strip()
-    display_markdown(contributors, raw=True)
+    display(Markdown(contributors))
 else:
     print("Contributors section not found in README.md")
 ```
