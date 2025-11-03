@@ -1,13 +1,19 @@
 # euclidlib
 
+[![All Contributors](https://img.shields.io/github/all-contributors/projectOwner/projectName?color=ee8449&style=flat-square)](#contributors)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
+[![Tests: pytest](https://img.shields.io/badge/tests-pytest-blue?logo=pytest)](https://docs.pytest.org/)
+[![Linting: Ruff](https://img.shields.io/badge/linting-ruff-purple?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
+[![Code Style: Prettier](https://img.shields.io/badge/code%20style-prettier-ff69b4.svg?logo=prettier&logoColor=white)](https://prettier.io/)
+[![Type Checking: mypy](https://img.shields.io/badge/type%20checking-mypy-8A2BE2?logo=mypy&logoColor=white)](https://mypy.readthedocs.io/)
+
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [Installation](#installation)
-- [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
-- [Acknowledgements](#acknowledgements)
+- [Contributors](#contributors)
 
 ## Introduction
 
@@ -26,10 +32,6 @@ pip install euclidlib
 - `python>3.7`
 - `fitsio`
 - `numpy`
-
-## Usage
-
-Soon to be announced.
 
 ## Contributing
 
@@ -54,6 +56,16 @@ If you would like to contribute, follow the following steps:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgements
+## Contributors
 
-- Thanks to the `euclidlib` contributors so far: Will Hartley & Florian Dubath (redshift bin distribution schema), Felicitas Keil & Martin Kilbinger (photometric 2-point correlation functions reading routines), Nicolas Tessore (photometric power spectra reading routines).
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind are welcome!
+To discover the meaning of each icon, hover your mouse over it.
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
