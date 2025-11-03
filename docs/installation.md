@@ -15,6 +15,7 @@ pip install euclidlib
 ```
 
 #### Installing from Github
+
 You can easily install `euclidlib` from PyPI using pip:
 
 ```bash
@@ -22,6 +23,7 @@ pip install git+https://github.com/euclidlib/euclidlib.git
 ```
 
 #### Installation for developers
+
 Clone the repository, navigate to the project directily, and install it in editable mode using `pip`:
 
 ```bash
@@ -34,6 +36,7 @@ pip install -e .
 ```
 
 #### Verifying Installation
+
 Once installed, you can verify the installation by importing euclidlib in Python:
 
 ```bash

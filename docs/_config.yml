@@ -18,7 +18,6 @@ latex:
 # Add a bibtex file so that we can create citations
 bibtex_bibfiles:
   - references.bib
-
 # Information about where the book exists on the web
 #repository:
 #  url: https://github.com/executablebooks/jupyter-book  # Online location of your book

@@ -20,5 +20,7 @@ This library is maintained on a best-effort basis by dedicated volunteers and co
 Want to contribute to euclidlib? Contributions are welcome! Whether you want to report issues, suggest improvements, or contribute code, check out our [GitHub](https://github.com/euclidlib/euclidlib) repository for more information.
 
 ## Table of Contents
+
 ```{tableofcontents}
+
 ```
