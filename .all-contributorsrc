@@ -1,7 +1,9 @@
 {
   "projectName": "euclidlib",
   "projectOwner": "euclidlib",
-  "files": ["README.md"],
+  "files": [
+    "README.md"
+  ],
   "commitType": "docs",
   "commitConvention": "angular",
   "contributorsPerLine": 7,
@@ -11,7 +13,11 @@
       "name": "Guadalupe Cañas-Herrera",
       "avatar_url": "https://avatars.githubusercontent.com/u/13239454?v=4",
       "profile": "http://gcanasherrera.com",
-      "contributions": ["code", "review", "ideas"]
+      "contributions": [
+        "code",
+        "review",
+        "ideas"
+      ]
     },
     {
       "login": "ntessore",
@@ -25,6 +31,15 @@
         "example",
         "maintenance",
         "test"
+      ]
+    },
+    {
+      "login": "zahrabaghkhani",
+      "name": "Zahra Baghkhani",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47903409?v=4",
+      "profile": "https://github.com/zahrabaghkhani",
+      "contributions": [
+        "code"
       ]
     }
   ]
