@@ -11,5 +11,5 @@ We recognize all kinds of contributions with the help of the [@all-contributors]
 :end-before: <!-- ALL-CONTRIBUTORS-LIST:END -->
 ```
 
-💡 *Want to join them?*  
+💡 _Want to join them?_
 Check out our [contribution guidelines](https://github.com/euclidlib/euclidlib) to learn how you can help — from improving documentation to adding new features or fixing bugs.
