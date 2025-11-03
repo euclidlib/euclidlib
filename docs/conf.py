@@ -59,6 +59,7 @@ myst_enable_extensions = [
     "linkify",
     "substitution",
     "tasklist",
+    "include",
 ]
 myst_url_schemes = ["mailto", "http", "https"]
 nb_execution_allow_errors = False
