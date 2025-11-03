@@ -1,15 +1,28 @@
+# Core documentation engine
 sphinx>=7.4,<8
-myst-nb
-sphinx-book-theme
-sphinx-togglebutton
-sphinx_copybutton
-sphinx-thebe
-sphinx-comments
-sphinx_external_toc
-jupyter_book
-# Optional, if you use design elements:
-# sphinx-design
-# And if your docs use examples or figures:
-matplotlib
+
+# Jupyter Book & notebook support
+jupyter-book>=1.0
+myst-nb>=1.1
+sphinx-jupyterbook-latex>=1.0
+sphinx-multitoc-numbering>=0.1.3
+
+# Theme and design
+sphinx-book-theme>=1.1
+sphinx-design>=0.5.0
+
+# Useful Sphinx extensions
+sphinx-togglebutton>=0.3.2
+sphinx-copybutton>=0.5.2
+sphinx-thebe>=0.2.2
+sphinx-comments>=0.0.3
+sphinx-external-toc>=0.4.1
+sphinxcontrib-bibtex>=2.6.2
+
+# Math and scientific stack (used in examples)
 numpy
-euclidlib
+matplotlib
+euclidlib  # your own package
+
+# (Optional but recommended for consistent builds)
+pyyaml
