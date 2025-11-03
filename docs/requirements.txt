@@ -13,4 +13,3 @@ jupyter_book
 matplotlib
 numpy
 euclidlib
-
