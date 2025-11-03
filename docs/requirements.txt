@@ -19,6 +19,9 @@ sphinx-comments>=0.0.3
 sphinx-external-toc>=0.4.1
 sphinxcontrib-bibtex>=2.6.2
 
+# others
+Linkify
+
 # Math and scientific stack (used in examples)
 numpy
 matplotlib
