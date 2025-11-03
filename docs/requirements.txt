@@ -12,4 +12,3 @@ sphinx_external_toc
 matplotlib
 numpy
 euclidlib
-
