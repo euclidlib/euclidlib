@@ -73,6 +73,7 @@ To discover the meaning of each icon, hover your mouse over it.
       <td align="center" valign="top" width="14.28%"><a href="https://jaimeruizzapatero.net/"><img src="https://avatars.githubusercontent.com/u/39957598?v=4?s=100" width="100px;" alt="Jaime RZ"/><br /><sub><b>Jaime RZ</b></sub></a><br /><a href="#review-JaimeRZP" title="Reviewed Pull Requests">👀</a> <a href="#ideas-JaimeRZP" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/itutusaus"><img src="https://avatars.githubusercontent.com/u/20775836?v=4?s=100" width="100px;" alt="itutusaus"/><br /><sub><b>itutusaus</b></sub></a><br /><a href="#review-itutusaus" title="Reviewed Pull Requests">👀</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/FelicitasKeil"><img src="https://avatars.githubusercontent.com/u/70713596?v=4?s=100" width="100px;" alt="Felicitas Keil"/><br /><sub><b>Felicitas Keil</b></sub></a><br /><a href="#code-FelicitasKeil" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/WillHartley"><img src="https://avatars.githubusercontent.com/u/6814229?v=4?s=100" width="100px;" alt="WillHartley"/><br /><sub><b>WillHartley</b></sub></a><br /><a href="#ideas-WillHartley" title="Ideas, Planning, & Feedback">🤔</a> <a href="#data-WillHartley" title="Data">🔣</a></td>
     </tr>
   </tbody>
 </table>
