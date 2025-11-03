@@ -20,7 +20,7 @@ sphinx-external-toc>=0.4.1
 sphinxcontrib-bibtex>=2.6.2
 
 # others
-Linkify
+linkify-it-py
 
 # Math and scientific stack (used in examples)
 numpy
