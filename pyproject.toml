@@ -20,12 +20,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 dynamic = ["version"]
 dependencies = [
     "fitsio",
-    "numpy",
-]
+    "numpy"]
 
 [project.urls]
 Repository = "https://github.com/euclidlib/euclidlib"
