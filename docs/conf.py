@@ -11,7 +11,7 @@ exclude_patterns = ["**.ipynb_checkpoints", ".DS_Store", "Thumbs.db", "_build"]
 extensions = [
     "sphinx_togglebutton",
     "sphinx_copybutton",
-    "myst_parser",
+#    "myst_parser",
     "myst_nb",
     "jupyter_book",
     "sphinx_thebe",
