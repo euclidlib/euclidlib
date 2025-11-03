@@ -1,7 +1,7 @@
 # 🤝 Contributors
 
-A heartfelt thank you to everyone who has contributed to **euclidlib**! 💫  
-Your ideas, work, and feedback have shaped this project into what it is today.  
+A heartfelt thank you to everyone who has contributed to **euclidlib**! 💫
+Your ideas, work, and feedback have shaped this project into what it is today.
 We recognize all kinds of contributions with the help of the [@all-contributors](https://allcontributors.org) bot.
 
 ---
@@ -11,3 +11,4 @@ We recognize all kinds of contributions with the help of the [@all-contributors]
 :end-before: <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ---
+```
