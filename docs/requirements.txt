@@ -1,10 +1,15 @@
-jupyter-book
+sphinx>=7.4,<8
+myst-nb
+sphinx-book-theme
+sphinx-togglebutton
+sphinx_copybutton
+sphinx-thebe
+sphinx-comments
+sphinx_external_toc
+# Optional, if you use design elements:
+# sphinx-design
+# And if your docs use examples or figures:
 matplotlib
 numpy
 euclidlib
-sphinx-togglebutton
-sphinx_copybutton
-myst-nb
-myst-parser
-sphinx-thebe
-sphinx-comments
+
