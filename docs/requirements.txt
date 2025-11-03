@@ -3,3 +3,7 @@ matplotlib
 numpy
 euclidlib
 sphinx-togglebutton
+sphinx_copybutton
+myst-nb
+myst-parser
+sphinx-thebe
