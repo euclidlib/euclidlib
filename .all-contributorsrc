@@ -1,7 +1,9 @@
 {
   "projectName": "euclidlib",
   "projectOwner": "euclidlib",
-  "files": ["README.md"],
+  "files": [
+    "README.md"
+  ],
   "commitType": "docs",
   "commitConvention": "angular",
   "contributorsPerLine": 7,
@@ -11,7 +13,11 @@
       "name": "Guadalupe Cañas-Herrera",
       "avatar_url": "https://avatars.githubusercontent.com/u/13239454?v=4",
       "profile": "http://gcanasherrera.com",
-      "contributions": ["code", "review", "ideas"]
+      "contributions": [
+        "code",
+        "review",
+        "ideas"
+      ]
     },
     {
       "login": "ntessore",
@@ -32,28 +38,47 @@
       "name": "Zahra Baghkhani",
       "avatar_url": "https://avatars.githubusercontent.com/u/47903409?v=4",
       "profile": "https://github.com/zahrabaghkhani",
-      "contributions": ["code"]
+      "contributions": [
+        "code"
+      ]
     },
     {
       "login": "JaimeRZP",
       "name": "Jaime RZ",
       "avatar_url": "https://avatars.githubusercontent.com/u/39957598?v=4",
       "profile": "https://jaimeruizzapatero.net/",
-      "contributions": ["review", "ideas"]
+      "contributions": [
+        "review",
+        "ideas"
+      ]
     },
     {
       "login": "itutusaus",
       "name": "itutusaus",
       "avatar_url": "https://avatars.githubusercontent.com/u/20775836?v=4",
       "profile": "https://github.com/itutusaus",
-      "contributions": ["review"]
+      "contributions": [
+        "review"
+      ]
     },
     {
       "login": "FelicitasKeil",
       "name": "Felicitas Keil",
       "avatar_url": "https://avatars.githubusercontent.com/u/70713596?v=4",
       "profile": "https://github.com/FelicitasKeil",
-      "contributions": ["code"]
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "WillHartley",
+      "name": "WillHartley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6814229?v=4",
+      "profile": "https://github.com/WillHartley",
+      "contributions": [
+        "ideas",
+        "data"
+      ]
     }
   ]
 }
