@@ -9,6 +9,7 @@ We recognize all kinds of contributions with the help of the [@all-contributors]
 ```{include} ../README.md
 :start-after: <!-- ALL-CONTRIBUTORS-LIST:START -->
 :end-before: <!-- ALL-CONTRIBUTORS-LIST:END -->
-
----
 ```
+
+💡 *Want to join them?*  
+Check out our [contribution guidelines](https://github.com/euclidlib/euclidlib) to learn how you can help — from improving documentation to adding new features or fixing bugs.
