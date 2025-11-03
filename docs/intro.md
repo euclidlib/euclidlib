@@ -1,26 +1,32 @@
-# euclidlib: a library to read Euclid products
+# euclidlib: A library for reading cosmology-ready Euclid products 
 
-The `euclidlib` python package is an **unofficial** tool designed to read products from the [Euclid Consortium](https://www.euclid-ec.org) Science Ground Segment.
+`euclidlib` is an **unofficial** Python package developed to facilitate access to data products from the [Euclid Consortium](https://www.euclid-ec.org) Science Ground Segment.
 
-Euclidlib offers user-friendly reading and writing routines, and effectively enables to overall work with Large-Scale Structure cosmological products.
+The library provides straightforward tools for reading and writing Euclid data, making it easier to work with cosmological products related to Large-Scale Structure.
 
-```{note}
-This library is maintained on a best-effort basis by dedicated volunteers and contributors from the Euclid community. For detailed credits, see the acknowledgements section.
-```
+> **Note**  
+> This package is maintained on a best-effort basis by volunteers and contributors from the Euclid community.  
+> For the full list of contributors, please refer to the [all-contributors section of the README](https://github.com/euclidlib/euclidlib?tab=readme-ov-file#contributors).
 
-## Features
+---
 
-- **Redshift Bin Distribution**: routine for handling redshift bin distributions.
-- **Photometric Power Spectra**: tools to read photometric power spectra data.
-- **Photometric correlation functions**: routine to read photometric correlation functions.
-- **Photometric bandpowers**: routine to read photometric bandpowers
-
-## Get Involved
-
-Want to contribute to euclidlib? Contributions are welcome! Whether you want to report issues, suggest improvements, or contribute code, check out our [GitHub](https://github.com/euclidlib/euclidlib) repository for more information.
-
-## Table of Contents
-
+## 📖 Table of Contents
 ```{tableofcontents}
 
 ```
+
+---
+
+## ✨ Features
+
+- **Redshift bin distributions** – routines for managing redshift bin data.  
+- **Photometric power spectra** – tools to read photometric angular power spectra and mixing matrices.  
+- **Photometric correlation functions** – readers for photometric correlation function data.  
+- **Photometric bandpowers** – routines to handle photometric bandpower measurements.  
+
+---
+
+## 🤝 Get Involved
+
+Contributions are very welcome!  
+If you’d like to report a bug, propose an improvement, or contribute code, visit the project’s [GitHub repository](https://github.com/euclidlib/euclidlib) for details on how to get started.

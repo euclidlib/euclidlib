@@ -1,4 +1,4 @@
-# Installation
+# 🔧 Installation
 
 To install `euclidlib`, follow the steps based on your installation preference:
 

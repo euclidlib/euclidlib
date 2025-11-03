@@ -6,5 +6,5 @@ root: intro
 chapters:
   - file: installation
   - file: getting_started
-  - file: acknowledgments
+  - file: contributors
 #- file: markdown-notebooks
