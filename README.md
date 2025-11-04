@@ -75,6 +75,9 @@ To discover the meaning of each icon, hover your mouse over it.
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/FelicitasKeil"><img src="https://avatars.githubusercontent.com/u/70713596?v=4?s=100" width="100px;" alt="Felicitas Keil"/><br /><sub><b>Felicitas Keil</b></sub></a><br /><a href="#code-FelicitasKeil" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/WillHartley"><img src="https://avatars.githubusercontent.com/u/6814229?v=4?s=100" width="100px;" alt="WillHartley"/><br /><sub><b>WillHartley</b></sub></a><br /><a href="#ideas-WillHartley" title="Ideas, Planning, & Feedback">🤔</a> <a href="#data-WillHartley" title="Data">🔣</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/FlorianDubath"><img src="https://avatars.githubusercontent.com/u/9742907?v=4?s=100" width="100px;" alt="FlorianDubath"/><br /><sub><b>FlorianDubath</b></sub></a><br /><a href="#ideas-FlorianDubath" title="Ideas, Planning, & Feedback">🤔</a> <a href="#data-FlorianDubath" title="Data">🔣</a></td>
+    </tr>
   </tbody>
 </table>
 
