@@ -27,6 +27,20 @@ class Result():
     p: Dict[int, NDArray[Any]]
     header: Dict[str, Any]
 
+    def __post_init__(self) -> None:
+        # Sanity check on the attributes
+        if any(
+            [
+                len(self.k) != len(self.k_eff),
+                any([len(self.k) != len(p_el) for p_el in self.p.values()]),
+                len(self.k != self.mode_number)
+            ]
+        ):
+            raise ValueError("Inconsistent class attributes, all arrays must have the same length.")
+        for l in range(4):
+            if l not in self.p:
+                raise ValueError("Power spectrum attribute must contain all multipoles from 0 to 4.")
+
     def __getitem__(self, l: int) -> NDArray[Any]:
         return self.p[l]
         
