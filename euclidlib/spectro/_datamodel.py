@@ -37,7 +37,7 @@ class Result():
             ]
         ):
             raise ValueError("Inconsistent class attributes, all arrays must have the same length.")
-        for l in range(4):
+        for l in range(5):
             if l not in self.p:
                 raise ValueError("Power spectrum attribute must contain all multipoles from 0 to 4.")
 
