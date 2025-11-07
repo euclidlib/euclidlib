@@ -29,3 +29,7 @@ class Result:
 
     def __getitem__(self, l: int) -> NDArray[Any]:
         return self.p[l]
+
+    @property
+    def shot_noise(self) -> float:
+        return self.header["SN_VALUE"]
