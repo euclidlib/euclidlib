@@ -4,7 +4,7 @@ from numpy.typing import NDArray
 from typing import Any, Dict
 
 @dataclass(frozen=True)
-class Result:
+class Result():
     """
     Output datamodel for read LE3 GC PK measurements, containing information on the header and the power spectrum multipoles.
 
@@ -29,6 +29,9 @@ class Result:
 
     def __getitem__(self, l: int) -> NDArray[Any]:
         return self.p[l]
+        
+    def __len__(self) -> int:
+        return len(self.k)
 
     @property
     def shot_noise(self) -> float:
