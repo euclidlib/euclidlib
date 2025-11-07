@@ -26,3 +26,6 @@ class Result:
     mode_number: NDArray[Any]
     p: Dict[int, NDArray[Any]]
     header: Dict[str, Any]
+
+    def __getitem__(self, l: int) -> NDArray[Any]:
+        return self.p[l]
