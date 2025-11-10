@@ -1,11 +1,11 @@
 # euclidlib
 
-[![All Contributors](https://img.shields.io/github/all-contributors/euclidlib/euclidib?color=ee8449&style=flat-square)](#contributors)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
 [![Tests: pytest](https://img.shields.io/badge/tests-pytest-blue?logo=pytest)](https://docs.pytest.org/)
 [![Linting: Ruff](https://img.shields.io/badge/linting-ruff-purple?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
 [![Code Style: Prettier](https://img.shields.io/badge/code%20style-prettier-ff69b4.svg?logo=prettier&logoColor=white)](https://prettier.io/)
 [![Type Checking: mypy](https://img.shields.io/badge/type%20checking-mypy-8A2BE2?logo=mypy&logoColor=white)](https://mypy.readthedocs.io/)
+[![All Contributors](https://img.shields.io/github/all-contributors/euclidlib/euclidlib?color=ee8449&style=flat-square)](#contributors)
 
 ## Table of Contents
 
