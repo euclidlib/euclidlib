@@ -1,9 +1,10 @@
 __all__ = [
+    "Result",
     "angular_power_spectra",
     "correlation_functions",
     "bandpowers",
     "cosebis",
-    "mixing_matrices"
+    "mixing_matrices",
 ]
 
 from ._pk_wl import (

@@ -81,8 +81,7 @@ class Result:
     weight: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
 
     def __post_init__(self) -> None:
-        float_array = np.asarray(self.array, dtype=float)
-        object.__setattr__(self, "array", float_array)
+        # Normalize the axis after setting the array
         axis = normalize_result_axis(self.axis, self.array, self.ell)
         object.__setattr__(self, "axis", axis)
 
@@ -93,7 +92,7 @@ class Result:
         self,
         dtype: np.dtype[Any] | None = None,
         *,
-        copy: np.bool[bool] | None = None,
+        copy: bool | None = None,
     ) -> NDArray[Any]:
         """Return NumPy array representation of the result."""
         if copy is not None:
