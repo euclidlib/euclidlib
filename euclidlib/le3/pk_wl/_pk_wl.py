@@ -4,7 +4,7 @@ import re
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 
-from dataclasses import dataclass
+from cosmolib.data import AngularPowerSpectrum
 
 TYPE_CHECKING = False
 if TYPE_CHECKING:
@@ -52,73 +52,6 @@ def normalize_result_axis(
     return normalize_axis_tuple(axis, result.ndim, "axis")
 
 
-@dataclass(frozen=True, repr=False)
-class Result:
-    """
-    A container for an array and associated data such as errors and ell values.
-
-    Parameters
-    ----------
-    array : NDArray
-        Main data array.
-    ell : NDArray or tuple of NDArray, optional
-        Angular scale(s) or ell values associated with the data.
-    axis : int or tuple of int, optional
-        Axis/axes corresponding to ell in the array.
-    lower : NDArray or tuple of NDArray, optional
-        Lower error bounds.
-    upper : NDArray or tuple of NDArray, optional
-        Upper error bounds.
-    weight : NDArray or tuple of NDArray, optional
-        Weights or inverse variances.
-    """
-
-    array: NDArray[Any]
-    ell: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    axis: int | tuple[int, ...] | None = None
-    lower: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    upper: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    weight: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-
-    def __post_init__(self) -> None:
-        # Normalize the axis after setting the array
-        axis = normalize_result_axis(self.axis, self.array, self.ell)
-        object.__setattr__(self, "axis", axis)
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(axis={self.axis!r})"
-
-    def __array__(
-        self,
-        dtype: np.dtype[Any] | None = None,
-        *,
-        copy: bool | None = None,
-    ) -> NDArray[Any]:
-        """Return NumPy array representation of the result."""
-        if copy is not None:
-            return self.array.__array__(dtype, copy=copy)
-        return self.array.__array__(dtype)
-
-    def __getitem__(self, key: Any) -> Any:
-        """Return a slice or element of the internal array."""
-        return self.array[key]
-
-    @property
-    def ndim(self) -> int:
-        """Return the number of dimensions of the result array."""
-        return self.array.ndim
-
-    @property
-    def shape(self) -> tuple[int, ...]:
-        """Return the shape of the result array."""
-        return self.array.shape
-
-    @property
-    def dtype(self) -> np.dtype[Any]:
-        """Return the data type of the result array."""
-        return self.array.dtype
-
-
 def _key_from_string(s: str) -> _DictKey:
     """
     Decode a string key from a FITS extension name.
@@ -164,7 +97,7 @@ def _read_metadata(hdu: Any) -> dict[str, Any]:
     return md
 
 
-def _read_result(hdu: Any) -> Result:
+def _read_result(hdu: Any) -> AngularPowerSpectrum:
     """
     Read a result object from a FITS HDU.
 
@@ -213,7 +146,7 @@ def _read_result(hdu: Any) -> Result:
         else tuple(_weight[: arr.shape[axis[i]], i] for i in order)
     )
 
-    return Result(
+    return AngularPowerSpectrum(
         arr.view(np.dtype(arr.dtype, metadata=_read_metadata(hdu))),
         axis=tuple(axis[i] for i in order),
         ell=ell,
@@ -223,7 +156,7 @@ def _read_result(hdu: Any) -> Result:
     )
 
 
-def read(path: str | PathLike[str]) -> dict[_DictKey, Result]:
+def read(path: str | PathLike[str]) -> dict[_DictKey, AngularPowerSpectrum]:
     """
     Read a dictionary of results from a FITS file.
 
@@ -252,7 +185,9 @@ def read(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     return results
 
 
-def angular_power_spectra(path: str | PathLike[str]) -> dict[_DictKey, Result]:
+def angular_power_spectra(
+    path: str | PathLike[str],
+) -> dict[_DictKey, AngularPowerSpectrum]:
     """
     Read angular power spectra results from a FITS file.
 
@@ -269,7 +204,7 @@ def angular_power_spectra(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     return read(path)
 
 
-def mixing_matrices(path: str | PathLike[str]) -> dict[_DictKey, Result]:
+def mixing_matrices(path: str | PathLike[str]) -> dict[_DictKey, AngularPowerSpectrum]:
     """
     Read mixing matrices from a FITS file.
 
