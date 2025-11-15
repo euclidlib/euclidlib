@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ._pk_wl import Result
+from euclidlib.le3.pk_wl._pk_wl import Result
 from os import PathLike
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
