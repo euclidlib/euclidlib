@@ -79,7 +79,7 @@ def correlation_functions(
                 raise ValueError(f"Unknown file type: {key}")
 
             xi[key] = TwoPointCorrelationFunction(
-                array, ell=THETA, axis=axis, weight=WEIGHT
+                array, theta=THETA, axis=axis, weight=WEIGHT
             )
     return xi
 
