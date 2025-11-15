@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from cosmolib.data import TwoPointCorrelationFunction
+from cosmolib.data import TwoPointCorrelationFunction  # type: ignore [import-not-found]
 from os import PathLike
 import numpy as np
 import fitsio  # type: ignore [import-not-found]

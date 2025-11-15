@@ -4,7 +4,7 @@ import re
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 
-from cosmolib.data import AngularPowerSpectrum
+from cosmolib.data import AngularPowerSpectrum  # type: ignore [import-not-found]
 
 TYPE_CHECKING = False
 if TYPE_CHECKING:
