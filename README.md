@@ -1,7 +1,7 @@
 # euclidlib
 
 [![PyPI version](https://img.shields.io/pypi/v/euclidlib.svg)](https://pypi.org/project/euclidlib/)
-[![CI](https://github.com/euclidlib/euclidlib/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/euclidlib/euclidlib/actions/workflows/ci.yaml)
+[![CI](https://github.com/euclidlib/euclidlib/actions/workflows/tests.yaml/badge.svg?branch=main)](https://github.com/euclidlib/euclidlib/actions/workflows/tests.yaml)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
 [![Tests: pytest](https://img.shields.io/badge/tests-pytest-blue?logo=pytest)](https://docs.pytest.org/)
 [![Linting: Ruff](https://img.shields.io/badge/linting-ruff-purple?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
