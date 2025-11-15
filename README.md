@@ -1,5 +1,7 @@
 # euclidlib
 
+[![PyPI version](https://img.shields.io/pypi/v/euclidlib.svg)](https://pypi.org/project/euclidlib/)
+[![CI](https://github.com/euclidlib/euclidlib/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/euclidlib/euclidlib/actions/workflows/ci.yaml)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
 [![Tests: pytest](https://img.shields.io/badge/tests-pytest-blue?logo=pytest)](https://docs.pytest.org/)
 [![Linting: Ruff](https://img.shields.io/badge/linting-ruff-purple?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
@@ -17,7 +19,9 @@
 
 ## Introduction
 
-`euclidlib` is an unofficial python package to read official Euclid mission products from the Science Ground Segment. The ultimate goal of `euclidlib` is to provide to the Euclid community a friendly and ready-to-use library that allows to work with the science-ready Euclid products right away. The library is maintained in a best-effort basis by Euclid volunteers and contributors. See acknolwedgements below.
+`euclidlib` is an unofficial Python package designed to access official Euclid mission products provided by the Science Ground Segment. Its goal is to offer the Euclid community a user-friendly, ready-to-use library that enables immediate work with science-ready Euclid data.
+
+The package is maintained on a best-effort basis by volunteers and contributors within the Euclid community. See the contributor list below.
 
 ## Installation
 
@@ -32,6 +36,29 @@ pip install euclidlib
 - `python>3.7`
 - `fitsio`
 - `numpy`
+
+## Structure and Format of `euclidlib`
+
+The design of the `euclidlib` package closely follows the organisation of the Euclid Data Product Description Documentation (http://st-dm.pages.euclid-sgs.uk/data-product-doc/dm10/) and reflects the structure of the Euclid Science Ground Segment.
+
+```mermaid
+graph TD
+    EUCLIDLIB[euclidlib]
+
+    LE3[le3]
+    PK[pk_wl]
+    TWOPCF[twopcf_wl]
+
+    PHZ[phz]
+
+    EUCLIDLIB --> LE3
+    EUCLIDLIB --> PHZ
+
+    LE3 --> PK
+    LE3 --> TWOPCF
+```
+
+`euclidlib` provides all data products in a unified, Pythonic format based on dataclasses, ensuring consistent, intuitive, and easy-to-use interfaces across all supported products. Please consult the full documentation for additional details.
 
 ## Contributing
 
@@ -59,6 +86,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contributors
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind are welcome!
+
 To discover the meaning of each icon, hover your mouse over it.
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
