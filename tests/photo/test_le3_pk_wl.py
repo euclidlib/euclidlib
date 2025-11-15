@@ -21,7 +21,7 @@ def test_angular_power_spectra(data_path):
 
 
 def test_mixing_matrices(data_path):
-    mms = el.photo.mixing_matrices(data_path / "mixing_matrices.fits")
+    mms = el.photo.mixing_matrices(data_path / "example-mixing_matrices.fits")
 
     expected_keys = {
         ("POS", "POS", 2, 2),
