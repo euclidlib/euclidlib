@@ -23,7 +23,7 @@ extensions = [
     "sphinxcontrib.bibtex",
     "sphinx_jupyterbook_latex",
     "sphinx_multitoc_numbering",
-    "sphinx.ext.mathjax"
+    "sphinx.ext.mathjax",
 ]
 external_toc_exclude_missing = False
 external_toc_path = "_toc.yml"
