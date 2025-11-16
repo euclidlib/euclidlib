@@ -5,9 +5,15 @@ build:
   tools:
     python: "3.9"
 
+  jobs:
+    pre_build:
+      # CRITICAL: convert Jupyter Book config into a Sphinx project
+      - jupyter-book config sphinx docs/
+
+sphinx:
+  configuration: docs/_build/.jupyter_book/sphinx/conf.py
+
 python:
   install:
     - requirements: docs/requirements.txt
 
-sphinx:
-  configuration: docs/_config.yml
