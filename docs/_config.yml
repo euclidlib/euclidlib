@@ -19,14 +19,14 @@ bibtex_bibfiles:
 parse:
   myst_enable_extensions:
     # math
-    - amsmath      # bare LaTeX environments: \begin{equation}...\end{equation}
-    - dollarmath   # $...$ and $$...$$
+    - amsmath # bare LaTeX environments: \begin{equation}...\end{equation}
+    - dollarmath # $...$ and $$...$$
     # (optional but usually useful, restore Jupyter Book defaults)
     - colon_fence
     - linkify
     - substitution
     - tasklist
-  myst_dmath_double_inline: true   # allow $$...$$ in text
+  myst_dmath_double_inline: true # allow $$...$$ in text
 
 # Sphinx-specific config
 sphinx:
