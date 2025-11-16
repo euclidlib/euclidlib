@@ -12,10 +12,6 @@ latex:
   latex_documents:
     targetname: book.tex
 
-# Bibliography
-bibtex_bibfiles:
-  - references.bib
-
 # Sphinx-specific config overrides
 sphinx:
   config:
