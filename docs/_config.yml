@@ -3,33 +3,20 @@ title: euclidlib
 author: the euclidlib team
 logo: euclidlib-patch.png
 
+# Notebook execution
 execute:
   execute_notebooks: force
 
+# LaTeX config
 latex:
   latex_documents:
     targetname: book.tex
 
+# Bibliography
 bibtex_bibfiles:
   - references.bib
 
-# --- THIS IS THE IMPORTANT PART FOR MATH ---
-
-# MyST / math parsing
-parse:
-  myst_enable_extensions:
-    # math
-    - amsmath # bare LaTeX environments: \begin{equation}...\end{equation}
-    - dollarmath # $...$ and $$...$$
-    # (optional but usually useful, restore Jupyter Book defaults)
-    - colon_fence
-    - linkify
-    - substitution
-    - tasklist
-  myst_dmath_double_inline: true # allow $$...$$ in text
-
-# Sphinx-specific config
+# Sphinx-specific config overrides
 sphinx:
   config:
-    # Use MathJax v3 (recommended in JB docs)
     mathjax_path: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

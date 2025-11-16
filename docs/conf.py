@@ -1,10 +1,13 @@
 ###############################################################################
-# Cleaned and fixed conf.py for ReadTheDocs + MyST + JupyterBook ecosystem
+# Clean conf.py for ReadTheDocs + JupyterBook 2 + MyST-NB 1.1
 ###############################################################################
 
 author = "the euclidlib team"
 copyright = "2025"
 
+# --------------------------------------------------------------------------
+# Extensions — minimal and safe for JB2
+# --------------------------------------------------------------------------
 extensions = [
     "myst_nb",
     "sphinx_external_toc",
@@ -17,13 +20,9 @@ extensions = [
 ]
 
 # --------------------------------------------------------------------------
-# FIX: Make Sphinx accept Markdown and Notebooks
+# Never override source_suffix when using MyST-NB (JB2 handles Markdown)
 # --------------------------------------------------------------------------
-source_suffix = {
-    ".md": "markdown",
-    ".rst": "restructuredtext",
-    ".ipynb": "myst-nb",
-}
+# DO NOT define source_suffix — myst_nb registers markdown automatically.
 
 exclude_patterns = [
     "**.ipynb_checkpoints",
@@ -33,25 +32,18 @@ exclude_patterns = [
 ]
 
 # --------------------------------------------------------------------------
-# Jupyter-Book settings
+# Table of contents from external YAML
 # --------------------------------------------------------------------------
 external_toc_path = "_toc.yml"
 external_toc_exclude_missing = False
 
-myst_enable_extensions = [
-    "colon_fence",
-    "dollarmath",
-    "linkify",
-    "substitution",
-    "tasklist",
-    "include",
-]
-
-myst_url_schemes = ["mailto", "http", "https"]
+# --------------------------------------------------------------------------
+# IMPORTANT: Do NOT define myst_enable_extensions or myst_url_schemes.
+# Jupyter Book 2 + MyST-Parser 3 configure these automatically.
+# --------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------
-# Notebook execution – RTD-safe
-# (disable or make it cached; RTD often fails with "kernel not found")
+# Notebook execution (recommended for RTD)
 # --------------------------------------------------------------------------
 nb_execution_mode = "off"
 nb_execution_timeout = 30
@@ -71,20 +63,3 @@ html_theme_options = {
     "use_repository_button": True,
     "home_page_in_toc": True,
 }
-
-# --------------------------------------------------------------------------
-# Bibliography
-# --------------------------------------------------------------------------
-bibtex_bibfiles = ["references.bib"]
-
-# --------------------------------------------------------------------------
-# Latex
-# --------------------------------------------------------------------------
-latex_engine = "pdflatex"
-
-# --------------------------------------------------------------------------
-# Misc
-# --------------------------------------------------------------------------
-pygments_style = "sphinx"
-suppress_warnings = ["myst.domains"]
-numfig = True
