@@ -29,7 +29,7 @@ Cross-correlations obey the same rule: shape = (components of field A) × (compo
 
 Examples:
 
-``` python
+```python
 ('SHE', 'SHE', 1, 1)  → shape = (2, 2) # first component is always E-mode
 ('POS', 'SHE', 1, 2)  → shape = (1, 2)
 ```
