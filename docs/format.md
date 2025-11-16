@@ -9,7 +9,7 @@ Original Euclid Consortium Science Ground Segment (SGS) products are not homogen
 `euclidlib` reads photometric redshift distributions and returns a canonical representation:
 
 - A 1D redshift array.
-- A mapping (Python dictionary) from redshift‑bin index → $$n(z)$$ array
+- A mapping (Python dictionary) from redshift‑bin index → \(n(z)\) array
 
 ## Level 3 (LE3) Cosmology-Ready Products
 
@@ -29,7 +29,7 @@ Cross-correlations obey the same rule: shape = (components of field A) × (compo
 
 Examples:
 
-```
+``` python
 ('SHE', 'SHE', 1, 1)  → shape = (2, 2) # first component is always E-mode
 ('POS', 'SHE', 1, 2)  → shape = (1, 2)
 ```
@@ -45,7 +45,7 @@ Each measurement is encapsulated in a dedicated Python dataclass corresponding t
 AngularPowerSpectra(a, ell=np.(array), axis=scale_axis, ...)
 ```
 
-These Python dataclasses are provided by the lightweight (`cosmolib` package)[https://github.com/astro-ph/cosmolib]. This format is also used by other python packages such as `heracles`, `cloelib`, `cloelike` and `Spaceborne`.
+These Python dataclasses are provided by the lightweight [`cosmolib` package](https://github.com/astro-ph/cosmolib). This format is also used by other python packages such as `heracles`, `cloelib`, `cloelike` and `Spaceborne`.
 
 ### 3. Attributes
 
