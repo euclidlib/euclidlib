@@ -1,22 +1,14 @@
+# readthedocs.yml
 version: 2
 
 build:
   os: ubuntu-22.04
   tools:
-    python: "3.9"
-    nodejs: "18" # <-- IMPORTANT
+    python: "3.10"
 
-  jobs:
-    pre_build:
-      - jupyter-book build docs/
-
-# No Sphinx
 sphinx:
-  builder: "none"
-
-# Tell RTD where your generated HTML is
-publish:
-  html: docs/_build/html/
+  builder: html
+  configuration: docs/conf.py
 
 python:
   install:
