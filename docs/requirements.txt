@@ -1,35 +1,28 @@
-# Core Sphinx – last version before the myst-parser bug
-sphinx>=7.0,<7.1
+# Core Jupyter Book 2
+jupyter-book>=2.0,<2.1
 
-# Docutils compatible with Sphinx 7.0 AND sphinxcontrib-bibtex
+# Explicit pins to match what jupyter-book installs internally
+myst-parser>=3.0,<4.0
+myst-nb>=1.1,<1.2
+sphinx>=7.2,<7.3
 docutils>=0.20,<0.21
 
-# MyST parser – version WITHOUT the broken transform removal
-myst-parser>=2.0.1,<3.0.0
-
-# MyST notebooks – supports Sphinx 7.0
-myst-nb>=1.1,<1.2
-
-# JupyterBook extensions (all compatible with Sphinx 7.0)
-sphinx-book-theme>=1.1,<1.2
-sphinx-design>=0.5.0
-sphinx-external-toc>=0.4.1
+# Jupyter Book ecosystem
+sphinx-external-toc>=1.0
+sphinx-book-theme>=1.1
+sphinx-design>=0.6
 sphinx-togglebutton>=0.3.2
 sphinx-copybutton>=0.5.2
-sphinx-thebe>=0.2.2
-sphinx-comments>=0.0.3
-sphinxcontrib-bibtex>=2.6.2
-sphinx-jupyterbook-latex>=1.0,<1.1
-sphinx-multitoc-numbering>=0.1.3
+sphinxcontrib-bibtex>=2.6
+sphinx-thebe>=0.3
 
-# MyST utilities
+# URL autolinker
 linkify-it-py>=2.0
 
-# Scientific stack (optional)
+# Your project
+euclidlib
+pyyaml
+
+# Scientific stack
 numpy
 matplotlib
-
-# Your library
-euclidlib
-
-pyyaml
