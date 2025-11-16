@@ -6,8 +6,6 @@ jupyter-book>=1.0
 myst-nb>=1.1
 sphinx-jupyterbook-latex>=1.0
 sphinx-multitoc-numbering>=0.1.3
-sphinx-rtd-theme
-myst-parser
 
 # Theme and design
 sphinx-book-theme>=1.1

@@ -1,31 +1,35 @@
 # Book settings
-# Learn more at https://jupyterbook.org/customize/config.html
-
 title: euclidlib
 author: the euclidlib team
 logo: euclidlib-patch.png
 
-# Force re-execution of notebooks on each build.
-# See https://jupyterbook.org/content/execute.html
 execute:
   execute_notebooks: force
 
-# Define the name of the latex output file for PDF builds
 latex:
   latex_documents:
     targetname: book.tex
 
-# Add a bibtex file so that we can create citations
 bibtex_bibfiles:
   - references.bib
-# Information about where the book exists on the web
-#repository:
-#  url: https://github.com/executablebooks/jupyter-book  # Online location of your book
-#  path_to_book: docs  # Optional path to your book, relative to the repository root
-#  branch: master  # Which branch of the repository should be used when creating links (optional)
 
-# Add GitHub buttons to your book
-# See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
-#html:
-#  use_issues_button: true
-#  use_repository_button: true
+# --- THIS IS THE IMPORTANT PART FOR MATH ---
+
+# MyST / math parsing
+parse:
+  myst_enable_extensions:
+    # math
+    - amsmath      # bare LaTeX environments: \begin{equation}...\end{equation}
+    - dollarmath   # $...$ and $$...$$
+    # (optional but usually useful, restore Jupyter Book defaults)
+    - colon_fence
+    - linkify
+    - substitution
+    - tasklist
+  myst_dmath_double_inline: true   # allow $$...$$ in text
+
+# Sphinx-specific config
+sphinx:
+  config:
+    # Use MathJax v3 (recommended in JB docs)
+    mathjax_path: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
