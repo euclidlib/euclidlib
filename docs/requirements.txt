@@ -1,28 +1,24 @@
-# Core Jupyter Book 2
-jupyter-book>=2.0,<2.1
+jupyter-book==2.0.2
 
-# Explicit pins to match what jupyter-book installs internally
-myst-parser>=3.0,<4.0
-myst-nb>=1.1,<1.2
-sphinx>=7.2,<7.3
-docutils>=0.20,<0.21
+# MyST stack
+myst-nb==1.1.0
+myst-parser<3.0
+sphinx==7.1.2
+docutils<0.21
 
-# Jupyter Book ecosystem
-sphinx-external-toc>=1.0
+# Themes & extensions
 sphinx-book-theme>=1.1
 sphinx-design>=0.6
 sphinx-togglebutton>=0.3.2
 sphinx-copybutton>=0.5.2
-sphinxcontrib-bibtex>=2.6
+sphinx-external-toc>=1.0
 sphinx-thebe>=0.3
+sphinxcontrib-bibtex>=2.6
 
-# URL autolinker
-linkify-it-py>=2.0
+linkify-it-py
 
-# Your project
-euclidlib
-pyyaml
-
-# Scientific stack
 numpy
 matplotlib
+euclidlib
+
+pyyaml
