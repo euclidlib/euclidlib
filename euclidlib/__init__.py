@@ -1,8 +1,8 @@
 __all__ = [
     "__version__",
     "__version_tuple__",
-    "photo",
-    "spectro",
+    "le3",
+    "phz",
 ]
 
 # generated version information
@@ -12,4 +12,4 @@ except ModuleNotFoundError:
     pass
 
 # import submodules here so everything is available with package import
-from . import photo, spectro
+from . import le3, phz

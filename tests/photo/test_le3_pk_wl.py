@@ -2,7 +2,7 @@ import euclidlib as el
 
 
 def test_angular_power_spectra(data_path):
-    cls = el.photo.angular_power_spectra(data_path / "angular_power_spectra.fits")
+    cls = el.le3.pk_wl.angular_power_spectra(data_path / "angular_power_spectra.fits")
 
     expected_keys = {
         ("POS", "POS", 2, 2),
@@ -21,7 +21,7 @@ def test_angular_power_spectra(data_path):
 
 
 def test_mixing_matrices(data_path):
-    mms = el.photo.mixing_matrices(data_path / "example-mixing_matrices.fits")
+    mms = el.le3.pk_wl.mixing_matrices(data_path / "mixing_matrices.fits")
 
     expected_keys = {
         ("POS", "POS", 2, 2),

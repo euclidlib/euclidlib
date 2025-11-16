@@ -11,7 +11,14 @@
       "name": "Guadalupe Cañas-Herrera",
       "avatar_url": "https://avatars.githubusercontent.com/u/13239454?v=4",
       "profile": "http://gcanasherrera.com",
-      "contributions": ["code", "review", "ideas"]
+      "contributions": [
+        "code",
+        "review",
+        "ideas",
+        "maintenance",
+        "test",
+        "example"
+      ]
     },
     {
       "login": "ntessore",
@@ -60,6 +67,13 @@
       "name": "WillHartley",
       "avatar_url": "https://avatars.githubusercontent.com/u/6814229?v=4",
       "profile": "https://github.com/WillHartley",
+      "contributions": ["ideas", "data"]
+    },
+    {
+      "login": "FlorianDubath",
+      "name": "FlorianDubath",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9742907?v=4",
+      "profile": "https://github.com/FlorianDubath",
       "contributions": ["ideas", "data"]
     }
   ]

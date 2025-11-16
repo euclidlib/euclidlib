@@ -2,7 +2,7 @@ import euclidlib as el
 
 
 def test_correlation_functions(data_path):
-    xis = el.photo.correlation_functions(
+    xis = el.le3.twopcf_wl.correlation_functions(
         data_path / "two_point_correlation_function_Xi.fits"
     )
 
