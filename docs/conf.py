@@ -3,23 +3,17 @@
 ###############################################################################
 
 author = "the euclidlib team"
-copyright = "2024"
+copyright = "2025"
 
 extensions = [
-    #"myst_parser",
-    #"myst_nb",
+    "myst_nb",
+    "sphinx_external_toc",
+    "sphinx_book_theme",
+    "sphinx_design",
     "sphinx_togglebutton",
     "sphinx_copybutton",
-    "sphinx_thebe",
-    "sphinx_comments",
-    "sphinx_external_toc",
-    "sphinx.ext.intersphinx",
-    "sphinx_design",
-    "sphinx_book_theme",
     "sphinxcontrib.bibtex",
-    "sphinx_jupyterbook_latex",
-    "sphinx_multitoc_numbering",
-    "sphinx.ext.mathjax",
+    "sphinx_thebe",
 ]
 
 # --------------------------------------------------------------------------
