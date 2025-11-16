@@ -40,7 +40,7 @@ pip install -e .
 Once installed, you can verify the installation by importing euclidlib in Python:
 
 ```bash
-import euclidlib
+import euclidlib as el
 ```
 
 If no errors occur, you're all set to start using the library!
