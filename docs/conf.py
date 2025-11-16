@@ -6,8 +6,8 @@ author = "the euclidlib team"
 copyright = "2024"
 
 extensions = [
-    "myst_parser",
-    "myst_nb",
+    #"myst_parser",
+    #"myst_nb",
     "sphinx_togglebutton",
     "sphinx_copybutton",
     "sphinx_thebe",
