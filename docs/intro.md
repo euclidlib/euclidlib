@@ -18,16 +18,31 @@ The library provides straightforward tools for reading and writing Euclid data, 
 
 ---
 
-## ✨ Features
-
-- **Redshift bin distributions** – routines for managing redshift bin data.
-- **Photometric power spectra** – tools to read photometric angular power spectra and mixing matrices.
-- **Photometric correlation functions** – readers for photometric correlation function data.
-- **Photometric bandpowers** – routines to handle photometric bandpower measurements.
-
----
-
 ## 🤝 Get Involved
 
 Contributions are very welcome!
 If you’d like to report a bug, propose an improvement, or contribute code, visit the project’s [GitHub repository](https://github.com/euclidlib/euclidlib) for details on how to get started.
+
+
+
+## check this up
+
+Inline: $a^2 + b^2 = c^2$
+
+Display with $$:
+
+$$
+\int_0^1 x^2 \, dx = \frac{1}{3}
+$$
+
+Bare LaTeX environment (needs `amsmath`):
+
+\begin{equation}
+  E = mc^2
+\end{equation}
+
+Math directive:
+
+```{math}
+:label: eq:test
+w_{t+1} = (1 + r_{t+1}) s(w_t) + y_{t+1}
