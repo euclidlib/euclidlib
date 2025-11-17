@@ -16,11 +16,11 @@ language = "en"
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    "myst_nb",                   # MyST Markdown + notebooks
-    "sphinx.ext.mathjax",        # Math support
-    "sphinx.ext.autodoc",        # API documentation
-    "sphinx.ext.napoleon",       # NumPy/Google docstrings
-    "sphinx_design",             # Layout utilities
+    "myst_nb",  # MyST Markdown + notebooks
+    "sphinx.ext.mathjax",  # Math support
+    "sphinx.ext.autodoc",  # API documentation
+    "sphinx.ext.napoleon",  # NumPy/Google docstrings
+    "sphinx_design",  # Layout utilities
 ]
 
 templates_path = ["_templates"]
@@ -70,6 +70,7 @@ html_css_files = ["local.css"]
 # latex_elements = {}
 
 # -- Optional: local Sphinx extensions setup --------------------------------
+
 
 def setup(app: Sphinx):
     """Custom Sphinx setup for euclidlib."""
