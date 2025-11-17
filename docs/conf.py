@@ -1,19 +1,38 @@
+# Configuration file for the Sphinx documentation builder.
+
+from datetime import date
+from sphinx.application import Sphinx
+
 # -- Project information -----------------------------------------------------
 
 project = "euclidlib"
 author = "the euclidlib team"
+copyright = f"{date.today().year}, {author}"
+
+# Master document
+master_doc = "index"
+language = "en"
 
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    "myst_nb",  # MyST Markdown + notebooks
-    "sphinx.ext.mathjax",  # Math support
-    "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",
-    "sphinx_design",  # For layout utilities (optional but useful)
+    "myst_nb",                   # MyST Markdown + notebooks
+    "sphinx.ext.mathjax",        # Math support
+    "sphinx.ext.autodoc",        # API documentation
+    "sphinx.ext.napoleon",       # NumPy/Google docstrings
+    "sphinx_design",             # Layout utilities
 ]
 
-# MyST NB & MyST settings
+templates_path = ["_templates"]
+
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+]
+
+# -- MyST & Notebook settings ------------------------------------------------
+
 myst_enable_extensions = [
     "colon_fence",
     "deflist",
@@ -22,37 +41,37 @@ myst_enable_extensions = [
     "linkify",
 ]
 
-# Notebook execution — no rule specified in myst.yml
-# so we keep the default (execute only if needed)
-nb_execution_mode = "auto"
+nb_execution_mode = "auto"  # Execute notebooks only if needed
 
-# Bibliography (from myst.yml → project.bibliography)
+# -- Bibliography ------------------------------------------------------------
+
 bibtex_bibfiles = ["references.bib"]
 
-# -- HTML theme --------------------------------------------------------------
+# -- HTML output -------------------------------------------------------------
 
 html_theme = "sphinx_book_theme"
 
-html_logo = "euclidlib-patch.png"  # site.options.logo
+html_logo = "euclidlib-patch.png"
 
 html_theme_options = {
     "logo": {
         "image_light": "euclidlib-patch.png",
         "image_dark": "euclidlib-patch.png",
     },
-    # "folders": true in myst.yml corresponds to showing folder sidebar structure
-    "show_nav_level": 2,
+    "show_nav_level": 2,  # Equivalent to "folders: true" in myst.yml
 }
 
-# -- PDF Export (Sphinx only partially supports this) ------------------------
-# Your myst.yml specified:
-#   exports:
-#     - format: pdf
-#       template: plain_latex_book
-#       output: exports/book.pdf
-#
-# To enable LaTeX builds on ReadTheDocs, you would add:
+html_static_path = ["_static"]
+html_css_files = ["local.css"]
+
+# -- PDF / LaTeX output (optional) ------------------------------------------
+# If you want ReadTheDocs to build PDF:
 # latex_engine = "pdflatex"
 # latex_elements = {}
-#
-# But PDF export must be configured in RTD, not here.
+
+# -- Optional: local Sphinx extensions setup --------------------------------
+
+def setup(app: Sphinx):
+    """Custom Sphinx setup for euclidlib."""
+    # Add directives, transforms, etc, if needed later.
+    pass
