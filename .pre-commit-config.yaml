@@ -26,4 +26,4 @@ repos:
       - id: mypy
         args: [--strict, --python-version=3.12]
         additional_dependencies: [numpy]
-        exclude: ^tests
+        exclude: "^(tests/|docs/)"
