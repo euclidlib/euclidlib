@@ -1,24 +1,10 @@
-jupyter-book==2.0.2
+# Core MystMD CLI
+mystmd
 
-# MyST stack
-myst-nb==1.1.0
-myst-parser<3.0
-sphinx==7.1.2
-docutils<0.21
-
-# Themes & extensions
-sphinx-book-theme>=1.1
-sphinx-design>=0.6
-sphinx-togglebutton>=0.3.2
-sphinx-copybutton>=0.5.2
-sphinx-external-toc>=1.0
-sphinx-thebe>=0.3
-sphinxcontrib-bibtex>=2.6
-
-linkify-it-py
-
+# Optional Python packages used inside your notebooks
 numpy
 matplotlib
 euclidlib
 
+# YAML support (used by mystmd for config)
 pyyaml
