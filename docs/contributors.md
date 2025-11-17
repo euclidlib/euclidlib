@@ -4,6 +4,7 @@ A heartfelt thank you to everyone who has contributed to `euclidlib`, whose idea
 We recognize all kinds of contributions with the help of the [@all-contributors](https://allcontributors.org) bot.
 
 ---
+
 ```{include} ../README.md
 :start-after: <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 :end-before: <!-- ALL-CONTRIBUTORS-LIST:END -->
