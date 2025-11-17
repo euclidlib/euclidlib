@@ -5,11 +5,8 @@ build:
   tools:
     python: "3.11"
 
-  jobs:
-    build:
-      steps:
-        - name: Build docs with mystmd
-          run: myst build docs --html --output-dir $READTHEDOCS_OUTPUT/html
+  commands:
+    - myst build docs --html --output-dir $READTHEDOCS_OUTPUT/html
 
 python:
   install:
