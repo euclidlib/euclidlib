@@ -7,7 +7,9 @@ build:
 
   jobs:
     build:
-      - myst build docs --html --output-dir $READTHEDOCS_OUTPUT/html
+      steps:
+        - name: Build docs with mystmd
+          run: myst build docs --html --output-dir $READTHEDOCS_OUTPUT/html
 
 python:
   install:
