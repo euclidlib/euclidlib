@@ -5,9 +5,9 @@ build:
   tools:
     python: "3.11"
 
-  commands:
-    - python -m mystmd build docs --html --output-dir $READTHEDOCS_OUTPUT/html
-
 python:
   install:
     - requirements: docs/requirements.txt
+
+commands:
+  - python -m mystmd build docs --html --output-dir $READTHEDOCS_OUTPUT/html
