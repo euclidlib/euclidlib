@@ -11,11 +11,11 @@ build:
 
 # Dependencies required to build your docs
 python:
-   install:
-     - method: pip
-       path: .
-       extra_requirements:
-         - sphinx
+  install:
+    - method: pip
+      path: .
+      extra_requirements:
+        - sphinx
 
 sphinx:
   builder: html
