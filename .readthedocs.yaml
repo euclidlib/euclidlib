@@ -7,14 +7,13 @@ build:
 
 python:
   install:
-      - method: pip
-        path: .
-        extra_requirements:
-          - linkify
-          - rtd
+    - method: pip
+      path: .
+      extra_requirements:
+        - linkify
+        - rtd
 
 sphinx:
   configuration: docs/conf.py
   builder: html
   fail_on_warning: true
-  
