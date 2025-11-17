@@ -9,7 +9,7 @@ Original Euclid Consortium Science Ground Segment (SGS) products are not homogen
 `euclidlib` reads photometric redshift distributions and returns a canonical representation:
 
 - A 1D redshift array.
-- A mapping (Python dictionary) from redshift‑bin index → \(n(z)\) array
+- A mapping (Python dictionary) from redshift‑bin index → $n(z)$ array
 
 ## Level 3 (LE3) Cosmology-Ready Products
 
