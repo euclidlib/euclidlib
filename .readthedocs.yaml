@@ -6,7 +6,7 @@ build:
     python: "3.11"
 
   commands:
-    - myst build docs --html --output-dir $READTHEDOCS_OUTPUT/html
+    - python -m mystmd build docs --html --output-dir $READTHEDOCS_OUTPUT/html
 
 python:
   install:
