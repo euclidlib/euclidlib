@@ -7,9 +7,9 @@ build:
 
 python:
   install:
-    - requirements: requirements.txt    # <--- THIS LINE IS MISSING!
+    - requirements: requirements.txt # <--- THIS LINE IS MISSING!
     - method: pip
-      path: .                           
+      path: .
 
 sphinx:
   configuration: docs/conf.py
