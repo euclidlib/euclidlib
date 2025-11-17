@@ -1,3 +1,4 @@
+# readthedocs.yml
 version: 2
 
 build:
@@ -5,15 +6,11 @@ build:
   tools:
     python: "3.10"
 
+sphinx:
+  builder: html
+  configuration: docs/conf.py
+
 python:
   install:
-<<<<<<< HEAD
-    - requirements: docs/requirements.txt    # <--- THIS LINE IS MISSING!
-=======
-    - requirements: docs/requirements.txt # <--- THIS LINE IS MISSING!
->>>>>>> 5f3868bb38d397479eb0640929883b7e83d9e236
-    - method: pip
-      path: .
-
-sphinx:
-  configuration: docs/conf.py
+    - requirements: docs/requirements.txt
+    
