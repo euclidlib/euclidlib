@@ -7,7 +7,7 @@ build:
 
 python:
   install:
-    - requirements: docs/requirements.txt    # <--- THIS LINE IS MISSING!
+    - requirements: docs/requirements.txt # <--- THIS LINE IS MISSING!
     - method: pip
       path: .
 
