@@ -6,11 +6,11 @@ author = "the euclidlib team"
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    "myst_nb",               # MyST Markdown + notebooks
-    "sphinx.ext.mathjax",    # Math support
+    "myst_nb",  # MyST Markdown + notebooks
+    "sphinx.ext.mathjax",  # Math support
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
-    "sphinx_design",         # For layout utilities (optional but useful)
+    "sphinx_design",  # For layout utilities (optional but useful)
 ]
 
 # MyST NB & MyST settings
@@ -33,7 +33,7 @@ bibtex_bibfiles = ["references.bib"]
 
 html_theme = "sphinx_book_theme"
 
-html_logo = "euclidlib-patch.png"     # site.options.logo
+html_logo = "euclidlib-patch.png"  # site.options.logo
 
 html_theme_options = {
     "logo": {
