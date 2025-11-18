@@ -1,5 +1,5 @@
 from __future__ import annotations
-from dataclass import dataclass
+from dataclasses import dataclass
 from numpy.typing import NDArray
 from typing import Any, Dict
 
@@ -33,7 +33,7 @@ class Result():
             [
                 len(self.k) != len(self.k_eff),
                 any([len(self.k) != len(p_el) for p_el in self.p.values()]),
-                len(self.k != self.mode_number)
+                len(self.k) != len(self.mode_number)
             ]
         ):
             raise ValueError("Inconsistent class attributes, all arrays must have the same length.")
