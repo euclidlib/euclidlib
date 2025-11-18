@@ -50,3 +50,8 @@ class Result():
     @property
     def shot_noise(self) -> float:
         return self.header["SN_VALUE"]
+
+    # For later, if z will ever be added to the header
+    # @property
+    # def redshift(self) -> float:
+    #     return self.header["Z_PLACEHOLDER"]
