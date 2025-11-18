@@ -5,6 +5,7 @@ from os import PathLike
 import fitsio
 from numpy.typing import NDArray
 from ._utils import _verify_input_file, _get_hdu_header, _get_hdu_data
+from ._datamodel import Result
 
 def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any], NDArray[Any]]:
     """
@@ -46,46 +47,40 @@ def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any
     return header, data
 
 def power_spectrum(
-        path: Union[str, PathLike[str], Iterable[str], Iterable[PathLike[str]]]
-    ) -> Dict[Tuple[str, str, int, int], NDArray]:
+        path: Union[str, PathLike[str]]
+    ) -> Result:
     """
     Returns power spectrum data in the cloe-compatible euclidlib data format
 
     Parameters
     ----------
-    path : str | PathLike | Iterable[str] | Iterable[PathLike]
-        path(s) to the pk file(s) (see notes for more info on providing more than one file)
+    path : str | PathLike
+        path to the pk file
 
     Returns
     -------
-    pk_dict : dict[NDArray]
-        dictionaty containing the pk data
-
-    Notes
-    -----
-    Multiple-file input is intended to load multiple redshift bins, not any collection of measurements.
-    When passing multiple redshift bins, provide them as a sequence of filenames ordered by growing value of z.
+    pk_result : Result
+        class containing the pk data
 
     Examples
     --------
     >>> filename = "pk_z0.9-1.1.fits"
     >>> pk = power_spectrum(filename)
-    >>> pk.keys() # returns dict_keys([('POS', 'POS', 1, 1)])
-    >>> filenames = ["pk_z0.9-1.1.fits", "pk_1.1-1.3.fits"]
-    >>> pk = power_spectrum(filenames)
-    >>> pk.keys() # returns dict_keys([('POS', 'POS', 1, 1), ('POS', POS', 2, 2)])
+    >>> pk.k # returns bin centers
+    >>> pk.k_eff # returns effective bin values
+    >>> pk.mode_number # returns number of modes in each bin
+    >>> pk.p[l] # returns multipole l (l = 0, ..., 4)
+    >>> pk[l] # equivalent to above, returns multipole l
+    >>> len(pk) # returns length of k array
     """
-    if isinstance(path, Iterable) and (len(path) == 0):
-        raise TypeError("Invalid input provided, it cannot be an empty sequence.")
-    if (not isinstance(path, Iterable)) or isinstance(path, str):
-        path = (path,)
-    pk_dict = dict()
-    for n, filename in enumerate(path):
-        # TODO
-        # For now, header data is ignored.
-        # It could be necessary to read the effective z for each bin...
-        _, pk = _read_power_spectrum(filename)
-        pk_dict["POS", "POS", (n+1), (n+1)] = pk
-    return pk_dict
+    header, data = _read_power_spectrum(path)
+    pk_result = Result(
+        data["K"],
+        data["K_EFF"],
+        data["NUM_MOD"],
+        {l: data["PK{}".format(str(l))] for l in range(5)},
+        header
+    )
+    return pk_result
     
 
