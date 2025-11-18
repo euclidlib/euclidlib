@@ -41,6 +41,8 @@ def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any
             if header["EXTNAME"] != "SPECTRUM":
                 raise ValueError(pk_not_found_message)
             data = _get_hdu_data(fits_input[2])
+        else:
+            raise ValueError(pk_not_found_message)
     return header, data
 
 def power_spectrum(
