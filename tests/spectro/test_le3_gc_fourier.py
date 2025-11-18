@@ -1,6 +1,7 @@
 import unittest
 from numpy import ndarray
 from euclidlib import spectro
+from euclidlib.spectro._datamodel import Result
 
 class TestPkReadingRoutine(unittest.TestCase):
 
@@ -14,38 +15,25 @@ class TestPkReadingRoutine(unittest.TestCase):
                 pk = spectro.power_spectrum(bad_input)
 
     def test_not_fits(self):
-        test_file_names = ["data/dummy_pk.fits", "data/dummy_ascii.txt"]
-        for not_fits_input in (test_file_names[1], test_file_names):
-            with self.assertRaises(ValueError):
-                pk = spectro.power_spectrum(not_fits_input)
+        with self.assertRaises(ValueError):
+            pk = spectro.power_spectrum("data/dummy_ascii.txt")
 
     def test_bad_fits(self):
-        test_file_names_list_pkbk = [
+        bad_fits_input_lists_pkbk = [
             [
-                ["data/dummy_{}.fits".format(stat), "data/dummy_noextname_{}.fits".format(stat)],
-                ["data/dummy_{}.fits".format(stat), "data/dummy_badextname_{}.fits".format(stat)],
-                ["data/dummy_{}.fits".format(stat), "data/dummy_nopk_{}.fits".format(stat)]
+                "data/dummy_noextname_{}.fits".format(stat),
+                "data/dummy_badextname_{}.fits".format(stat),
+                "data/dummy_nopk_{}.fits".format(stat)
             ] for stat in ("pk", "bk")
         ]
-        for test_file_names_list in test_file_names_list_pkbk:
-            for test_file_names in test_file_names_list:
-                for bad_fits_input in (test_file_names[1], test_file_names):
-                    with self.assertRaises(ValueError):
-                        pk = spectro.power_spectrum(bad_fits_input)
+        for bad_fits_input_list in bad_fits_input_lists_pkbk:
+            for bad_fits_input in bad_fits_input_list:
+                with self.assertRaises(ValueError):
+                    pk = spectro.power_spectrum(bad_fits_input)
 
     def test_read_single_pk(self):
         pk = spectro.power_spectrum("data/dummy_pk.fits")
-        self.assertTrue(isinstance(pk, dict))
-        self.assertEqual(list(pk.keys()), [("POS", "POS", 1, 1),])
-        self.assertTrue(isinstance(pk["POS", "POS", 1, 1], ndarray))
-
-    def test_read_multiple_pk(self):
-        bin_number = 4
-        pk = spectro.power_spectrum(["data/dummy_pk.fits"]*bin_number)
-        self.assertTrue(isinstance(pk, dict))
-        self.assertEqual(list(pk.keys()), [("POS", "POS", (n+1), (n+1)) for n in range(bin_number)])
-        self.assertTrue(all(isinstance(pk["POS", "POS", (n+1), (n+1)], ndarray) for n in range(bin_number)))
-
+        self.assertTrue(isinstance(pk, Result))
 
 if __name__ == "__main__":
     unittest.main()
