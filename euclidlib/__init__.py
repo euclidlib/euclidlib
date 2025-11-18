@@ -1,4 +1,4 @@
-__all__ = ["__version__", "__version_tuple__", "phzle3", "_util"]
+__all__ = ["__version__", "__version_tuple__", "phz", "le3", "_util"]
 
 # generated version information
 try:
