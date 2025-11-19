@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-<<<<<<<< HEAD:euclidlib/le3/twopcf_wl/_twopcf_wl.py
 from cosmolib.data import TwoPointCorrelationFunction  # type: ignore [import-not-found]
-========
-from euclidlib.le3.pk_wl import Result
->>>>>>>> 912a41cb2470a93f494b5645127466f7d0addd23:euclidlib/le3/twopcf_wl.py
 from os import PathLike
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
