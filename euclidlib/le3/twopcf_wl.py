@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from euclidlib.le3.pk_wl import Result
+from cosmolib.data import TwoPointCorrelationFunction  # type: ignore [import-not-found]
 from os import PathLike
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
@@ -28,7 +28,9 @@ def _key_from_string(s: str) -> tuple[str, str, int, int] | None:
     return tuple_key_dict
 
 
-def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
+def correlation_functions(
+    path: str | PathLike[str],
+) -> dict[_DictKey, TwoPointCorrelationFunction]:
     """
     Reads 2D correlation functions from a Euclid data product.
 
@@ -52,7 +54,7 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
       for the output dictionary.
     """
 
-    xi: dict[_DictKey, Result] = {}
+    xi: dict[_DictKey, TwoPointCorrelationFunction] = {}
     with fitsio.FITS(path) as fits:
         for hdu in fits[1:]:
             extname = hdu.get_extname()
@@ -76,7 +78,9 @@ def correlation_functions(path: str | PathLike[str]) -> dict[_DictKey, Result]:
             else:
                 raise ValueError(f"Unknown file type: {key}")
 
-            xi[key] = Result(array, ell=THETA, axis=axis, weight=WEIGHT)
+            xi[key] = TwoPointCorrelationFunction(
+                array, theta=THETA, axis=axis, weight=WEIGHT
+            )
     return xi
 
 

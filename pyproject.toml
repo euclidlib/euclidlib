@@ -24,7 +24,8 @@ requires-python = ">=3.9"
 dynamic = ["version"]
 dependencies = [
     "fitsio",
-    "numpy"]
+    "numpy",
+    "cosmolib"]
 
 [project.urls]
 Repository = "https://github.com/euclidlib/euclidlib"
