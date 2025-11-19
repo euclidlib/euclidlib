@@ -2,10 +2,11 @@ import re
 import os
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
+from .._util import writer
 
 from cosmolib.data import AngularPowerSpectrum  # type: ignore [import-not-found]
 
-TYPE_CHECKING = False
+TYPE_CHECKING = True
 if TYPE_CHECKING:
     from os import PathLike
     from typing import Any, TypeAlias
@@ -183,7 +184,10 @@ def read(path: str | PathLike[str]) -> dict[_DictKey, AngularPowerSpectrum]:
             results[key] = _read_result(hdu)
     return results
 
-def angular_power_spectra(path: str | PathLike[str]) -> dict[_DictKey, AngularPowerSpectrum]:
+
+def angular_power_spectra(
+    path: str | PathLike[str],
+) -> dict[_DictKey, AngularPowerSpectrum]:
     """
     Read angular power spectra results from a FITS file.
 
