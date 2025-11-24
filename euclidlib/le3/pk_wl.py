@@ -9,7 +9,12 @@ from cosmolib.data import AngularPowerSpectrum  # type: ignore [import-not-found
 TYPE_CHECKING = True
 if TYPE_CHECKING:
     from os import PathLike
-    from typing import Any, TypeAlias
+    from typing import Any
+
+    try:
+        from typing import TypeAlias
+    except ImportError:
+        from typing_extensions import TypeAlias
     from numpy.typing import NDArray
 
     _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]

@@ -9,7 +9,12 @@ from .._util import writer
 
 TYPE_CHECKING = True
 if TYPE_CHECKING:
-    from typing import TypeAlias, Any
+    from typing import Any
+
+    try:
+        from typing import TypeAlias
+    except ImportError:
+        from typing_extensions import TypeAlias
 
     _DictKey: TypeAlias = tuple[str, str, int, int]
 
