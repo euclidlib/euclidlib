@@ -1,3 +1,4 @@
+from __future__ import annotations
 import re
 import os
 import fitsio  # type: ignore [import-not-found]

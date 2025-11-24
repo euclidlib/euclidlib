@@ -1,11 +1,14 @@
-import os
+from __future__ import annotations
 
-from cosmolib.data import TwoPointCorrelationFunction, COSEBI  # type: ignore [import-not-found]
+import os
 from os import PathLike
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
 from numpy.typing import NDArray
 from .._util import writer
+
+from cosmolib.data import TwoPointCorrelationFunction, COSEBI  # type: ignore [import-not-found]
+
 
 TYPE_CHECKING = True
 if TYPE_CHECKING:
