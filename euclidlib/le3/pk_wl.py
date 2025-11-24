@@ -9,7 +9,7 @@ from cosmolib.data import AngularPowerSpectrum  # type: ignore [import-not-found
 TYPE_CHECKING = True
 if TYPE_CHECKING:
     from os import PathLike
-    from typing import Any
+    from typing import Any, Union
 
     try:
         from typing import TypeAlias
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
         from typing_extensions import TypeAlias
     from numpy.typing import NDArray
 
-    _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
+    _DictKey: TypeAlias = Union[str, int, tuple["_DictKey", ...]]
 
 
 def normalize_result_axis(
