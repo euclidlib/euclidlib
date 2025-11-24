@@ -11,10 +11,10 @@ TYPE_CHECKING = True
 if TYPE_CHECKING:
     from typing import TypeAlias, Any
 
-    _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
+    _DictKey: TypeAlias = tuple[str, str, int, int]
 
 
-def _key_from_string(s: str) -> tuple[str, str, int, int] | None:
+def _key_from_string(s: str) -> _DictKey | None:
     """
     Decode a Euclid-style EXTNAME into an internal dictionary key.
 
