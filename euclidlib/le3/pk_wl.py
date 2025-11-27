@@ -1,18 +1,24 @@
 from __future__ import annotations
-
 import re
+import os
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
+from .._util import writer
 
-from dataclasses import dataclass
+from cosmolib.data import AngularPowerSpectrum  # type: ignore [import-not-found]
 
-TYPE_CHECKING = False
+TYPE_CHECKING = True
 if TYPE_CHECKING:
     from os import PathLike
-    from typing import Any, TypeAlias
+    from typing import Any, Union
+
+    try:
+        from typing import TypeAlias
+    except ImportError:
+        from typing_extensions import TypeAlias
     from numpy.typing import NDArray
 
-    _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
+    _DictKey: TypeAlias = Union[str, int, tuple["_DictKey", ...]]
 
 
 def normalize_result_axis(
@@ -50,73 +56,6 @@ def normalize_result_axis(
         else:
             axis = -1
     return normalize_axis_tuple(axis, result.ndim, "axis")
-
-
-@dataclass(frozen=True, repr=False)
-class Result:
-    """
-    A container for an array and associated data such as errors and ell values.
-
-    Parameters
-    ----------
-    array : NDArray
-        Main data array.
-    ell : NDArray or tuple of NDArray, optional
-        Angular scale(s) or ell values associated with the data.
-    axis : int or tuple of int, optional
-        Axis/axes corresponding to ell in the array.
-    lower : NDArray or tuple of NDArray, optional
-        Lower error bounds.
-    upper : NDArray or tuple of NDArray, optional
-        Upper error bounds.
-    weight : NDArray or tuple of NDArray, optional
-        Weights or inverse variances.
-    """
-
-    array: NDArray[Any]
-    ell: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    axis: int | tuple[int, ...] | None = None
-    lower: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    upper: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-    weight: NDArray[Any] | tuple[NDArray[Any], ...] | None = None
-
-    def __post_init__(self) -> None:
-        # Normalize the axis after setting the array
-        axis = normalize_result_axis(self.axis, self.array, self.ell)
-        object.__setattr__(self, "axis", axis)
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(axis={self.axis!r})"
-
-    def __array__(
-        self,
-        dtype: np.dtype[Any] | None = None,
-        *,
-        copy: bool | None = None,
-    ) -> NDArray[Any]:
-        """Return NumPy array representation of the result."""
-        if copy is not None:
-            return self.array.__array__(dtype, copy=copy)
-        return self.array.__array__(dtype)
-
-    def __getitem__(self, key: Any) -> Any:
-        """Return a slice or element of the internal array."""
-        return self.array[key]
-
-    @property
-    def ndim(self) -> int:
-        """Return the number of dimensions of the result array."""
-        return self.array.ndim
-
-    @property
-    def shape(self) -> tuple[int, ...]:
-        """Return the shape of the result array."""
-        return self.array.shape
-
-    @property
-    def dtype(self) -> np.dtype[Any]:
-        """Return the data type of the result array."""
-        return self.array.dtype
 
 
 def _key_from_string(s: str) -> _DictKey:
@@ -164,7 +103,7 @@ def _read_metadata(hdu: Any) -> dict[str, Any]:
     return md
 
 
-def _read_result(hdu: Any) -> Result:
+def _read_result(hdu: Any) -> AngularPowerSpectrum:
     """
     Read a result object from a FITS HDU.
 
@@ -213,7 +152,7 @@ def _read_result(hdu: Any) -> Result:
         else tuple(_weight[: arr.shape[axis[i]], i] for i in order)
     )
 
-    return Result(
+    return AngularPowerSpectrum(
         arr.view(np.dtype(arr.dtype, metadata=_read_metadata(hdu))),
         axis=tuple(axis[i] for i in order),
         ell=ell,
@@ -223,7 +162,7 @@ def _read_result(hdu: Any) -> Result:
     )
 
 
-def read(path: str | PathLike[str]) -> dict[_DictKey, Result]:
+def read(path: str | PathLike[str]) -> dict[_DictKey, AngularPowerSpectrum]:
     """
     Read a dictionary of results from a FITS file.
 
@@ -235,7 +174,7 @@ def read(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     Returns
     -------
     results : dict
-        Dictionary mapping decoded keys to Result objects.
+        Dictionary mapping decoded keys to dataclass objects.
     """
     results = {}
     with fitsio.FITS(path) as fits:
@@ -252,7 +191,9 @@ def read(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     return results
 
 
-def angular_power_spectra(path: str | PathLike[str]) -> dict[_DictKey, Result]:
+def angular_power_spectra(
+    path: str | PathLike[str],
+) -> dict[_DictKey, AngularPowerSpectrum]:
     """
     Read angular power spectra results from a FITS file.
 
@@ -264,12 +205,12 @@ def angular_power_spectra(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     Returns
     -------
     spectra : dict
-        Dictionary of angular power spectra Result objects.
+        Dictionary of angular power spectra dataclass objects.
     """
     return read(path)
 
 
-def mixing_matrices(path: str | PathLike[str]) -> dict[_DictKey, Result]:
+def mixing_matrices(path: str | PathLike[str]) -> dict[_DictKey, AngularPowerSpectrum]:
     """
     Read mixing matrices from a FITS file.
 
@@ -281,6 +222,98 @@ def mixing_matrices(path: str | PathLike[str]) -> dict[_DictKey, Result]:
     Returns
     -------
     matrices : dict
-        Dictionary of mixing matrix Result objects.
+        Dictionary of mixing matrix dataclass objects.
     """
     return read(path)
+
+
+@writer(angular_power_spectra)
+def _(path: str | PathLike[str], results: dict[_DictKey, AngularPowerSpectrum]) -> None:
+    """
+    Write angular power spectra results to a FITS file.
+    Parameters
+    ----------
+    path : str or PathLike
+        Path to the output FITS file.
+    results : dict
+        Dictionary mapping keys to dataclass objects containing the data to write.
+    """
+
+    def _key_to_string(key: _DictKey) -> str:
+        return "-".join(str(k) for k in (key if isinstance(key, tuple) else (key,)))
+
+    if os.path.exists(path):
+        os.remove(path)
+
+    with fitsio.FITS(path, "rw") as fits:
+        for key, result in results.items():
+            name = _key_to_string(key)
+            arr = np.asarray(result.array)
+            axis = result.axis
+            if isinstance(axis, int):
+                axis = (axis,)
+            elif axis is None:
+                axis = ()
+            if arr.ndim == 1:
+                nrows = arr.shape[0]
+                reshaped_arr = arr
+                tdim = None
+            elif arr.ndim in (2, 3):
+                dim_shape = arr.shape[:-1]
+                nrows = arr.shape[-1]
+                reshaped_arr = arr.reshape(-1, nrows).T
+                tdim = f"({','.join(map(str, dim_shape[::-1]))})"
+            else:
+                raise ValueError(f"Unsupported array shape: {arr.shape}")
+
+            def get_tuple_or_default(
+                attr: str, default_dtype: np.dtype[Any]
+            ) -> np.ndarray[Any, Any]:
+                val = getattr(result, attr, None)
+                if val is None:
+                    return np.zeros(nrows, dtype=default_dtype)
+                val = np.asarray(val)
+                if isinstance(val, (tuple, list)):
+                    val = np.stack([np.asarray(v) for v in val], axis=-1)
+                return val.reshape(nrows).astype(default_dtype)
+
+            ell = get_tuple_or_default("ell", np.dtype(np.int64))
+            lower = get_tuple_or_default("lower", np.dtype(np.int64))
+            upper = get_tuple_or_default("upper", np.dtype(np.int64))
+            weight = get_tuple_or_default("weight", np.dtype(np.float64))
+
+            array_shape = (
+                tuple(map(int, tdim.strip("()").split(",")))
+                if tdim
+                else reshaped_arr.shape[1:]
+            )
+
+            dtype = [
+                ("ARRAY", "f8", array_shape),
+                ("ELL", "i8"),
+                ("LOWER", "i8"),
+                ("UPPER", "i8"),
+                ("WEIGHT", "f8"),
+            ]
+
+            structured_array = np.empty(nrows, dtype=dtype)
+            structured_array["ARRAY"] = reshaped_arr.reshape((nrows,) + array_shape)
+            structured_array["ELL"] = ell
+            structured_array["LOWER"] = lower
+            structured_array["UPPER"] = upper
+            structured_array["WEIGHT"] = weight
+
+            header = {
+                "ELLAXIS": repr(axis),
+            }
+            if tdim is not None:
+                header["TDIM1"] = tdim
+            if meta := arr.dtype.metadata:
+                for k, v in meta.items():
+                    header[f"META {k.upper()}"] = str(v)
+
+            # Write the header to the FITS file
+            history = getattr(_, "_history", None)
+            if history is not None:
+                header["HISTORY"] = history
+            fits.write(structured_array, extname=name, header=header)
