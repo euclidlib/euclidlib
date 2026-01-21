@@ -7,14 +7,14 @@ from typing import TYPE_CHECKING
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 
-from .._util import writer
+from ._util import writer
 
 if TYPE_CHECKING:
     from typing import Any
     from numpy.typing import ArrayLike, NDArray
 
 if np.lib.NumpyVersion(np.__version__) >= "2.0.0b1":
-    trapezoid = np.trapezoid  # type: ignore
+    trapezoid = np.trapezoid
 else:
     trapezoid = np.trapz  # type: ignore
 
@@ -33,7 +33,7 @@ def _hist2dist(x: NDArray[Any], y: NDArray[Any]) -> NDArray[Any]:
 def redshift_distributions(
     path: str | PathLike[str],
     *,
-    ext: str | int | None = "BIN_INFO",
+    ext: str | int | None = None,
     hist: bool = False,
 ) -> tuple[NDArray[Any], Mapping[int, NDArray[Any]]]:
     """Read redshift distributions in Euclid format.

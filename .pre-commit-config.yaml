@@ -1,18 +1,16 @@
 repos:
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 23.11.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.13
     hooks:
-      - id: black
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.1.7
-    hooks:
-      - id: ruff
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.3-1
+    rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: check-case-conflict
       - id: check-docstring-first
@@ -23,7 +21,7 @@ repos:
         args: [--fix=lf]
       - id: trailing-whitespace
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.7.1
+    rev: v1.19.1
     hooks:
       - id: mypy
         args: [--strict, --python-version=3.12]

@@ -1,5 +1,5 @@
-import numpy as np
-import pytest
+import numpy as np  # type: ignore
+import pytest  # type: ignore
 
 import euclidlib as el
 
@@ -20,11 +20,11 @@ def test_redshift_distributions(tmp_path, write_hist, read_hist):
 
     path = tmp_path / "nz.fits"
 
-    el.photo.redshift_distributions.write(path, z, nz, hist=write_hist)
+    el.phz.redshift_distributions.write(path, z, nz, hist=write_hist)
 
     # read test data
 
-    z, nz = el.photo.redshift_distributions(path, hist=read_hist)
+    z, nz = el.phz.redshift_distributions(path, hist=read_hist)
 
     np.testing.assert_array_equal(z, np.linspace(0.0, 6.0, 3001))
 
@@ -46,8 +46,8 @@ def test_redshift_distributions_ident(tmp_path):
 
     path = tmp_path / "nz.fits"
 
-    el.photo.redshift_distributions.write(path, z_, nz_, hist=True)
-    z, nz = el.photo.redshift_distributions(path, hist=True)
+    el.phz.redshift_distributions.write(path, z_, nz_, hist=True)
+    z, nz = el.phz.redshift_distributions(path, hist=True)
 
     np.testing.assert_array_equal(z, z_)
     np.testing.assert_array_equal(nz[1], nz_.astype(nz[1].dtype))

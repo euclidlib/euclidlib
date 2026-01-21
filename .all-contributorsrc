@@ -1,0 +1,87 @@
+{
+  "projectName": "euclidlib",
+  "projectOwner": "euclidlib",
+  "files": ["README.md"],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "gcanasherrera",
+      "name": "Guadalupe Cañas-Herrera",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13239454?v=4",
+      "profile": "http://gcanasherrera.com",
+      "contributions": [
+        "code",
+        "review",
+        "ideas",
+        "maintenance",
+        "test",
+        "example"
+      ]
+    },
+    {
+      "login": "ntessore",
+      "name": "Nicolas Tessore",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3993688?v=4",
+      "profile": "http://ntessore.page",
+      "contributions": [
+        "code",
+        "review",
+        "ideas",
+        "example",
+        "maintenance",
+        "test"
+      ]
+    },
+    {
+      "login": "zahrabaghkhani",
+      "name": "Zahra Baghkhani",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47903409?v=4",
+      "profile": "https://github.com/zahrabaghkhani",
+      "contributions": ["code"]
+    },
+    {
+      "login": "JaimeRZP",
+      "name": "Jaime RZ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39957598?v=4",
+      "profile": "https://jaimeruizzapatero.net/",
+      "contributions": ["review", "ideas"]
+    },
+    {
+      "login": "itutusaus",
+      "name": "itutusaus",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20775836?v=4",
+      "profile": "https://github.com/itutusaus",
+      "contributions": ["review"]
+    },
+    {
+      "login": "FelicitasKeil",
+      "name": "Felicitas Keil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/70713596?v=4",
+      "profile": "https://github.com/FelicitasKeil",
+      "contributions": ["code"]
+    },
+    {
+      "login": "WillHartley",
+      "name": "WillHartley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6814229?v=4",
+      "profile": "https://github.com/WillHartley",
+      "contributions": ["ideas", "data"]
+    },
+    {
+      "login": "FlorianDubath",
+      "name": "FlorianDubath",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9742907?v=4",
+      "profile": "https://github.com/FlorianDubath",
+      "contributions": ["ideas", "data"]
+    },
+    {
+      "login": "jacopo-salvalaggio",
+      "name": "Jacopo Salvalaggio",
+      "avatar_url": "https://avatars.githubusercontent.com/u/99494103?v=4",
+      "profile": "https://github.com/jacopo-salvalaggio",
+      "contributions": ["code", "ideas", "data"]
+    }
+  ]
+}
