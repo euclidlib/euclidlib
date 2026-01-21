@@ -1,21 +1,23 @@
 from __future__ import annotations
 from warnings import warn
-from typing import Any, Dict, Tuple, Iterable, Union
+from typing import Any, Dict, Tuple, Union
 from os import PathLike
-import fitsio
+import fitsio  # type: ignore [import-not-found]
 import os
 from numpy.typing import NDArray
 
 from cosmolib.data import PowerSpectrum  # type: ignore [import-not-found]
 
 
-def _verify_input_file(path: Union[str, PathLike[str]], check_extra_hdu: bool = False) -> None:
+def _verify_input_file(
+    path: Union[str, PathLike[str]], check_extra_hdu: bool = False
+) -> None:
     """
     Verifies that input file is a compatible LE3-GC fits file
 
     Parameters
     ----------
-    path : str | PathLike 
+    path : str | PathLike
         path to the (hopefully) fits file
     check_extra_hdu : bool
         verify file contains information on two different hdu (e.g. bispectrum and power spectrum)
@@ -31,7 +33,9 @@ def _verify_input_file(path: Union[str, PathLike[str]], check_extra_hdu: bool = 
     """
     hdul_target_length = 3 if check_extra_hdu else 2
     if not any((isinstance(path, str), isinstance(path, PathLike))):
-        raise TypeError("Provided fits file name must be a string or a PathLike object.")
+        raise TypeError(
+            "Provided fits file name must be a string or a PathLike object."
+        )
     if not os.path.isfile(path):
         raise FileNotFoundError("Could not find file '{}'.".format(str(path)))
     try:
@@ -39,15 +43,14 @@ def _verify_input_file(path: Union[str, PathLike[str]], check_extra_hdu: bool = 
             assert len(fits_input) > hdul_target_length - 1
             assert "EXTNAME" in _get_hdu_header(fits_input[hdul_target_length - 1])
     except OSError:
-        raise ValueError(
-            "Provided file is not a valid fits file."
-        )
+        raise ValueError("Provided file is not a valid fits file.")
     except AssertionError:
         raise ValueError(
             "Provided fits file does not match the structure of a valid LE3-GC product."
         )
     except Exception:
         raise RuntimeError("Invalid file provided.")
+
 
 def _get_hdu_header(hdu: fitsio.TableHDU) -> Dict[str, Any]:
     """
@@ -65,6 +68,7 @@ def _get_hdu_header(hdu: fitsio.TableHDU) -> Dict[str, Any]:
     """
     head: Dict[str, Any] = dict(hdu.read_header())
     return head
+
 
 def _get_hdu_data(hdu: fitsio.TableHDU) -> NDArray[Any]:
     """
@@ -84,7 +88,9 @@ def _get_hdu_data(hdu: fitsio.TableHDU) -> NDArray[Any]:
     return arr
 
 
-def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any], NDArray[Any]]:
+def _read_power_spectrum(
+    path: Union[str, PathLike[str]],
+) -> Tuple[Dict[str, Any], NDArray[Any]]:
     """
     Reads power spectrum from Euclid LE3-GC fits file, returning both header and data
 
@@ -98,14 +104,16 @@ def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any
     header, data : Dict, NDArray
     """
     # Multiply-used error message
-    pk_not_found_message = "Invalid fits file provided, cannot locate power spectrum data."
+    pk_not_found_message = (
+        "Invalid fits file provided, cannot locate power spectrum data."
+    )
     # File quality check
     _verify_input_file(path)
     # Read file and verify it contains information on the pk
     with fitsio.FITS(path) as fits_input:
         header = _get_hdu_header(fits_input[1])
         if "SPECTRUM" not in header["EXTNAME"]:
-           raise ValueError(pk_not_found_message)
+            raise ValueError(pk_not_found_message)
         elif header["EXTNAME"] == "SPECTRUM":
             data = _get_hdu_data(fits_input[1])
         # If a bispectrum file was provided, retrieve pk from next hdu and warn the user
@@ -123,9 +131,8 @@ def _read_power_spectrum(path: Union[str, PathLike[str]]) -> Tuple[Dict[str, Any
             raise ValueError(pk_not_found_message)
     return header, data
 
-def power_spectrum(
-        path: Union[str, PathLike[str]]
-    ) -> PowerSpectrum:
+
+def power_spectrum(path: Union[str, PathLike[str]]) -> PowerSpectrum:
     """
     Returns power spectrum data in the cloe-compatible euclidlib data format
 
@@ -144,11 +151,10 @@ def power_spectrum(
         data["K"],
         data["K_EFF"],
         data["NUM_MOD"],
-        {l: data["PK{}".format(str(l))] for l in range(5)},
+        {ell: data["PK{}".format(str(ell))] for ell in range(5)},
         0,  # Fiducial cosmology is not stored in the fits file
-        0, # redshift_eff is not stored in the fits file
-        1./header["SN_VALUE"],
-        header["SN_VALUE"]
+        0,  # redshift_eff is not stored in the fits file
+        1.0 / header["SN_VALUE"],
+        header["SN_VALUE"],
     )
     return pk_result
-    
