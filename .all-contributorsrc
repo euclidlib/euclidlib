@@ -75,6 +75,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/9742907?v=4",
       "profile": "https://github.com/FlorianDubath",
       "contributions": ["ideas", "data"]
+    },
+    {
+      "login": "jacopo-salvalaggio",
+      "name": "Jacopo Salvalaggio",
+      "avatar_url": "https://avatars.githubusercontent.com/u/99494103?v=4",
+      "profile": "https://github.com/jacopo-salvalaggio",
+      "contributions": ["code", "ideas", "data"]
     }
   ]
 }

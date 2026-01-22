@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 
-from .._util import writer
+from ._util import writer
 
 if TYPE_CHECKING:
     from typing import Any
