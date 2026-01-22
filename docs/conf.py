@@ -11,7 +11,7 @@ author = "the euclidlib team"
 copyright = f"{date.today().year}, {author}"
 
 # Master document
-master_doc = "index"
+# master_doc = "index"
 language = "en"
 
 # -- General configuration ---------------------------------------------------
