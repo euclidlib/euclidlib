@@ -1,32 +1,27 @@
-# Core documentation engine
-sphinx>=7.4,<8
+# Core
+sphinx>=6.2,<7
 
-# MyST Markdown support (required for .md files)
-myst-parser>=0.18
+# Markdown & notebooks (stable with Sphinx 6)
+myst-parser>=0.18,<1.1
+myst-nb>=0.17,<1.0
 
-# Jupyter Book & notebook support
+# Jupyter Book stack
 jupyter-book>=1.0,<1.2
-myst-nb>=1.3
-sphinx-jupyterbook-latex>=1.0
-sphinx-multitoc-numbering>=0.1.3
+sphinx-book-theme>=1.1,<1.2
 
-# Theme and design
-sphinx-book-theme>=1.1
+# Extensions
 sphinx-design>=0.5.0
-
-# Useful Sphinx extensions
 sphinx-togglebutton>=0.3.2
 sphinx-copybutton>=0.5.2
 sphinx-thebe>=0.2.2
-sphinx-comments>=0.0.3
 sphinx-external-toc>=0.4.1
 sphinxcontrib-bibtex>=2.6.2
 
-# Others
+# Utilities
 linkify-it-py
 pyyaml
 
-# Math and scientific stack (used in examples)
+# Scientific stack
 numpy
 matplotlib
 euclidlib
