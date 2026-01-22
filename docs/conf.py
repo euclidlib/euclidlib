@@ -32,12 +32,6 @@ exclude_patterns = [
     ".DS_Store",
 ]
 
-# Support both RST and Markdown
-source_suffix = {
-    ".rst": "restructuredtext",
-    ".md": "markdown",
-}
-
 # -- MyST & Notebook settings ------------------------------------------------
 
 myst_enable_extensions = [
