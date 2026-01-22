@@ -16,7 +16,6 @@ language = "en"
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    "myst_parser",
     "myst_nb",
     "sphinx.ext.mathjax",
     "sphinx.ext.autodoc",
