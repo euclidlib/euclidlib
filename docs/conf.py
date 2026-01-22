@@ -2,6 +2,7 @@
 
 from datetime import date
 from sphinx.application import Sphinx
+import os
 
 # -- Project information -----------------------------------------------------
 
@@ -31,6 +32,12 @@ exclude_patterns = [
     ".DS_Store",
 ]
 
+# Support both RST and Markdown
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
+
 # -- MyST & Notebook settings ------------------------------------------------
 
 myst_enable_extensions = [
@@ -41,7 +48,8 @@ myst_enable_extensions = [
     "linkify",
 ]
 
-nb_execution_mode = "auto"  # Execute notebooks only if needed
+# Execute notebooks automatically
+jupyter_execute_notebooks = "auto"  # RTD executes notebooks if needed
 
 # -- Bibliography ------------------------------------------------------------
 
@@ -58,21 +66,22 @@ html_theme_options = {
         "image_light": "euclidlib-patch.png",
         "image_dark": "euclidlib-patch.png",
     },
-    "show_nav_level": 2,  # Equivalent to "folders: true" in myst.yml
+    "show_nav_level": 2,  # Depth of sidebar
 }
 
-html_static_path = ["_static"]
-html_css_files = ["local.css"]
+# Only use _static if it exists
+if os.path.exists("_static"):
+    html_static_path = ["_static"]
+    html_css_files = ["local.css"]
+else:
+    html_static_path = []
 
 # -- PDF / LaTeX output (optional) ------------------------------------------
-# If you want ReadTheDocs to build PDF:
 # latex_engine = "pdflatex"
 # latex_elements = {}
 
+
 # -- Optional: local Sphinx extensions setup --------------------------------
-
-
 def setup(app: Sphinx):
     """Custom Sphinx setup for euclidlib."""
-    # Add directives, transforms, etc, if needed later.
     pass
