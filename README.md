@@ -53,8 +53,6 @@ graph TD
 
     %% Summary Statistics label top-left
     subgraph "Summary Statistics"
-        direction TB
-        LABEL["Summary Statistics"]
         LE3[le3]:::data
         PKWL[pk_wl]:::module
         TWOPCF[twopcf_wl]:::module
