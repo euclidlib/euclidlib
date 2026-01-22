@@ -51,9 +51,11 @@ graph TD
     %% Core
     EUCLIDLIB[euclidlib]:::core
 
-    %% Summary Statistics
+    %% Summary Statistics label top-left
     subgraph "Summary Statistics"
-        LE3[le3]:::module
+        direction TB
+        LABEL["Summary Statistics"]
+        LE3[le3]:::data
         PKWL[pk_wl]:::module
         TWOPCF[twopcf_wl]:::module
         PKGC[pk_gc]:::module
@@ -69,6 +71,7 @@ graph TD
     LE3 --> PKWL
     LE3 --> TWOPCF
     LE3 --> PKGC
+
 ```
 
 `euclidlib` provides all data products in a unified, Pythonic format based on dataclasses, ensuring consistent, intuitive, and easy-to-use interfaces across all supported products. Please consult the full documentation for additional details.
