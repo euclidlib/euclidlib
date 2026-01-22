@@ -48,7 +48,7 @@ graph TD
     LE3[le3]
     PKWL[pk_wl]
     TWOPCF[twopcf_wl]
-    PPKGC[pk_gc]
+    PKGC[pk_gc]
 
     PHZ[phz]
 
