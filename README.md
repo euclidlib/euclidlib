@@ -43,15 +43,15 @@ The design of the `euclidlib` package closely follows the organisation of the [E
 
 ```mermaid
 graph TD
-    %% Colors inspired by Euclid logo
-    classDef core fill:#000000,stroke:#ffffff,stroke-width:2px,color:#f5f5dc;  %% black with beige text
-    classDef module fill:#808080,stroke:#000000,stroke-width:1.5px,color:#ffffff;  %% grey with white text
-    classDef data fill:#f5f5dc,stroke:#000000,stroke-width:1.5px,color:#000000;  %% beige with black text
+    %% Node styles
+    classDef core fill:#000000,stroke:none,color:#ffffff,font-size:20px,rounded-corners:10px;
+    classDef module fill:#f5f0e1,stroke:none,color:#000000,font-size:16px,rounded-corners:10px; %% pastel beige
+    classDef data fill:#d9d9d9,stroke:none,color:#000000,font-size:16px,rounded-corners:10px; %% grey
 
-    %% Core library
-    EUCLIDLIB[<b>euclidlib</b>]:::core
+    %% Core
+    EUCLIDLIB[euclidlib]:::core
 
-    %% Summary statistics modules
+    %% Summary Statistics
     subgraph "Summary Statistics"
         LE3[le3]:::module
         PKWL[pk_wl]:::module
@@ -60,9 +60,7 @@ graph TD
     end
 
     %% Photometry
-    subgraph Photometry
-        PHZ[phz]:::data
-    end
+    PHZ[phz]:::data
 
     %% Connections
     EUCLIDLIB --> LE3
