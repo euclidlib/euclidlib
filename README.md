@@ -43,22 +43,23 @@ The design of the `euclidlib` package closely follows the organisation of the [E
 
 ```mermaid
 graph TD
-    %% Colors
-    classDef core fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef module fill:#9cf,stroke:#333,stroke-width:1.5px;
-    classDef data fill:#fc9,stroke:#333,stroke-width:1.5px;
+    %% Colors inspired by Euclid logo
+    classDef core fill:#000000,stroke:#ffffff,stroke-width:2px,color:#f5f5dc;  %% black with beige text
+    classDef module fill:#808080,stroke:#000000,stroke-width:1.5px,color:#ffffff;  %% grey with white text
+    classDef data fill:#f5f5dc,stroke:#000000,stroke-width:1.5px,color:#000000;  %% beige with black text
 
     %% Core library
     EUCLIDLIB[<b>euclidlib</b>]:::core
 
-    %% Modules
-    subgraph Lens & Clustering
+    %% Summary statistics modules
+    subgraph "Summary Statistics"
         LE3[le3]:::module
         PKWL[pk_wl]:::module
         TWOPCF[twopcf_wl]:::module
         PKGC[pk_gc]:::module
     end
 
+    %% Photometry
     subgraph Photometry
         PHZ[phz]:::data
     end
@@ -70,7 +71,6 @@ graph TD
     LE3 --> PKWL
     LE3 --> TWOPCF
     LE3 --> PKGC
-
 ```
 
 `euclidlib` provides all data products in a unified, Pythonic format based on dataclasses, ensuring consistent, intuitive, and easy-to-use interfaces across all supported products. Please consult the full documentation for additional details.
