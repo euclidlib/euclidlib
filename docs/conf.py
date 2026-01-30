@@ -42,7 +42,7 @@ myst_enable_extensions = [
 ]
 
 # Execute notebooks automatically
-jupyter_execute_notebooks = "auto"  # RTD executes notebooks if needed
+nb_execution_mode = "off"  # RTD executes notebooks if needed
 
 # -- Bibliography ------------------------------------------------------------
 
