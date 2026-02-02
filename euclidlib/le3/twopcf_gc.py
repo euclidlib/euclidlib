@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from warnings import warn
 from os import PathLike
 from typing import Optional, cast
 
-from numpy.typing import NDArray
 from cosmolib.data import (
     TPCF_2Dcart,
     TPCF_2Dpol,
@@ -17,7 +15,7 @@ from ._common import (
     _read_covariance_data,
     build_covariance_matrix,
     build_2d_correlation,
-    get_cosmology_from_header
+    get_cosmology_from_header,
 )
 
 TYPE_CHECKING = True
@@ -42,19 +40,13 @@ def get_TPCF_2Dcart(
 
     z_eff, fiducial_cosmology = get_cosmology_from_header(header)
 
-    scale_1d = data['SCALE_1D']
-    scale_2d = data['SCALE_2D']
-    xi = data['XI']
+    scale_1d = data["SCALE_1D"]
+    scale_2d = data["SCALE_2D"]
+    xi = data["XI"]
 
     s_perp, s_para, correlation = build_2d_correlation(scale_1d, scale_2d, xi)
 
-    result = TPCF_2Dcart(
-        s_perp,
-        s_para,
-        correlation,
-        fiducial_cosmology,
-        z_eff
-    )
+    result = TPCF_2Dcart(s_perp, s_para, correlation, fiducial_cosmology, z_eff)
 
     return result
 
@@ -69,19 +61,13 @@ def get_TPCF_2Dpol(
 
     z_eff, fiducial_cosmology = get_cosmology_from_header(header)
 
-    s_1d = data['SCALE_1D']
-    mu_1d = data['SCALE_2D']
-    correlation_1d = data['XI']
+    s_1d = data["SCALE_1D"]
+    mu_1d = data["SCALE_2D"]
+    correlation_1d = data["XI"]
 
     s, mu, correlation = build_2d_correlation(s_1d, mu_1d, correlation_1d)
 
-    result = TPCF_2Dpol(
-        s,
-        mu,
-        correlation,
-        fiducial_cosmology,
-        z_eff
-    )
+    result = TPCF_2Dpol(s, mu, correlation, fiducial_cosmology, z_eff)
 
     return result
 

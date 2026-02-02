@@ -6,7 +6,6 @@ import os
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 
-from typing import cast
 
 from numpy.typing import NDArray
 
@@ -67,7 +66,10 @@ def _get_hdu_data(hdu: fitsio.TableHDU) -> NDArray[Any]:
     arr: NDArray[Any] = hdu.read()
     return arr
 
-def get_cosmology_from_header(header: Dict[str, Any], get_fiducial: bool = True) -> Tuple[float, Dict[str, float]]:
+
+def get_cosmology_from_header(
+    header: Dict[str, Any], get_fiducial: bool = True
+) -> Tuple[float, Dict[str, float]]:
     """
     Extracts redshift and fiducial cosmology from a FITS header.
     """
@@ -95,17 +97,16 @@ def get_cosmology_from_header(header: Dict[str, Any], get_fiducial: bool = True)
         }
         return z_eff, fiducial_cosmology
 
+
 def _read_le3_data(
     path: Union[str, PathLike[str]], ext_name: str, check_extra_hdu: bool = False
 ) -> Tuple[Dict[str, Any], NDArray[Any]]:
     """
     Reads data from a Euclid LE3 fits file
     """
-    not_found_message = (
-        f"Invalid fits file provided, cannot locate {ext_name} data."
-    )
+    not_found_message = f"Invalid fits file provided, cannot locate {ext_name} data."
 
-    _verify_input_file(path, False) # Always check for at least 2 HDUs
+    _verify_input_file(path, False)  # Always check for at least 2 HDUs
 
     with fitsio.FITS(path) as fits_input:
         header = _get_hdu_header(fits_input[1])
@@ -119,7 +120,7 @@ def _read_le3_data(
                 f"\n\033[0;31m[!]\033[0m Found {header['EXTNAME']}, not {ext_name}. "
                 "Falling back to next HDU."
             )
-            _verify_input_file(path, True) # Now check for 3 HDUs
+            _verify_input_file(path, True)  # Now check for 3 HDUs
             header = _get_hdu_header(fits_input[2])
             if ext_name in header["EXTNAME"]:
                 data = _get_hdu_data(fits_input[2])
@@ -163,13 +164,14 @@ def build_covariance_matrix(
     )
     data = data[mask]
 
-    if mode=="PS":
+    if mode == "PS":
         scale_prefix = "k"
-    elif mode=="TPCF":
+    elif mode == "TPCF":
         scale_prefix = "s"
     else:
-        raise ValueError("Mode for building covariance must be picked from "
-                         "('PS', 'TPCF').")
+        raise ValueError(
+            "Mode for building covariance must be picked from ('PS', 'TPCF')."
+        )
 
     scale_i_col = f"{scale_prefix.upper()}I"
     scale_j_col = f"{scale_prefix.upper()}J"
@@ -208,6 +210,7 @@ def build_covariance_matrix(
     )
 
     return all_unique_scale_values, full_cov_matrix
+
 
 def build_2d_correlation(
     s_1d: NDArray[Any],

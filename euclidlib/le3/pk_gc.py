@@ -4,7 +4,6 @@ from warnings import warn
 from os import PathLike
 from typing import Optional, cast
 
-from numpy.typing import NDArray
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
 from cosmolib.data import PS_ell, Cov_PS_ell, MixMat_PS_ell
@@ -13,7 +12,7 @@ from ._common import (
     _read_le3_data,
     _read_covariance_data,
     build_covariance_matrix,
-    get_cosmology_from_header
+    get_cosmology_from_header,
 )
 
 TYPE_CHECKING = True
@@ -86,46 +85,42 @@ def get_Cov_PS_ell(
     return result
 
 
-def get_MixMat_PS_ell(
-    path: Union[str, PathLike[str]]
-) -> MixMat_PS_ell:
+def get_MixMat_PS_ell(path: Union[str, PathLike[str]]) -> MixMat_PS_ell:
     """
     Reads the mixing matrix for power spectrum multipoles from a FITS file.
     """
     with fitsio.FITS(path) as fits:
-        kout_data = fits['BINS_OUTPUT'].read()
-        kout = kout_data['k']
+        kout_data = fits["BINS_OUTPUT"].read()
+        kout = kout_data["k"]
 
-        kin_data = fits['BINS_INPUT'].read()
+        kin_data = fits["BINS_INPUT"].read()
         kin = {
-            0: kin_data['kp0'],
-            2: kin_data['kp2'],
-            4: kin_data['kp4'],
+            0: kin_data["kp0"],
+            2: kin_data["kp2"],
+            4: kin_data["kp4"],
         }
 
-        mixing_data = fits['MIXING_MATRIX'].read()
-        header = fits['MIXING_MATRIX'].read_header()
+        mixing_data = fits["MIXING_MATRIX"].read()
+        header = fits["MIXING_MATRIX"].read_header()
 
-        W00 = mixing_data['W00'][0]
-        W02 = mixing_data['W02'][0]
-        W04 = mixing_data['W04'][0]
-        W20 = mixing_data['W20'][0]
-        W22 = mixing_data['W22'][0]
-        W24 = mixing_data['W24'][0]
-        W40 = mixing_data['W40'][0]
-        W42 = mixing_data['W42'][0]
-        W44 = mixing_data['W44'][0]
+        W00 = mixing_data["W00"][0]
+        W02 = mixing_data["W02"][0]
+        W04 = mixing_data["W04"][0]
+        W20 = mixing_data["W20"][0]
+        W22 = mixing_data["W22"][0]
+        W24 = mixing_data["W24"][0]
+        W40 = mixing_data["W40"][0]
+        W42 = mixing_data["W42"][0]
+        W44 = mixing_data["W44"][0]
 
-        mixing_matrix = np.block([
-            [W00, W02, W04],
-            [W20, W22, W24],
-            [W40, W42, W44]
-        ])
+        mixing_matrix = np.block([[W00, W02, W04], [W20, W22, W24], [W40, W42, W44]])
 
         try:
             z_eff = header["Z_EFF"]
         except KeyError:
-            warn("Effective redshift not specified in FITS file header. Setting it to 0.")
+            warn(
+                "Effective redshift not specified in FITS file header. Setting it to 0."
+            )
             z_eff = 0.0
 
     result = MixMat_PS_ell(
