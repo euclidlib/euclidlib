@@ -4,10 +4,10 @@ from os import PathLike
 from typing import Optional, cast
 
 from cosmolib.data import (
-    TPCF_2Dcart,
-    TPCF_2Dpol,
-    TPCF_ell,
-    Cov_TPCF_ell,
+    TwoPointCorrelationCartesian,
+    TwoPointCorrelationPolar,
+    TwoPointCorrelationMultipoles,
+    TwoPointCorrelationMultipolesCovariance,
 )
 
 from ._common import (
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 def get_TPCF_2Dcart(
     path: Union[str, PathLike[str]],
-) -> dict[_DictKey, TPCF_2Dpol]:
+) -> TwoPointCorrelationCartesian:
     """
     Returns 2PCF data in the cloe-compatible euclidlib data format
     """
@@ -46,14 +46,20 @@ def get_TPCF_2Dcart(
 
     s_perp, s_para, correlation = build_2d_correlation(scale_1d, scale_2d, xi)
 
-    result = TPCF_2Dcart(s_perp, s_para, correlation, fiducial_cosmology, z_eff)
+    result = TwoPointCorrelationCartesian(
+        s_perp,
+        s_para,
+        correlation,
+        fiducial_cosmology,
+        z_eff
+    )
 
     return result
 
 
 def get_TPCF_2Dpol(
     path: Union[str, PathLike[str]],
-) -> dict[_DictKey, TPCF_2Dpol]:
+) -> TwoPointCorrelationPolar:
     """
     Returns 2PCF data in the cloe-compatible euclidlib data format
     """
@@ -67,14 +73,20 @@ def get_TPCF_2Dpol(
 
     s, mu, correlation = build_2d_correlation(s_1d, mu_1d, correlation_1d)
 
-    result = TPCF_2Dpol(s, mu, correlation, fiducial_cosmology, z_eff)
+    result = TwoPointCorrelationPolar(
+        s,
+        mu,
+        correlation,
+        fiducial_cosmology,
+        z_eff
+    )
 
     return result
 
 
 def get_TPCF_ell(
     path: Union[str, PathLike[str]],
-) -> dict[_DictKey, TPCF_ell]:
+) -> dict[_DictKey, TwoPointCorrelationMultipoles]:
     """
     Returns 2PCF data in the cloe-compatible euclidlib data format
     """
@@ -82,27 +94,23 @@ def get_TPCF_ell(
 
     z_eff, fiducial_cosmology = get_cosmology_from_header(header)
 
-    results: dict[_DictKey, Optional[TPCF_ell]] = {}
+    multipoles: dict[int, np.ndarray] = {}
 
-    # Assuming multipoles 0, 2, 4 are present as XI0, XI2, XI4
-    for i in range(5):
-        for j in range(5):
-            results[("SPE", "SPE", i, j)] = None
+    for ell in range(5):
+        multipoles[f"ELL{ell}"] = data[f"XI{ell}"]
 
-    for i in [0, 2, 4]:
-        results[("SPE", "SPE", i, i)] = TPCF_ell(
-            data["SCALE"],
-            data[f"XI{i}"],
-            fiducial_cosmology,
-            z_eff,
-        )
+    result = TwoPointCorrelationMultipoles(
+        data["SCALE"],
+        multipoles,
+        fiducial_cosmology,
+        z_eff,
+    )
 
-    return cast(dict[_DictKey, TPCF_ell], results)
-
+    return result
 
 def get_Cov_TPCF_ell(
     path: Union[str, PathLike[str]],
-) -> Cov_TPCF_ell:
+) -> TwoPointCorrelationMultipolesCovariance:
     """
     Returns a single Cov_TPCF_ell object containing the full,
     combined covariance matrix for even multipoles (0, 2, 4), the s-axis,
@@ -115,7 +123,7 @@ def get_Cov_TPCF_ell(
     s_values, full_cov_matrix = build_covariance_matrix(data, "TPCF")
 
     # Create and return the single covariance object
-    result = Cov_TPCF_ell(
+    result = TwoPointCorrelationMultipolesCovariance(
         s_values,
         full_cov_matrix,
         z_eff,
