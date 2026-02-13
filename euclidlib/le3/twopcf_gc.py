@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Optional, cast
 
 from cosmolib.data import (
     TwoPointCorrelationCartesian,
@@ -47,11 +46,7 @@ def get_TPCF_2Dcart(
     s_perp, s_para, correlation = build_2d_correlation(scale_1d, scale_2d, xi)
 
     result = TwoPointCorrelationCartesian(
-        s_perp,
-        s_para,
-        correlation,
-        fiducial_cosmology,
-        z_eff
+        s_perp, s_para, correlation, fiducial_cosmology, z_eff
     )
 
     return result
@@ -73,13 +68,7 @@ def get_TPCF_2Dpol(
 
     s, mu, correlation = build_2d_correlation(s_1d, mu_1d, correlation_1d)
 
-    result = TwoPointCorrelationPolar(
-        s,
-        mu,
-        correlation,
-        fiducial_cosmology,
-        z_eff
-    )
+    result = TwoPointCorrelationPolar(s, mu, correlation, fiducial_cosmology, z_eff)
 
     return result
 
@@ -107,6 +96,7 @@ def get_TPCF_ell(
     )
 
     return result
+
 
 def get_Cov_TPCF_ell(
     path: Union[str, PathLike[str]],

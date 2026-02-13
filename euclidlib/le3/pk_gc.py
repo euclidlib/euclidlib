@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from warnings import warn
 from os import PathLike
-from typing import Optional, cast
 
 import numpy as np
 import fitsio  # type: ignore [import-not-found]
 from cosmolib.data import (
     PowerSpectrumMultipoles,
     PowerSpectrumMultipolesCovariance,
-    PowerSpectrumMultipolesMixingMatrix)
+    PowerSpectrumMultipolesMixingMatrix,
+)
 
 from ._common import (
     _read_le3_data,
@@ -84,7 +84,7 @@ def get_Cov_PS_ell(
 
 
 def get_MixMat_PS_ell(
-    path: Union[str, PathLike[str]]
+    path: Union[str, PathLike[str]],
 ) -> PowerSpectrumMultipolesMixingMatrix:
     """
     Reads the mixing matrix for power spectrum multipoles from a FITS file.
@@ -103,15 +103,15 @@ def get_MixMat_PS_ell(
         mixing_data = fits["MIXING_MATRIX"].read()
         header = fits["MIXING_MATRIX"].read_header()
 
-        W00 = mixing_data['W00']
-        W02 = mixing_data['W02']
-        W04 = mixing_data['W04']
-        W20 = mixing_data['W20']
-        W22 = mixing_data['W22']
-        W24 = mixing_data['W24']
-        W40 = mixing_data['W40']
-        W42 = mixing_data['W42']
-        W44 = mixing_data['W44']
+        W00 = mixing_data["W00"]
+        W02 = mixing_data["W02"]
+        W04 = mixing_data["W04"]
+        W20 = mixing_data["W20"]
+        W22 = mixing_data["W22"]
+        W24 = mixing_data["W24"]
+        W40 = mixing_data["W40"]
+        W42 = mixing_data["W42"]
+        W44 = mixing_data["W44"]
 
         mixing_matrix = np.block([[W00, W02, W04], [W20, W22, W24], [W40, W42, W44]])
 
