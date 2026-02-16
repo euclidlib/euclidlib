@@ -149,7 +149,7 @@ def read_mixing_matrix_data(
     data = None
     header = None
 
-    required = ['BINS_OUTPUT', 'BINS_INPUT', 'MIXING_MATRIX']
+    required = ["BINS_OUTPUT", "BINS_INPUT", "MIXING_MATRIX"]
 
     with fitsio.FITS(path) as fits_input:
         for hdu in fits_input:
@@ -159,8 +159,10 @@ def read_mixing_matrix_data(
                 header[extname] = _get_hdu_header(hdu)
 
     if data is None:
-        raise ValueError("HDU does not seem a mixing matrix. (BINS_OUTPUT, "
-                         " BINS_INPUT, MIXING_MATRIX)")
+        raise ValueError(
+            "HDU does not seem a mixing matrix. (BINS_OUTPUT, "
+            " BINS_INPUT, MIXING_MATRIX)"
+        )
 
     return header, data
 
