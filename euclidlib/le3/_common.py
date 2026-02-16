@@ -74,13 +74,13 @@ def get_cosmology_from_header(
     Extracts redshift and fiducial cosmology from a FITS header.
     """
     try:
-        z_eff = header["Z_EFF"]
+        zeff = header["Z_EFF"]
     except KeyError:
         warn("Effective redshift not specified in fits file header. Setting it to 0.")
-        z_eff = 0.0
+        zeff = 0.0
 
     if not get_fiducial:
-        return z_eff
+        return zeff
     else:
         fiducial_cosmology = {
             "OMEGA_M": header["OMEGA_M"],
@@ -95,18 +95,18 @@ def get_cosmology_from_header(
             "N_EFF": header["N_EFF"],
             "T_CMB": header["T_CMB"],
         }
-        return z_eff, fiducial_cosmology
+        return zeff, fiducial_cosmology
 
 
-def _read_le3_data(
-    path: Union[str, PathLike[str]], ext_name: str, check_extra_hdu: bool = False
+def read_data_vectors(
+    path: Union[str, PathLike[str]], ext_name: str
 ) -> Tuple[Dict[str, Any], NDArray[Any]]:
     """
     Reads data from a Euclid LE3 fits file
     """
     not_found_message = f"Invalid fits file provided, cannot locate {ext_name} data."
 
-    _verify_input_file(path, False)  # Always check for at least 2 HDUs
+    _verify_input_file(path, False)
 
     with fitsio.FITS(path) as fits_input:
         header = _get_hdu_header(fits_input[1])
@@ -115,21 +115,10 @@ def _read_le3_data(
             data = _get_hdu_data(fits_input[1])
             return header, data
 
-        if check_extra_hdu:
-            warn(
-                f"\n\033[0;31m[!]\033[0m Found {header['EXTNAME']}, not {ext_name}. "
-                "Falling back to next HDU."
-            )
-            _verify_input_file(path, True)  # Now check for 3 HDUs
-            header = _get_hdu_header(fits_input[2])
-            if ext_name in header["EXTNAME"]:
-                data = _get_hdu_data(fits_input[2])
-                return header, data
-
     raise ValueError(not_found_message)
 
 
-def _read_covariance_data(
+def read_covariance_data(
     path: Union[str, PathLike[str]],
 ) -> Tuple[Dict[str, Any], NDArray[Any]]:
     """
@@ -151,65 +140,29 @@ def _read_covariance_data(
     return header, data
 
 
-def build_covariance_matrix(
-    data: NDArray[Any],
-    mode: str,
-) -> Tuple[NDArray[Any], NDArray[Any]]:
+def read_mixing_matrix_data(
+    path: Union[str, PathLike[str]],
+) -> Tuple[Dict[str, Any], NDArray[Any]]:
     """
-    Builds the full covariance matrix from the table data.
+    Reads mixing matrix matrix data from Euclid LE3-CM-GC fits file
     """
-    even_multipoles = [0, 2, 4]
-    mask = np.isin(data["MULTIPOLE-I"], even_multipoles) & np.isin(
-        data["MULTIPOLE-J"], even_multipoles
-    )
-    data = data[mask]
+    data = None
+    header = None
 
-    if mode == "PS":
-        scale_prefix = "k"
-    elif mode == "TPCF":
-        scale_prefix = "s"
-    else:
-        raise ValueError(
-            "Mode for building covariance must be picked from ('PS', 'TPCF')."
-        )
+    required = ['BINS_OUTPUT', 'BINS_INPUT', 'MIXING_MATRIX']
 
-    scale_i_col = f"{scale_prefix.upper()}I"
-    scale_j_col = f"{scale_prefix.upper()}J"
+    with fitsio.FITS(path) as fits_input:
+        for hdu in fits_input:
+            extname = hdu.get_extname() if hdu.get_extname() else ""
+            if np.any([req in extname for req in required]):
+                data[extname] = hdu.read()
+                header[extname] = _get_hdu_header(hdu)
 
-    all_unique_scale_values = np.unique(data[scale_i_col])
-    scale_to_idx = {s_val: i for i, s_val in enumerate(all_unique_scale_values)}
-    n_scale = len(all_unique_scale_values)
+    if data is None:
+        raise ValueError("HDU does not seem a mixing matrix. (BINS_OUTPUT, "
+                         " BINS_INPUT, MIXING_MATRIX)")
 
-    unique_ells = np.unique(data["MULTIPOLE-I"])
-    ell_to_block_idx = {ell: i for i, ell in enumerate(unique_ells)}
-    n_ells = len(unique_ells)
-
-    total_size = n_ells * n_scale
-    full_cov_matrix = np.zeros((total_size, total_size))
-
-    for row in data:
-        ell_i = row["MULTIPOLE-I"]
-        ell_j = row["MULTIPOLE-J"]
-        scale_i = row[scale_i_col]
-        scale_j = row[scale_j_col]
-        cov = row["COVARIANCE"]
-
-        block_row_start = ell_to_block_idx[ell_i] * n_scale
-        block_col_start = ell_to_block_idx[ell_j] * n_scale
-
-        scale_idx_i = scale_to_idx[scale_i]
-        scale_idx_j = scale_to_idx[scale_j]
-
-        final_row = block_row_start + scale_idx_i
-        final_col = block_col_start + scale_idx_j
-        full_cov_matrix[final_row, final_col] = cov
-
-    # Ensure the full matrix is symmetric
-    full_cov_matrix = (
-        full_cov_matrix + full_cov_matrix.T - np.diag(np.diag(full_cov_matrix))
-    )
-
-    return all_unique_scale_values, full_cov_matrix
+    return header, data
 
 
 def build_2d_correlation(

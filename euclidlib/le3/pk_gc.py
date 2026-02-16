@@ -12,9 +12,8 @@ from cosmolib.data import (
 )
 
 from ._common import (
-    _read_le3_data,
-    _read_covariance_data,
-    build_covariance_matrix,
+    read_data_vectors,
+    read_covariance_data,
     get_cosmology_from_header,
 )
 
@@ -30,104 +29,147 @@ if TYPE_CHECKING:
     _DictKey: TypeAlias = Union[str, int, tuple["_DictKey", ...]]
 
 
-def get_PS_ell(
-    path: Union[str, PathLike[str]],
+def get_PowerSpectrumMultipoles(
+    path: Union[str, PathLike[str]], *redshifts: str
 ) -> dict[_DictKey, PowerSpectrumMultipoles]:
     """
     Returns power spectrum data in the cloe-compatible euclidlib data format
     """
-    header, data = _read_le3_data(path, "SPECTRUM", check_extra_hdu=True)
+    nz = len(redshifts)
+    result: dict[_DictKey, Optional[PowerSpectrumMultipoles]] = {}
 
-    z_eff, fiducial_cosmology = get_cosmology_from_header(header)
+    for i in range(nz):
+        for j in range(nz):
+            result[("SPE", "SPE", i, j)] = None
 
-    multipoles: dict[int, np.ndarray] = {}
+    for i,zlab in enumerate(redshifts):
 
-    for ell in range(5):
-        multipoles[f"ELL{ell}"] = data[f"PK{ell}"]
+        header, data = read_data_vectors(path.format(zlab), "SPECTRUM")
+        zeff, fiducial_cosmology = get_cosmology_from_header(header)
+        nbar = 1.0 / header["SN_VALUE"]
+        multipoles = np.array([data[f"PK{ell}"] for ell in range(5)])
 
-    result = PowerSpectrumMultipoles(
-        data["K"],
-        data["K_EFF"],
-        data["NUM_MOD"],
-        multipoles,
-        fiducial_cosmology,
-        z_eff,
-        1.0 / header["SN_VALUE"],
-        header["SN_VALUE"],
-    )
+        result[("SPE", "SPE", i, i)] = PowerSpectrumMultipoles(
+            k=data["K"],
+            keff=data["K_EFF"],
+            Nmodes=data["NUM_MOD"],
+            multipoles=multipoles,
+            fiducial_cosmology=fiducial_cosmology,
+            zeff=zeff,
+            nbar=nbar,
+            Psn=header["SN_VALUE"],
+        )
 
     return result
 
-
-def get_Cov_PS_ell(
-    path: Union[str, PathLike[str]],
-) -> PowerSpectrumMultipolesCovariance:
+def get_PowerSpectrumMultipolesCovariance(
+    path: Union[str, PathLike[str]],  *redshifts: str
+) -> dict[_DictKey, PowerSpectrumMultipolesCovariance]:
     """
     Returns a single Cov_PS_ell object containing the full,
     combined covariance matrix for even multipoles (0, 2, 4), the k-axis,
     and the effective redshift.
     """
-    header, data = _read_covariance_data(path)
+    nz = len(redshifts)
+    result: dict[_DictKey, Optional[PowerSpectrumMultipolesCovariance]] = {}
 
-    z_eff = get_cosmology_from_header(header, get_fiducial=False)
+    for i in range(nz):
+        for j in range(nz):
+            result[("SPE", "SPE", i, j)] = None
 
-    k_values, full_cov_matrix = build_covariance_matrix(data, "PS")
+    for i,zlab in enumerate(redshifts):
 
-    # Create and return the single PowerSpectrumMultipolesCovariance object
-    result = PowerSpectrumMultipolesCovariance(
-        k_values,
-        full_cov_matrix,
-        z_eff,
-    )
+        header, data = read_covariance_data(path.format(zlab))
+        zeff = get_cosmology_from_header(header, get_fiducial=False)
+        mask = (
+            np.isin(data["MULTIPOLE-I"], range(5)) &
+            np.isin(data["MULTIPOLE-J"], range(5))
+        )
+        data = data[mask]
+
+        scale_prefix = "k"
+        scale_i_col = f"{scale_prefix.upper()}I"
+
+        k_values = np.unique(data[scale_i_col])
+        nk = len(k_values)
+
+        covariance_blocks: dict[str, NDArray[Any]] = {}
+        for ell_i in range(5):
+            for ell_j in range(5):
+                block_mask = (
+                    (data["MULTIPOLE-I"] == ell_i) &
+                    (data["MULTIPOLE-J"] == ell_j)
+                )
+                block_data = data[block_mask]
+
+                if len(block_data) == 0:
+                    continue
+
+                current_block = np.zeros((nk, nk))
+
+                k_to_idx = {k_val: i for i, k_val in enumerate(k_values)}
+
+                for row in block_data:
+                    k_idx_i = k_to_idx[row[f"{scale_prefix.upper()}I"]]
+                    k_idx_j = k_to_idx[row[f"{scale_prefix.upper()}J"]]
+                    current_block[k_idx_i, k_idx_j] = row["COVARIANCE"]
+
+                covariance_blocks[f"ELL_{ell_i}-{ell_j}"] = current_block
+
+        result[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesCovariance(
+            k=k_values,
+            covariance=covariance_blocks,
+            zeff=zeff,
+        )
 
     return result
 
 
-def get_MixMat_PS_ell(
-    path: Union[str, PathLike[str]],
-) -> PowerSpectrumMultipolesMixingMatrix:
+def get_PowerSpectrumMultipolesMixingMatrix(
+    path: Union[str, PathLike[str]],  *redshifts: str
+) -> dict[_DictKey, PowerSpectrumMultipolesMixingMatrix]:
     """
     Reads the mixing matrix for power spectrum multipoles from a FITS file.
     """
-    with fitsio.FITS(path) as fits:
-        kout_data = fits["BINS_OUTPUT"].read()
-        kout = kout_data["k"]
+    even_multipoles = [0, 2, 4]
 
-        kin_data = fits["BINS_INPUT"].read()
-        kin = {
-            0: kin_data["kp0"],
-            2: kin_data["kp2"],
-            4: kin_data["kp4"],
-        }
+    nz = len(redshifts)
+    result: dict[_DictKey, Optional[PowerSpectrumMultipolesMixingMatrix]] = {}
 
-        mixing_data = fits["MIXING_MATRIX"].read()
-        header = fits["MIXING_MATRIX"].read_header()
+    for i in range(nz):
+        for j in range(nz):
+            result[("SPE", "SPE", i, j)] = None
 
-        W00 = mixing_data["W00"]
-        W02 = mixing_data["W02"]
-        W04 = mixing_data["W04"]
-        W20 = mixing_data["W20"]
-        W22 = mixing_data["W22"]
-        W24 = mixing_data["W24"]
-        W40 = mixing_data["W40"]
-        W42 = mixing_data["W42"]
-        W44 = mixing_data["W44"]
+    for i,zlab in enumerate(redshifts):
 
-        mixing_matrix = np.block([[W00, W02, W04], [W20, W22, W24], [W40, W42, W44]])
+        with fitsio.FITS(path.format(zlab)) as fits:
+            kout_data = fits["BINS_OUTPUT"].read()
+            kout = kout_data["k"]
 
-        try:
-            z_eff = header["Z_EFF"]
-        except KeyError:
-            warn(
-                "Effective redshift not specified in FITS file header. Setting it to 0."
+            kin_data = fits["BINS_INPUT"].read()
+            kin = {ell: kin_data["kp{}".format(ell)] for ell in even_multipoles}
+
+            mixing_data = fits["MIXING_MATRIX"].read()
+            header = fits["MIXING_MATRIX"].read_header()
+
+            mixing_matrix_blocks = {
+                "ELL_{}-{}".format(ell1,ell2):
+                mixing_data["W{}{}".format(ell1,ell2)]
+                for ell2 in even_multipoles for ell1 in even_multipoles}
+
+            try:
+                zeff = header["Z_EFF"]
+            except KeyError:
+                warn(
+                    "Effective redshift not specified in FITS file header. "
+                    "Setting it to 0.")
+                zeff = 0.0
+
+            result[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesMixingMatrix(
+                kout=kout,
+                kin=kin,
+                mixing=mixing_matrix_blocks,
+                zeff=zeff,
             )
-            z_eff = 0.0
-
-    result = PowerSpectrumMultipolesMixingMatrix(
-        kout,
-        kin,
-        mixing_matrix,
-        z_eff,
-    )
 
     return result
