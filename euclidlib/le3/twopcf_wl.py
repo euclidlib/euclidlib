@@ -7,7 +7,7 @@ import fitsio  # type: ignore [import-not-found]
 from numpy.typing import NDArray
 from .._util import writer
 
-from cosmolib.data import TwoPointCorrelationFunction, COSEBI  # type: ignore [import-not-found]
+from cosmolib.data import TwoPointCorrelationFunction, COSEBI
 
 
 TYPE_CHECKING = True

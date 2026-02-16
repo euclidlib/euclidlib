@@ -3,6 +3,9 @@ from __future__ import annotations
 import numpy as np
 from os import PathLike
 
+from typing import Optional, Any
+from numpy.typing import NDArray
+
 from cosmolib.data import (
     TwoPointCorrelationCartesian,
     TwoPointCorrelationPolar,
@@ -36,14 +39,14 @@ def get_TwoPointCorrelationCartesian(
     Returns 2PCF data in the cloe-compatible euclidlib data format
     """
     nz = len(redshifts)
-    result: dict[_DictKey, Optional[PowerSpectrumMultipoles]] = {}
+    result: dict[_DictKey, Optional[TwoPointCorrelationCartesian]] = {}
 
     for i in range(nz):
         for j in range(nz):
             result[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        header, data = read_data_vectors(path.format(zlab), "CORRELATION")
+        header, data = read_data_vectors(str(path).format(zlab), "CORRELATION")
         zeff, fiducial_cosmology = get_cosmology_from_header(header)
 
         scale_1d = data["SCALE_1D"]
@@ -70,14 +73,14 @@ def get_TwoPointCorrelationPolar(
     Returns 2PCF data in the cloe-compatible euclidlib data format
     """
     nz = len(redshifts)
-    result: dict[_DictKey, Optional[PowerSpectrumMultipoles]] = {}
+    result: dict[_DictKey, Optional[TwoPointCorrelationPolar]] = {}
 
     for i in range(nz):
         for j in range(nz):
             result[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        header, data = read_data_vectors(path.format(zlab), "CORRELATION")
+        header, data = read_data_vectors(str(path).format(zlab), "CORRELATION")
         zeff, fiducial_cosmology = get_cosmology_from_header(header)
 
         s_1d = data["SCALE_1D"]
@@ -104,14 +107,14 @@ def get_TwoPointCorrelationMultipoles(
     Returns 2PCF data in the cloe-compatible euclidlib data format
     """
     nz = len(redshifts)
-    result: dict[_DictKey, Optional[PowerSpectrumMultipoles]] = {}
+    result: dict[_DictKey, Optional[TwoPointCorrelationMultipoles]] = {}
 
     for i in range(nz):
         for j in range(nz):
             result[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        header, data = read_data_vectors(path.format(zlab), "CORRELATION")
+        header, data = read_data_vectors(str(path).format(zlab), "CORRELATION")
         zeff, fiducial_cosmology = get_cosmology_from_header(header)
         multipoles = np.array([data[f"XI{ell}"] for ell in range(5)])
 
@@ -136,15 +139,15 @@ def get_TwoPointCorrelationMultipolesCovariance(
     even_multipoles = [0, 2, 4]
 
     nz = len(redshifts)
-    result: dict[_DictKey, Optional[PowerSpectrumMultipolesCovariance]] = {}
+    result: dict[_DictKey, Optional[TwoPointCorrelationMultipoles]] = {}
 
     for i in range(nz):
         for j in range(nz):
             result[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        header, data = read_covariance_data(path.format(zlab))
-        zeff = get_cosmology_from_header(header, get_fiducial=False)
+        header, data = read_covariance_data(str(path).format(zlab))
+        zeff, _ = get_cosmology_from_header(header, get_fiducial=False)
         mask = np.isin(data["MULTIPOLE-I"], even_multipoles) & np.isin(
             data["MULTIPOLE-J"], even_multipoles
         )
@@ -178,7 +181,7 @@ def get_TwoPointCorrelationMultipolesCovariance(
 
                 covariance_blocks[f"ELL_{ell_i}-{ell_j}"] = current_block
 
-        result[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesCovariance(
+        result[("SPE", "SPE", i, i)] = TwoPointCorrelationMultipolesCovariance(
             k=k_values,
             covariance=covariance_blocks,
             zeff=zeff,

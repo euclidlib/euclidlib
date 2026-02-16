@@ -3,8 +3,10 @@ from __future__ import annotations
 from warnings import warn
 from os import PathLike
 
+from typing import Optional, Any
+from numpy.typing import NDArray
+
 import numpy as np
-import fitsio  # type: ignore [import-not-found]
 from cosmolib.data import (
     PowerSpectrumMultipoles,
     PowerSpectrumMultipolesCovariance,
@@ -14,6 +16,7 @@ from cosmolib.data import (
 from ._common import (
     read_data_vectors,
     read_covariance_data,
+    read_mixing_matrix_data,
     get_cosmology_from_header,
 )
 
@@ -43,7 +46,7 @@ def get_PowerSpectrumMultipoles(
             result[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        header, data = read_data_vectors(path.format(zlab), "SPECTRUM")
+        header, data = read_data_vectors(str(path).format(zlab), "SPECTRUM")
         zeff, fiducial_cosmology = get_cosmology_from_header(header)
         nbar = 1.0 / header["SN_VALUE"]
         multipoles = np.array([data[f"PK{ell}"] for ell in range(5)])
@@ -78,8 +81,8 @@ def get_PowerSpectrumMultipolesCovariance(
             result[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        header, data = read_covariance_data(path.format(zlab))
-        zeff = get_cosmology_from_header(header, get_fiducial=False)
+        header, data = read_covariance_data(str(path).format(zlab))
+        zeff, _ = get_cosmology_from_header(header, get_fiducial=False)
         mask = np.isin(data["MULTIPOLE-I"], range(5)) & np.isin(
             data["MULTIPOLE-J"], range(5)
         )
@@ -138,36 +141,30 @@ def get_PowerSpectrumMultipolesMixingMatrix(
             result[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        with fitsio.FITS(path.format(zlab)) as fits:
-            kout_data = fits["BINS_OUTPUT"].read()
-            kout = kout_data["k"]
+        header, data = read_mixing_matrix_data(str(path).format(zlab))
+        kout = data["BINS_OUTPUT"]["k"]
+        kin = {ell: data["BINS_INPUT"]["kp{}".format(ell)] for ell in even_multipoles}
+        mixing_matrix_blocks = {
+            "ELL_{}-{}".format(ell1, ell2): data["MIXING_MATRIX"][
+                "W{}{}".format(ell1, ell2)
+            ]
+            for ell2 in even_multipoles
+            for ell1 in even_multipoles
+        }
 
-            kin_data = fits["BINS_INPUT"].read()
-            kin = {ell: kin_data["kp{}".format(ell)] for ell in even_multipoles}
-
-            mixing_data = fits["MIXING_MATRIX"].read()
-            header = fits["MIXING_MATRIX"].read_header()
-
-            mixing_matrix_blocks = {
-                "ELL_{}-{}".format(ell1, ell2): mixing_data["W{}{}".format(ell1, ell2)]
-                for ell2 in even_multipoles
-                for ell1 in even_multipoles
-            }
-
-            try:
-                zeff = header["Z_EFF"]
-            except KeyError:
-                warn(
-                    "Effective redshift not specified in FITS file header. "
-                    "Setting it to 0."
-                )
-                zeff = 0.0
-
-            result[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesMixingMatrix(
-                kout=kout,
-                kin=kin,
-                mixing=mixing_matrix_blocks,
-                zeff=zeff,
+        try:
+            zeff = header["MIXING_MATRIX"]["Z_EFF"]
+        except KeyError:
+            warn(
+                "Effective redshift not specified in FITS file header. Setting it to 0."
             )
+            zeff = 0.0
+
+        result[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesMixingMatrix(
+            kout=kout,
+            kin=kin,
+            mixing=mixing_matrix_blocks,
+            zeff=zeff,
+        )
 
     return result

@@ -79,10 +79,8 @@ def get_cosmology_from_header(
         warn("Effective redshift not specified in fits file header. Setting it to 0.")
         zeff = 0.0
 
-    if not get_fiducial:
-        return zeff
-    else:
-        fiducial_cosmology = {
+    fiducial_cosmology = (
+        {
             "OMEGA_M": header["OMEGA_M"],
             "OMEGA_R": header["OMEGA_R"],
             "OMEGA_B": header["OMEGA_B"],
@@ -95,7 +93,11 @@ def get_cosmology_from_header(
             "N_EFF": header["N_EFF"],
             "T_CMB": header["T_CMB"],
         }
-        return zeff, fiducial_cosmology
+        if get_fiducial
+        else {}
+    )
+
+    return zeff, fiducial_cosmology
 
 
 def read_data_vectors(
@@ -134,7 +136,7 @@ def read_covariance_data(
                 data = hdu.read()
                 header = _get_hdu_header(hdu)
 
-    if data is None:
+    if header is None or data is None:
         raise ValueError("HDU 'COVARIANCE' not found in file.")
 
     return header, data
@@ -142,12 +144,12 @@ def read_covariance_data(
 
 def read_mixing_matrix_data(
     path: Union[str, PathLike[str]],
-) -> Tuple[Dict[str, Any], NDArray[Any]]:
+) -> Tuple[Dict[str, Any], Dict[str, NDArray[Any]]]:
     """
     Reads mixing matrix matrix data from Euclid LE3-CM-GC fits file
     """
-    data = None
-    header = None
+    data = {}
+    header = {}
 
     required = ["BINS_OUTPUT", "BINS_INPUT", "MIXING_MATRIX"]
 
@@ -158,7 +160,7 @@ def read_mixing_matrix_data(
                 data[extname] = hdu.read()
                 header[extname] = _get_hdu_header(hdu)
 
-    if data is None:
+    if header is None or data is None:
         raise ValueError(
             "HDU does not seem a mixing matrix. (BINS_OUTPUT, "
             " BINS_INPUT, MIXING_MATRIX)"
