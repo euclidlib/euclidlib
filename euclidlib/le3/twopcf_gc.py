@@ -18,6 +18,7 @@ from ._common import (
     read_covariance_data,
     build_2d_correlation,
     get_cosmology_from_header,
+    check_input,
 )
 
 TYPE_CHECKING = True
@@ -38,7 +39,7 @@ def get_TwoPointCorrelationCartesian(
     """
     Returns 2PCF data in the cloe-compatible euclidlib data format
     """
-    nz = len(redshifts)
+    redshifts, nz = check_input(redshifts)
     result: dict[_DictKey, Optional[TwoPointCorrelationCartesian]] = {}
 
     for i in range(nz):
@@ -72,7 +73,7 @@ def get_TwoPointCorrelationPolar(
     """
     Returns 2PCF data in the cloe-compatible euclidlib data format
     """
-    nz = len(redshifts)
+    redshifts, nz = check_input(redshifts)
     result: dict[_DictKey, Optional[TwoPointCorrelationPolar]] = {}
 
     for i in range(nz):
@@ -106,7 +107,7 @@ def get_TwoPointCorrelationMultipoles(
     """
     Returns 2PCF data in the cloe-compatible euclidlib data format
     """
-    nz = len(redshifts)
+    redshifts, nz = check_input(redshifts)
     result: dict[_DictKey, Optional[TwoPointCorrelationMultipoles]] = {}
 
     for i in range(nz):
@@ -138,7 +139,7 @@ def get_TwoPointCorrelationMultipolesCovariance(
     """
     even_multipoles = [0, 2, 4]
 
-    nz = len(redshifts)
+    redshifts, nz = check_input(redshifts)
     result: dict[_DictKey, Optional[TwoPointCorrelationMultipoles]] = {}
 
     for i in range(nz):

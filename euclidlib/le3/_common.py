@@ -187,3 +187,15 @@ def build_2d_correlation(
     correlation_2d[s_indices, mu_indices] = correlation_1d
 
     return unique_s, unique_mu, correlation_2d
+
+
+def check_input(
+    redshifts: tuple[str, ...],
+) -> tuple[tuple[str, ...], int]:
+    """
+    Define number of cases to read
+    """
+    multiple_paths = len(redshifts) > 0
+    redshifts = redshifts if multiple_paths else ("",)
+    nz = len(redshifts)
+    return redshifts, nz

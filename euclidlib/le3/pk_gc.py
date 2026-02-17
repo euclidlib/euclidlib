@@ -18,6 +18,7 @@ from ._common import (
     read_covariance_data,
     read_mixing_matrix_data,
     get_cosmology_from_header,
+    check_input,
 )
 
 TYPE_CHECKING = True
@@ -38,7 +39,7 @@ def get_PowerSpectrumMultipoles(
     """
     Returns power spectrum data in the cloe-compatible euclidlib data format
     """
-    nz = len(redshifts)
+    redshifts, nz = check_input(redshifts)
     result: dict[_DictKey, Optional[PowerSpectrumMultipoles]] = {}
 
     for i in range(nz):
@@ -73,7 +74,7 @@ def get_PowerSpectrumMultipolesCovariance(
     combined covariance matrix for even multipoles (0, 2, 4), the k-axis,
     and the effective redshift.
     """
-    nz = len(redshifts)
+    redshifts, nz = check_input(redshifts)
     result: dict[_DictKey, Optional[PowerSpectrumMultipolesCovariance]] = {}
 
     for i in range(nz):
@@ -133,7 +134,7 @@ def get_PowerSpectrumMultipolesMixingMatrix(
     """
     even_multipoles = [0, 2, 4]
 
-    nz = len(redshifts)
+    redshifts, nz = check_input(redshifts)
     result: dict[_DictKey, Optional[PowerSpectrumMultipolesMixingMatrix]] = {}
 
     for i in range(nz):
