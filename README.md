@@ -46,16 +46,20 @@ graph TD
     EUCLIDLIB[euclidlib]
 
     LE3[le3]
-    PK[pk_wl]
-    TWOPCF[twopcf_wl]
+    PK_WL[pk_wl]
+    TWOPCF_WL[twopcf_wl]
+    PK_GC[pk_gc]
+    TWOPCF_GC[twopcf_gc]
 
     PHZ[phz]
 
     EUCLIDLIB --> LE3
     EUCLIDLIB --> PHZ
 
-    LE3 --> PK
-    LE3 --> TWOPCF
+    LE3 --> PK_WL
+    LE3 --> TWOPCF_WL
+    LE3 --> PK_GC
+    LE3 --> TWOPCF_GC
 ```
 
 `euclidlib` provides all data products in a unified, Pythonic format based on dataclasses, ensuring consistent, intuitive, and easy-to-use interfaces across all supported products. Please consult the full documentation for additional details.
