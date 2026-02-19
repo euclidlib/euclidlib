@@ -3,8 +3,7 @@ from __future__ import annotations
 import numpy as np
 from os import PathLike
 
-from typing import Optional, Any
-from numpy.typing import NDArray
+from typing import Optional
 
 from cosmolib.data import (
     TwoPointCorrelationCartesian,
@@ -14,11 +13,11 @@ from cosmolib.data import (
 )
 
 from ._common import (
-    read_data_vectors,
-    read_covariance_data,
-    build_2d_correlation,
-    get_cosmology_from_header,
     check_input,
+    get_cosmology_from_header,
+    read_data_vectors,
+    read_and_reshape_covariance_matrix,
+    build_2d_correlation,
 )
 
 TYPE_CHECKING = True
@@ -137,53 +136,21 @@ def get_TwoPointCorrelationMultipolesCovariance(
     combined covariance matrix for even multipoles (0, 2, 4), the s-axis,
     and the effective redshift.
     """
-    even_multipoles = [0, 2, 4]
-
     redshifts, nz = check_input(redshifts)
-    result: dict[_DictKey, Optional[TwoPointCorrelationMultipoles]] = {}
+    result: dict[_DictKey, Optional[TwoPointCorrelationMultipolesCovariance]] = {}
 
     for i in range(nz):
         for j in range(nz):
             result[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        header, data = read_covariance_data(str(path).format(zlab))
-        zeff, _ = get_cosmology_from_header(header, get_fiducial=False)
-        mask = np.isin(data["MULTIPOLE-I"], even_multipoles) & np.isin(
-            data["MULTIPOLE-J"], even_multipoles
+        s_values, covariance_blocks, zeff = read_and_reshape_covariance_matrix(
+            path=str(path).format(zlab),
+            type="CORRELATION",
         )
-        data = data[mask]
-
-        scale_prefix = "s"
-        scale_i_col = f"{scale_prefix.upper()}I"
-
-        k_values = np.unique(data[scale_i_col])
-        nk = len(k_values)
-
-        covariance_blocks: dict[str, NDArray[Any]] = {}
-        for ell_i in even_multipoles:
-            for ell_j in even_multipoles:
-                block_mask = (data["MULTIPOLE-I"] == ell_i) & (
-                    data["MULTIPOLE-J"] == ell_j
-                )
-                block_data = data[block_mask]
-
-                if len(block_data) == 0:
-                    continue
-
-                current_block = np.zeros((nk, nk))
-
-                k_to_idx = {k_val: i for i, k_val in enumerate(k_values)}
-
-                for row in block_data:
-                    k_idx_i = k_to_idx[row[f"{scale_prefix.upper()}I"]]
-                    k_idx_j = k_to_idx[row[f"{scale_prefix.upper()}J"]]
-                    current_block[k_idx_i, k_idx_j] = row["COVARIANCE"]
-
-                covariance_blocks[f"ELL_{ell_i}-{ell_j}"] = current_block
 
         result[("SPE", "SPE", i, i)] = TwoPointCorrelationMultipolesCovariance(
-            k=k_values,
+            s=s_values,
             covariance=covariance_blocks,
             zeff=zeff,
         )

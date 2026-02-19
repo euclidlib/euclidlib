@@ -3,8 +3,7 @@ from __future__ import annotations
 from warnings import warn
 from os import PathLike
 
-from typing import Optional, Any
-from numpy.typing import NDArray
+from typing import Optional
 
 import numpy as np
 from cosmolib.data import (
@@ -14,11 +13,11 @@ from cosmolib.data import (
 )
 
 from ._common import (
-    read_data_vectors,
-    read_covariance_data,
-    read_mixing_matrix_data,
-    get_cosmology_from_header,
     check_input,
+    get_cosmology_from_header,
+    read_data_vectors,
+    read_and_reshape_covariance_matrix,
+    read_mixing_matrix,
 )
 
 TYPE_CHECKING = True
@@ -82,40 +81,10 @@ def get_PowerSpectrumMultipolesCovariance(
             result[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        header, data = read_covariance_data(str(path).format(zlab))
-        zeff, _ = get_cosmology_from_header(header, get_fiducial=False)
-        mask = np.isin(data["MULTIPOLE-I"], range(5)) & np.isin(
-            data["MULTIPOLE-J"], range(5)
+        k_values, covariance_blocks, zeff = read_and_reshape_covariance_matrix(
+            path=str(path).format(zlab),
+            type="SPECTRUM",
         )
-        data = data[mask]
-
-        scale_prefix = "k"
-        scale_i_col = f"{scale_prefix.upper()}I"
-
-        k_values = np.unique(data[scale_i_col])
-        nk = len(k_values)
-
-        covariance_blocks: dict[str, NDArray[Any]] = {}
-        for ell_i in range(5):
-            for ell_j in range(5):
-                block_mask = (data["MULTIPOLE-I"] == ell_i) & (
-                    data["MULTIPOLE-J"] == ell_j
-                )
-                block_data = data[block_mask]
-
-                if len(block_data) == 0:
-                    continue
-
-                current_block = np.zeros((nk, nk))
-
-                k_to_idx = {k_val: i for i, k_val in enumerate(k_values)}
-
-                for row in block_data:
-                    k_idx_i = k_to_idx[row[f"{scale_prefix.upper()}I"]]
-                    k_idx_j = k_to_idx[row[f"{scale_prefix.upper()}J"]]
-                    current_block[k_idx_i, k_idx_j] = row["COVARIANCE"]
-
-                covariance_blocks[f"ELL_{ell_i}-{ell_j}"] = current_block
 
         result[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesCovariance(
             k=k_values,
@@ -142,7 +111,7 @@ def get_PowerSpectrumMultipolesMixingMatrix(
             result[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        header, data = read_mixing_matrix_data(str(path).format(zlab))
+        header, data = read_mixing_matrix(str(path).format(zlab))
         kout = data["BINS_OUTPUT"]["k"]
         kin = {ell: data["BINS_INPUT"]["kp{}".format(ell)] for ell in even_multipoles}
         mixing_matrix_blocks = {

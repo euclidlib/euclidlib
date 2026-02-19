@@ -100,6 +100,18 @@ def get_cosmology_from_header(
     return zeff, fiducial_cosmology
 
 
+def check_input(
+    redshifts: tuple[str, ...],
+) -> tuple[tuple[str, ...], int]:
+    """
+    Define number of cases to read
+    """
+    multiple_paths = len(redshifts) > 0
+    redshifts = redshifts if multiple_paths else ("",)
+    nz = len(redshifts)
+    return redshifts, nz
+
+
 def read_data_vectors(
     path: Union[str, PathLike[str]], ext_name: str
 ) -> Tuple[Dict[str, Any], NDArray[Any]]:
@@ -119,8 +131,10 @@ def read_data_vectors(
 
     raise ValueError(not_found_message)
 
+    return header, data
 
-def read_covariance_data(
+
+def read_covariance_matrix(
     path: Union[str, PathLike[str]],
 ) -> Tuple[Dict[str, Any], NDArray[Any]]:
     """
@@ -142,14 +156,59 @@ def read_covariance_data(
     return header, data
 
 
-def read_mixing_matrix_data(
+def read_and_reshape_covariance_matrix(
+    path: Union[str, PathLike[str]],
+    type: str,
+) -> Tuple[NDArray[Any], Dict[str, NDArray[Any]], float]:
+    """
+    Helper function to get multipoles covariance data
+    """
+    header, data = read_covariance_matrix(path)
+    zeff, _ = get_cosmology_from_header(header, get_fiducial=False)
+    mask = np.isin(data["MULTIPOLE-I"], range(5)) & np.isin(
+        data["MULTIPOLE-J"], range(5)
+    )
+    data = data[mask]
+
+    if type == "SPECTRUM":
+        scale_label = "K"
+    elif type == "CORRELATION":
+        scale_label = "S"
+
+    scale_values = np.unique(data[scale_label + "I"])
+    n_scale_values = len(scale_values)
+
+    covariance_blocks: dict[str, NDArray[Any]] = {}
+    for ell_i in range(5):
+        for ell_j in range(5):
+            block_mask = (data["MULTIPOLE-I"] == ell_i) & (data["MULTIPOLE-J"] == ell_j)
+            block_data = data[block_mask]
+
+            if len(block_data) == 0:
+                continue
+
+            current_block = np.zeros((n_scale_values, n_scale_values))
+
+            scale_to_idx = {scale_val: i for i, scale_val in enumerate(scale_values)}
+
+            for row in block_data:
+                scale_idx_i = scale_to_idx[row[scale_label + "I"]]
+                scale_idx_j = scale_to_idx[row[scale_label + "J"]]
+                current_block[scale_idx_i, scale_idx_j] = row["COVARIANCE"]
+
+            covariance_blocks[f"ELL_{ell_i}-{ell_j}"] = current_block
+
+    return scale_values, covariance_blocks, zeff
+
+
+def read_mixing_matrix(
     path: Union[str, PathLike[str]],
 ) -> Tuple[Dict[str, Any], Dict[str, NDArray[Any]]]:
     """
-    Reads mixing matrix matrix data from Euclid LE3-CM-GC fits file
+    Reads mixing matrix data from Euclid LE3-CM-GC fits file
     """
-    data = {}
-    header = {}
+    data: Dict[str, NDArray[Any]] = {}
+    header: Dict[str, Any] = {}
 
     required = ["BINS_OUTPUT", "BINS_INPUT", "MIXING_MATRIX"]
 
@@ -160,7 +219,7 @@ def read_mixing_matrix_data(
                 data[extname] = hdu.read()
                 header[extname] = _get_hdu_header(hdu)
 
-    if header is None or data is None:
+    if not data:
         raise ValueError(
             "HDU does not seem a mixing matrix. (BINS_OUTPUT, "
             " BINS_INPUT, MIXING_MATRIX)"
@@ -187,15 +246,3 @@ def build_2d_correlation(
     correlation_2d[s_indices, mu_indices] = correlation_1d
 
     return unique_s, unique_mu, correlation_2d
-
-
-def check_input(
-    redshifts: tuple[str, ...],
-) -> tuple[tuple[str, ...], int]:
-    """
-    Define number of cases to read
-    """
-    multiple_paths = len(redshifts) > 0
-    redshifts = redshifts if multiple_paths else ("",)
-    nz = len(redshifts)
-    return redshifts, nz
