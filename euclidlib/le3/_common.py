@@ -82,16 +82,16 @@ def get_cosmology_from_header(
     fiducial_cosmology = (
         {
             "OMEGA_M": header["OMEGA_M"],
-            "OMEGA_R": header["OMEGA_R"],
             "OMEGA_B": header["OMEGA_B"],
-            "OMEGA_V": header["OMEGA_V"],
-            "OMEGA_K": header["OMEGA_K"],
             "HUBBLE": header["HUBBLE"],
-            "INDEX_N": header["INDEX_N"],
-            "SIGMA_8": header["SIGMA_8"],
-            "W_STATE": header["W_STATE"],
-            "N_EFF": header["N_EFF"],
-            "T_CMB": header["T_CMB"],
+            **({"OMEGA_R": header["OMEGA_R"]} if "OMEGA_R" in header else {}),
+            **({"OMEGA_V": header["OMEGA_V"]} if "OMEGA_V" in header else {}),
+            **({"OMEGA_K": header["OMEGA_K"]} if "OMEGA_K" in header else {}),
+            **({"INDEX_N": header["INDEX_N"]} if "INDEX_N" in header else {}),
+            **({"SIGMA_8": header["SIGMA_8"]} if "SIGMA_8" in header else {}),
+            **({"W_STATE": header["W_STATE"]} if "W_STATE" in header else {}),
+            **({"N_EFF":   header["N_EFF"]  } if "N_EFF"   in header else {}),
+            **({"T_CMB":   header["T_CMB"]  } if "T_CMB"   in header else {}),
         }
         if get_fiducial
         else {}
