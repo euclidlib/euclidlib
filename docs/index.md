@@ -1,6 +1,6 @@
 # euclidlib: A library for reading cosmology-ready Euclid products
 
-`euclidlib` is an **unofficial** Python package developed to facilitate access to data products from the [Euclid Consortium](https://www.euclid-ec.org) Science Ground Segment.
+`euclidlib` is an **unofficial** Python package developed to facilitate access to data products from the [Euclid Consortium](https://www.euclid-ec.org) Science Ground Segment and Science Working Groups.
 
 The library provides straightforward tools for reading and writing Euclid data, making it easier to work with cosmological products related to Large-Scale Structure.
 

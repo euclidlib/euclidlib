@@ -1,66 +1,147 @@
-# 📁 Format
+# 📁 Data Format
 
 ## Are Euclid products homogeneous?
 
-Original Euclid Consortium Science Ground Segment (SGS) products are not homogeneous beyond being delivered as FITS files. For Level 3 (LE3) products, `euclidlib` performs homogenisation when reading them: it maps heterogeneous FITS inputs to the same internal dataclass formats, enforces the spin/component array shapes and binning conventions described below, and extracts a consistent set of metadata (scale arrays, limits, weights, and header fields). These conversions allow downstream code to treat LE3 products uniformly even if their raw origins differ.
+Original Euclid Consortium Science Ground Segment (SGS) products and
+other Science Working Group (SWG) products are **not homogeneous**,
+beyond the fact that they are delivered as FITS files.
 
-## Photometric products
+Level 3 (LE3) and other cosmology-ready products (summary statistics)
+differ in:
 
-`euclidlib` reads photometric redshift distributions and returns a canonical representation:
+- Internal FITS structure\
+- Naming conventions\
+- Array shapes\
+- Metadata formatting
 
-- A 1D redshift array.
-- A mapping (Python dictionary) from redshift‑bin index → $n(z)$ array
+To ensure consistency as much as possible, `euclidlib` performs **automatic homogenisation
+at read time**. It:
 
-## Level 3 (LE3) Cosmology-Ready Products
+- Maps heterogeneous FITS inputs to unified internal dataclass
+  formats
+- Enforces consistent spin/component array shapes
+- Standardises binning conventions
+- Extracts a common set of metadata (scales, limits, weights, headers)
 
-These products correspond to measurements of weak lensing (cosmic shear)
-and galaxy clustering derived from the Euclid catalogues.
+This guarantees that downstream cosmological analyses can treat all
+products uniformly, regardless of their raw origin, which is highly-useful in likelihood codes.
 
-### 1. Spin Structure
+---
 
-Euclid observables map to different array shape. For this, they are grouped by spin; the array shape follows the number of components of each field. Think of each field as a small vector (components ordered consistently) and correlations as outer products of those vectors.
+# SGS Photometric Products
 
-| Spin | Field                    | Components | Component order | Auto-correlation shape |
-| ---- | ------------------------ | ---------: | --------------- | ---------------------: |
-| 0    | POS (position / density) |          1 | [pos]           |                (1 × 1) |
-| 2    | SHE (shear)              |          2 | [e1, e2]        |                (2 × 2) |
+`euclidlib` reads photometric redshift distributions and returns a
+canonical representation consisting of:
 
-Cross-correlations obey the same rule: shape = (components of field A) × (components of field B).
+- A 1D redshift array\
+- A Python dictionary mapping `redshift_bin_index` to a $n(z)$ array
 
-Examples:
+This ensures all photo-z inputs share a consistent internal format.
+
+---
+
+# Level 3 (LE3) and Other Cosmology-Ready Products
+
+## 1. `euclidlib` Output Structure
+
+When a summary-statistics product is loaded, `euclidlib` returns a
+**Python dictionary** whose key are tuples:
 
 ```python
-('SHE', 'SHE', 1, 1)  → shape = (2, 2) # first component is always E-mode
-('POS', 'SHE', 1, 2)  → shape = (1, 2)
+{
+    ('FIELD1', 'FIELD2', zbin1, zbin2): dataclass_instance
+}
 ```
 
-When loaded with `euclidlib`, products are returned as a nested dictionary keyed by:
-field1 → field2 → redshift bin 1 → redshift bin 2 → measurement array (with the shapes above). Bins act as independent fields, so every bin pair stores its own component-shaped array.
+Each key uniquely identifies, for instance:
 
-### 2. `cosmolib` dataclasses
+    (field_1, field_2, redshift_bin_1, redshift_bin_2)
 
-Each measurement is encapsulated in a dedicated Python dataclass corresponding to its observable. For example:
+Bins are treated as independent fields, so every bin pair stores its own
+component-shaped measurement array.
 
+---
+
+## 2. `cosmolib` Dataclasses
+
+Each measurement is stored in a dedicated Python dataclass corresponding
+to its observable.
+
+Example:
+
+```python
+AngularPowerSpectra(
+    array=np.array,
+    ell=np.array,
+    scale_axis="ell",
+    ...
+)
 ```
-AngularPowerSpectra(a, ell=np.(array), axis=scale_axis, ...)
+
+These Python dataclasses are provided by the lightweight [cosmolib package](https://github.com/astro-ph/cosmolib). This format is also used by other python packages such as heracles, cloelib, cloelike and Spaceborne.
+
+---
+
+# Spin Structure
+
+Euclid observables are grouped by **spin**, which determines the number
+of components and therefore the array shape.
+
+- **POS** = Photometric galaxy positions
+- **SHE** = Weak lensing shear
+- **SPE** = Spectroscopic galaxy clustering
+
+## Component Structure
+
+---
+
+Spin Field Components Component Auto-correlation Quantity stored in
+order shape attribute
+
+---
+
+0 POS (position / 1 \[pos\] (1 × 1) `array`
+density)
+
+2 SHE (shear) 2 \[E, B\] (2 × 2) `array`
+
+0 SPE (position / 1 \[spe\] (1 × 1) `multipoles`
+density)
+
+---
+
+Cross-correlations follow:
+
+    shape = (components of field A) × (components of field B)
+
+---
+
+## Examples
+
+```python
+('SHE', 'SHE', 1, 1).array       # shape = (2, 2), each with lenth of ell-values
+('POS', 'SHE', 1, 2).array       # shape = (1, 2), each with lenth of ell-values
+('SPE', 'SPE', 1, 1).multipoles  # shape = (5, Nk), where 5 refers to the multipoles and Nk to the lenght of k-values
 ```
 
-These Python dataclasses are provided by the lightweight [`cosmolib` package](https://github.com/astro-ph/cosmolib). This format is also used by other python packages such as `heracles`, `cloelib`, `cloelike` and `Spaceborne`.
+---
 
-### 3. Attributes
+# Dataclass Attributes
 
-Each entry of the dictionary contains a dataclass with attributes:
+Each dictionary entry contains a dataclass with:
 
-- The array containing the measurements
-- The scale ($\theta$ or $\ell$)
-- Upper and lower limits of that scale
-- Measurement weights
-- Additional metadata extracted from the FITS headers
+- The measurement array (`array` or `multipoles`)\
+- The scale (`theta`, `ell`, or `k`)\
+- Upper and lower scale limits\
+- Measurement weights\
+- Metadata extracted from FITS headers
 
-### 4. Real vs Harmonic Space
+---
 
-Real-space and harmonic-space measurements share the same underlying spin structure.
-For example:
+# Photometric: Real vs Harmonic Space
+
+Photometric real-space and harmonic-space observables share the same underlying spin
+structure.
 
 | Real Space                  | Harmonic Space                      |
 | --------------------------- | ----------------------------------- |
@@ -68,4 +149,5 @@ For example:
 | $(\gamma_t, \gamma_\times)$ | $(C_\ell^{gE}, C_\ell^{gB})$        |
 | $(\xi_{+}, \xi_{-})$        | $(C_\ell^{EE}, C_\ell^{BB}, \dots)$ |
 
-Because of this shared structure, all these quantities are stored in a uniform way using the `euclidlib` format—even though their original data products are not homogeneous. In practice, `euclidlib` handles the required conversions automatically.
+Because of this shared structure, all observables are stored in a
+uniform internal format by `euclidlib` regardless of the working-space.
