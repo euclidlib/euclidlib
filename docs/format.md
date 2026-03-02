@@ -9,9 +9,9 @@ beyond the fact that they are delivered as FITS files.
 Level 3 (LE3) and other cosmology-ready products (summary statistics)
 differ in:
 
-- Internal FITS structure\
-- Naming conventions\
-- Array shapes\
+- Internal FITS structure
+- Naming conventions
+- Array shapes
 - Metadata formatting
 
 To ensure consistency as much as possible, `euclidlib` performs **automatic homogenisation
@@ -28,7 +28,7 @@ products uniformly, regardless of their raw origin, which is highly-useful in li
 
 ---
 
-# SGS Photometric Products
+## SGS Photometric Products
 
 `euclidlib` reads photometric redshift distributions and returns a
 canonical representation consisting of:
@@ -40,9 +40,9 @@ This ensures all photo-z inputs share a consistent internal format.
 
 ---
 
-# Level 3 (LE3) and Other Cosmology-Ready Products
+## Level 3 (LE3) and Other Cosmology-Ready Products
 
-## 1. `euclidlib` Output Structure
+### 1. `euclidlib` Output Structure
 
 When a summary-statistics product is loaded, `euclidlib` returns a
 **Python dictionary** whose key are tuples:
@@ -62,7 +62,7 @@ component-shaped measurement array.
 
 ---
 
-## 2. `cosmolib` Dataclasses
+### 2. `cosmolib` Dataclasses
 
 Each measurement is stored in a dedicated Python dataclass corresponding
 to its observable.
@@ -82,7 +82,7 @@ These Python dataclasses are provided by the lightweight [cosmolib package](http
 
 ---
 
-## 3. Spin Structure
+### 3. Spin Structure
 
 Euclid observables are grouped by **spin**, which determines the number
 of components and therefore the array shape.
@@ -110,7 +110,7 @@ Cross-correlations obey the same rule: shape = (components of field A) × (compo
 
 ---
 
-## 4. Dataclass Attributes
+### 4. Dataclass Attributes
 
 Each dictionary entry contains a dataclass with:
 
@@ -122,7 +122,7 @@ Each dictionary entry contains a dataclass with:
 
 ---
 
-## 5. Photometric: Real vs Harmonic Space
+### 5. Photometric: Real vs Harmonic Space
 
 Photometric real-space and harmonic-space observables share the same underlying spin
 structure.
