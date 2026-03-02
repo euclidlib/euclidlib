@@ -33,7 +33,7 @@ products uniformly, regardless of their raw origin, which is highly-useful in li
 `euclidlib` reads photometric redshift distributions and returns a
 canonical representation consisting of:
 
-- A 1D redshift array\
+- A 1D redshift array
 - A Python dictionary mapping `redshift_bin_index` to a $n(z)$ array
 
 This ensures all photo-z inputs share a consistent internal format.
