@@ -82,7 +82,7 @@ These Python dataclasses are provided by the lightweight [cosmolib package](http
 
 ---
 
-# Spin Structure
+## 3. Spin Structure
 
 Euclid observables are grouped by **spin**, which determines the number
 of components and therefore the array shape.
@@ -91,54 +91,38 @@ of components and therefore the array shape.
 - **SHE** = Weak lensing shear
 - **SPE** = Spectroscopic galaxy clustering
 
-## Component Structure
+| Spin | Field                    | Components | Component order | Auto-correlation shape | Quantity stored in attribute |
+| ---- | ------------------------ | ---------: | --------------- | ---------------------: | ---------------------------- |
+| 0    | POS (position / density) |          1 | [pos]           |                (1 × 1) | array                        |
+| 2    | SHE (shear)              |          2 | [e1, e2]        |                (2 × 2) | array                        |
+| 0    | SPE (position / density) |          1 | [spe]           |                (1 × 1) | multipoles                   |
 
----
-
-Spin Field Components Component Auto-correlation Quantity stored in
-order shape attribute
-
----
-
-0 POS (position / 1 \[pos\] (1 × 1) `array`
-density)
-
-2 SHE (shear) 2 \[E, B\] (2 × 2) `array`
-
-0 SPE (position / 1 \[spe\] (1 × 1) `multipoles`
-density)
-
----
-
-Cross-correlations follow:
-
-    shape = (components of field A) × (components of field B)
-
----
-
-## Examples
+Cross-correlations obey the same rule: shape = (components of field A) × (components of field B). Examples:
 
 ```python
-('SHE', 'SHE', 1, 1).array       # shape = (2, 2), each with lenth of ell-values
-('POS', 'SHE', 1, 2).array       # shape = (1, 2), each with lenth of ell-values
-('SPE', 'SPE', 1, 1).multipoles  # shape = (5, Nk), where 5 refers to the multipoles and Nk to the lenght of k-values
+('SHE', 'SHE', 1, 1).array       → shape = (2, 2) # first component is always E-mode, second is B-mode
+# ('SHE', 'SHE', 1, 1).array[0, 0] will have lenght equal to ('SHE', 'SHE', 1, 1).ell
+('POS', 'SHE', 1, 2).array       → shape = (1, 2)
+# ('SHE', 'SHE', 1, 1).array[0, 0] will have lenght equal to ('SHE', 'SHE', 1, 1).ell
+('SPE', 'SPE', 1, 1).multipoles  → shape = (5, Nk)
+# ('SPE', 'SPE', 1, 1).multipoles will have lenght
 ```
 
 ---
 
-# Dataclass Attributes
+## 4. Dataclass Attributes
 
 Each dictionary entry contains a dataclass with:
 
-- The measurement array (`array` or `multipoles`)\
-- The scale (`theta`, `ell`, or `k`)\
-- Upper and lower scale limits\
-- Measurement weights\
+- The measurement array (`array` or `multipoles`)
+- The scale (`theta`, `ell`, or `k`)
+- Upper and lower scale limits
+- Measurement weights
 - Metadata extracted from FITS headers
 
 ---
 
-# Photometric: Real vs Harmonic Space
+## 5. Photometric: Real vs Harmonic Space
 
 Photometric real-space and harmonic-space observables share the same underlying spin
 structure.
