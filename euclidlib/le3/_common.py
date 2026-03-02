@@ -90,8 +90,8 @@ def get_cosmology_from_header(
             **({"INDEX_N": header["INDEX_N"]} if "INDEX_N" in header else {}),
             **({"SIGMA_8": header["SIGMA_8"]} if "SIGMA_8" in header else {}),
             **({"W_STATE": header["W_STATE"]} if "W_STATE" in header else {}),
-            **({"N_EFF":   header["N_EFF"]  } if "N_EFF"   in header else {}),
-            **({"T_CMB":   header["T_CMB"]  } if "T_CMB"   in header else {}),
+            **({"N_EFF": header["N_EFF"]} if "N_EFF" in header else {}),
+            **({"T_CMB": header["T_CMB"]} if "T_CMB" in header else {}),
         }
         if get_fiducial
         else {}
