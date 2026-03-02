@@ -12,8 +12,15 @@ The library provides straightforward tools for reading and writing Euclid data, 
 
 ## 📖 Table of Contents
 
-```{tableofcontents}
+```{toctree}
+:maxdepth: 1
+:caption: Getting Started
 
+installation
+format
+examples
+modules
+contributors
 ```
 
 ---

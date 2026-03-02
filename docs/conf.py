@@ -4,6 +4,10 @@ from datetime import date
 from sphinx.application import Sphinx
 import os
 
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))
+
 # -- Project information -----------------------------------------------------
 
 project = "euclidlib"
@@ -12,6 +16,9 @@ copyright = f"{date.today().year}, {author}"
 
 # Master document
 language = "en"
+root_doc = "index"
+autodoc_mock_imports = ["cosmolib"]
+nb_execution_mode = "auto"
 
 # -- General configuration ---------------------------------------------------
 
@@ -27,6 +34,9 @@ templates_path = ["_templates"]
 
 exclude_patterns = [
     "_build",
+    "build",
+    "jupyter_execute",
+    "**/jupyter_execute",
     "Thumbs.db",
     ".DS_Store",
 ]
@@ -39,10 +49,12 @@ myst_enable_extensions = [
     "tasklist",
     "substitution",
     "linkify",
+    "dollarmath",
+    "amsmath",
 ]
 
 # Execute notebooks automatically
-nb_execution_mode = "off"  # RTD executes notebooks if needed
+# jupyter_execute_notebooks = "auto"  # RTD executes notebooks if needed
 
 # -- Bibliography ------------------------------------------------------------
 
