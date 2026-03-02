@@ -2,17 +2,27 @@ from __future__ import annotations
 
 from warnings import warn
 from os import PathLike
-import os
-import fitsio  # type: ignore [import-not-found]
 
-from typing import Optional, cast
+from typing import Optional
 
-from numpy.typing import NDArray
-from cosmolib.data import PowerSpectrum  # type: ignore [import-not-found]
+import numpy as np
+from cosmolib.data import (
+    PowerSpectrumMultipoles,
+    PowerSpectrumMultipolesCovariance,
+    PowerSpectrumMultipolesMixingMatrix,
+)
+
+from ._common import (
+    check_input,
+    get_cosmology_from_header,
+    read_data_vectors,
+    read_and_reshape_covariance_matrix,
+    read_mixing_matrix,
+)
 
 TYPE_CHECKING = True
 if TYPE_CHECKING:
-    from typing import Any, Dict, Tuple, Union
+    from typing import Union
 
     try:
         from typing import TypeAlias
@@ -22,131 +32,109 @@ if TYPE_CHECKING:
     _DictKey: TypeAlias = Union[str, int, tuple["_DictKey", ...]]
 
 
-def _verify_input_file(
-    path: Union[str, PathLike[str]], check_extra_hdu: bool = False
-) -> None:
-    """
-    Verifies that input file is a compatible LE3-GC fits file
-    """
-    hdul_target_length = 3 if check_extra_hdu else 2
-
-    if not any((isinstance(path, str), isinstance(path, PathLike))):
-        raise TypeError(
-            "Provided fits file name must be a string or a PathLike object."
-        )
-
-    if not os.path.isfile(path):
-        raise FileNotFoundError(f"Could not find file '{path}'.")
-
-    try:
-        with fitsio.FITS(path) as fits_input:
-            assert len(fits_input) > hdul_target_length - 1
-            assert "EXTNAME" in _get_hdu_header(fits_input[hdul_target_length - 1])
-    except OSError:
-        raise ValueError("Provided file is not a valid fits file.")
-    except AssertionError:
-        raise ValueError(
-            "Provided fits file does not match the structure of a valid LE3-GC product."
-        )
-    except Exception:
-        raise RuntimeError("Invalid file provided.")
-
-
-def _get_hdu_header(hdu: fitsio.TableHDU) -> Dict[str, Any]:
-    """
-    Reads header from fits file HDU
-    """
-    head: Dict[str, Any] = dict(hdu.read_header())
-    return head
-
-
-def _get_hdu_data(hdu: fitsio.TableHDU) -> NDArray[Any]:
-    """
-    Reads data from fits file HDU
-    """
-    arr: NDArray[Any] = hdu.read()
-    return arr
-
-
-def _read_power_spectrum(
-    path: Union[str, PathLike[str]],
-) -> Tuple[Dict[str, Any], NDArray[Any]]:
-    """
-    Reads power spectrum from Euclid LE3-GC fits file
-    """
-    pk_not_found_message = (
-        "Invalid fits file provided, cannot locate power spectrum data."
-    )
-
-    _verify_input_file(path)
-
-    with fitsio.FITS(path) as fits_input:
-        header = _get_hdu_header(fits_input[1])
-
-        if "SPECTRUM" not in header["EXTNAME"]:
-            raise ValueError(pk_not_found_message)
-
-        if header["EXTNAME"] == "SPECTRUM":
-            data = _get_hdu_data(fits_input[1])
-
-        elif header["EXTNAME"] == "BISPECTRUM":
-            warn(
-                "\n\033[0;31m[!]\033[0m This looks to be a bispectrum file. "
-                "Falling back to next HDU looking for data on the power spectrum."
-            )
-            _verify_input_file(path, check_extra_hdu=True)
-            header = _get_hdu_header(fits_input[2])
-            if header["EXTNAME"] != "SPECTRUM":
-                raise ValueError(pk_not_found_message)
-            data = _get_hdu_data(fits_input[2])
-
-        else:
-            raise ValueError(pk_not_found_message)
-
-    return header, data
-
-
-def power_spectrum(
-    path: Union[str, PathLike[str]],
-) -> dict[_DictKey, PowerSpectrum]:
+def get_PowerSpectrumMultipoles(
+    path: Union[str, PathLike[str]], *redshifts: str
+) -> dict[_DictKey, PowerSpectrumMultipoles]:
     """
     Returns power spectrum data in the cloe-compatible euclidlib data format
     """
-    header, data = _read_power_spectrum(path)
+    redshifts, nz = check_input(redshifts)
+    result: dict[_DictKey, Optional[PowerSpectrumMultipoles]] = {}
 
-    fidual_cosmology = {
-        "OMEGA_M": header["OMEGA_M"],
-        "OMEGA_R": header["OMEGA_R"],
-        "OMEGA_B": header["OMEGA_B"],
-        "OMEGA_V": header["OMEGA_V"],
-        "OMEGA_K": header["OMEGA_K"],
-        "HUBBLE": header["HUBBLE"],
-        "INDEX_N": header["INDEX_N"],
-        "SIGMA_8": header["SIGMA_8"],
-        "W_STATE": header["W_STATE"],
-        "N_EFF": header["N_EFF"],
-        "T_CMB": header["T_CMB"],
-    }
+    for i in range(nz):
+        for j in range(nz):
+            result[("SPE", "SPE", i, j)] = None
 
-    # Explicit annotation required for mypy
-    results: dict[_DictKey, Optional[PowerSpectrum]] = {}
+    for i, zlab in enumerate(redshifts):
+        header, data = read_data_vectors(str(path).format(zlab), "SPECTRUM")
+        zeff, fiducial_cosmology = get_cosmology_from_header(header)
+        nbar = 1.0 / header["SN_VALUE"]
+        multipoles = np.array([data[f"PK{ell}"] for ell in range(5)])
 
-    # Create all keys (auto + cross)
-    for i in range(5):
-        for j in range(5):
-            results[("SPE", "SPE", i, j)] = None
-
-    # Fill only auto-correlations
-    for i in range(5):
-        results[("SPE", "SPE", i, i)] = PowerSpectrum(
-            data["K"],
-            data["K_EFF"],
-            data["NUM_MOD"],
-            data[f"PK{i}"],
-            fidual_cosmology,
-            0,  # redshift_eff is not stored
-            1.0 / header["SN_VALUE"],
-            header["SN_VALUE"],
+        result[("SPE", "SPE", i, i)] = PowerSpectrumMultipoles(
+            k=data["K"],
+            keff=data["K_EFF"],
+            Nmodes=data["NUM_MOD"],
+            multipoles=multipoles,
+            fiducial_cosmology=fiducial_cosmology,
+            zeff=zeff,
+            nbar=nbar,
+            Psn=header["SN_VALUE"],
         )
 
-    return cast(dict[_DictKey, PowerSpectrum], results)
+    return result
+
+
+def get_PowerSpectrumMultipolesCovariance(
+    path: Union[str, PathLike[str]], *redshifts: str
+) -> dict[_DictKey, PowerSpectrumMultipolesCovariance]:
+    """
+    Returns a single Cov_PS_ell object containing the full,
+    combined covariance matrix for even multipoles (0, 2, 4), the k-axis,
+    and the effective redshift.
+    """
+    redshifts, nz = check_input(redshifts)
+    result: dict[_DictKey, Optional[PowerSpectrumMultipolesCovariance]] = {}
+
+    for i in range(nz):
+        for j in range(nz):
+            result[("SPE", "SPE", i, j)] = None
+
+    for i, zlab in enumerate(redshifts):
+        k_values, covariance_blocks, zeff = read_and_reshape_covariance_matrix(
+            path=str(path).format(zlab),
+            type="SPECTRUM",
+        )
+
+        result[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesCovariance(
+            k=k_values,
+            covariance=covariance_blocks,
+            zeff=zeff,
+        )
+
+    return result
+
+
+def get_PowerSpectrumMultipolesMixingMatrix(
+    path: Union[str, PathLike[str]], *redshifts: str
+) -> dict[_DictKey, PowerSpectrumMultipolesMixingMatrix]:
+    """
+    Reads the mixing matrix for power spectrum multipoles from a FITS file.
+    """
+    even_multipoles = [0, 2, 4]
+
+    redshifts, nz = check_input(redshifts)
+    result: dict[_DictKey, Optional[PowerSpectrumMultipolesMixingMatrix]] = {}
+
+    for i in range(nz):
+        for j in range(nz):
+            result[("SPE", "SPE", i, j)] = None
+
+    for i, zlab in enumerate(redshifts):
+        header, data = read_mixing_matrix(str(path).format(zlab))
+        kout = data["BINS_OUTPUT"]["k"]
+        kin = {ell: data["BINS_INPUT"]["kp{}".format(ell)] for ell in even_multipoles}
+        mixing_matrix_blocks = {
+            "ELL_{}-{}".format(ell1, ell2): data["MIXING_MATRIX"][
+                "W{}{}".format(ell1, ell2)
+            ]
+            for ell2 in even_multipoles
+            for ell1 in even_multipoles
+        }
+
+        try:
+            zeff = header["MIXING_MATRIX"]["Z_EFF"]
+        except KeyError:
+            warn(
+                "Effective redshift not specified in FITS file header. Setting it to 0."
+            )
+            zeff = 0.0
+
+        result[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesMixingMatrix(
+            kout=kout,
+            kin=kin,
+            mixing=mixing_matrix_blocks,
+            zeff=zeff,
+        )
+
+    return result

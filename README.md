@@ -43,33 +43,21 @@ The design of the `euclidlib` package closely follows the organisation of the [E
 
 ```mermaid
 graph TD
-    %% Node styles
-    classDef core fill:#000000,stroke:none,color:#ffffff,font-size:20px,rounded-corners:10px;
-    classDef module fill:#f5f0e1,stroke:none,color:#000000,font-size:16px,rounded-corners:10px; %% pastel beige
-    classDef data fill:#d9d9d9,stroke:none,color:#000000,font-size:16px,rounded-corners:10px; %% grey
+    EUCLIDLIB[euclidlib]
 
-    %% Core
-    EUCLIDLIB[euclidlib]:::core
+    LE3[le3]
+    PK_WL[pk_wl]
+    TWOPCF_WL[twopcf_wl]
+    PK_GC[pk_gc]
+    TWOPCF_GC[twopcf_gc]
 
-    %% Summary Statistics label top-left
-    subgraph "Summary Statistics"
-        LE3[le3]:::data
-        PKWL[pk_wl]:::module
-        TWOPCF[twopcf_wl]:::module
-        PKGC[pk_gc]:::module
-    end
+    PHZ[phz]
 
-    %% Photometry
-    PHZ[phz]:::data
-
-    %% Connections
     EUCLIDLIB --> LE3
     EUCLIDLIB --> PHZ
 
-    LE3 --> PKWL
+    LE3 --> PK
     LE3 --> TWOPCF
-    LE3 --> PKGC
-
 ```
 
 `euclidlib` provides all data products in a unified, Pythonic format based on dataclasses, ensuring consistent, intuitive, and easy-to-use interfaces across all supported products. Please consult the full documentation for additional details.
@@ -120,6 +108,8 @@ To discover the meaning of each icon, hover your mouse over it.
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/FlorianDubath"><img src="https://avatars.githubusercontent.com/u/9742907?v=4?s=100" width="100px;" alt="FlorianDubath"/><br /><sub><b>FlorianDubath</b></sub></a><br /><a href="#ideas-FlorianDubath" title="Ideas, Planning, & Feedback">🤔</a> <a href="#data-FlorianDubath" title="Data">🔣</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jacopo-salvalaggio"><img src="https://avatars.githubusercontent.com/u/99494103?v=4?s=100" width="100px;" alt="Jacopo Salvalaggio"/><br /><sub><b>Jacopo Salvalaggio</b></sub></a><br /><a href="#code-jacopo-salvalaggio" title="Code">💻</a> <a href="#ideas-jacopo-salvalaggio" title="Ideas, Planning, & Feedback">🤔</a> <a href="#data-jacopo-salvalaggio" title="Data">🔣</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AndreaPezzotta"><img src="https://avatars.githubusercontent.com/u/29603598?v=4?s=100" width="100px;" alt="AndreaPezzotta"/><br /><sub><b>AndreaPezzotta</b></sub></a><br /><a href="#code-AndreaPezzotta" title="Code">💻</a> <a href="#ideas-AndreaPezzotta" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/chiaramoretti"><img src="https://avatars.githubusercontent.com/u/12472732?v=4?s=100" width="100px;" alt="Chiara Moretti"/><br /><sub><b>Chiara Moretti</b></sub></a><br /><a href="#review-chiaramoretti" title="Reviewed Pull Requests">👀</a></td>
     </tr>
   </tbody>
 </table>
