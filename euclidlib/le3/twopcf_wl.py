@@ -76,8 +76,7 @@ def correlation_functions(
     Notes
     -----
     - Only HDUs whose EXTNAME contains ``'2D'`` are read.
-    - The mapping of FITS columns to TPCF components follows the official
-      Euclid naming conventions:
+    - The mapping of FITS columns to TPCF components follows the official Euclid naming conventions:
         * SHE–SHE → (XI_P, XI_M, XI_X)
         * POS–SHE → (GAMMA_T, GAMMA_X)
         * POS–POS → (WTHETA)

@@ -39,7 +39,7 @@ pip install euclidlib
 
 ## Structure and Format of `euclidlib`
 
-The design of the `euclidlib` package closely follows the organisation of the [Euclid Data Product Description Documentation](http://st-dm.pages.euclid-sgs.uk/data-product-doc/dm10/) and reflects the structure of the Euclid Science Ground Segment.
+The design of the `euclidlib` package closely follows the organisation of the [Euclid Data Product Description Documentation](http://st-dm.pages.euclid-sgs.uk/data-product-doc/dmdr1/) and reflects the structure of the Euclid Science Ground Segment.
 
 ```mermaid
 graph TD
@@ -56,10 +56,8 @@ graph TD
     EUCLIDLIB --> LE3
     EUCLIDLIB --> PHZ
 
-    LE3 --> PK_WL
-    LE3 --> TWOPCF_WL
-    LE3 --> PK_GC
-    LE3 --> TWOPCF_GC
+    LE3 --> PK
+    LE3 --> TWOPCF
 ```
 
 `euclidlib` provides all data products in a unified, Pythonic format based on dataclasses, ensuring consistent, intuitive, and easy-to-use interfaces across all supported products. Please consult the full documentation for additional details.
