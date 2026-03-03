@@ -39,7 +39,7 @@ pip install euclidlib
 
 ## Structure and Format of `euclidlib`
 
-The design of the `euclidlib` package closely follows the organisation of the [Euclid Data Product Description Documentation](http://st-dm.pages.euclid-sgs.uk/data-product-doc/dm10/) and reflects the structure of the Euclid Science Ground Segment.
+The design of the `euclidlib` package closely follows the organisation of the [Euclid Data Product Description Documentation](http://st-dm.pages.euclid-sgs.uk/data-product-doc/dmdr1/) and reflects the structure of the Euclid Science Ground Segment.
 
 ```mermaid
 graph TD
