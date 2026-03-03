@@ -28,8 +28,8 @@ if TYPE_CHECKING:
     _DictKey: TypeAlias = Union[str, int, tuple["_DictKey", ...]]
 
 
-def get_BAO_alphas(
-        path: union[str, PathLike[str]], *redshifts: str
+def BAO_alphas(
+        path: Union[str, PathLike[str]], *redshifts: str
 ) -> dict[_DictKey, TwoPointCorrelationCartesian]:
     """
     Returns alphas from BAO in cloe-compatible euclidlib data format
