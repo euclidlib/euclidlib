@@ -19,7 +19,7 @@
 
 ## Introduction
 
-`euclidlib` is an unofficial Python package designed to access official Euclid mission products provided by the Science Ground Segment. Its goal is to offer the Euclid community a user-friendly, ready-to-use library that enables immediate work with science-ready Euclid data.
+`euclidlib` is an unofficial Python library for accessing and reading cosmology-ready data products from the ESA Euclid mission. Its goal is to offer the Euclid community a user-friendly, ready-to-use library that enables immediate work with science-ready Euclid data.
 
 The package is maintained on a best-effort basis by volunteers and contributors within the Euclid community. See the contributor list below.
 
