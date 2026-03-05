@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import numpy as np
-import fitsio # type: ignore[import-untyped]
+import fitsio  # type: ignore[import-untyped]
 from os import PathLike
 
 from typing import Optional
@@ -166,7 +166,7 @@ def write_TwoPointCorrelationMultipoles(
     s: NDArray[np.float64],
     xi: NDArray[np.float64],
     zeff: float,
-    cosmology: dict[str, float]
+    cosmology: dict[str, float],
 ) -> None:
     """
     Writes two-point correlation function multipoles to a FITS file with a structure
