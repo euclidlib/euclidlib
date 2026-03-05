@@ -3,7 +3,7 @@ from __future__ import annotations
 from warnings import warn
 from os import PathLike
 import os
-import fitsio  # type: ignore[import-untyped]
+import fitsio  # type: ignore [import-not-found]
 import numpy as np
 
 

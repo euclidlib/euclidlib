@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import numpy as np
-import fitsio  # type: ignore[import-untyped]
+import fitsio  # type: ignore [import-not-found]
 from os import PathLike
 
 from typing import Optional

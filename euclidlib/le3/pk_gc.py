@@ -7,7 +7,7 @@ from os import PathLike
 from typing import Optional
 
 import numpy as np
-import fitsio  # type: ignore[import-untyped]
+import fitsio  # type: ignore [import-not-found]
 from cosmolib.data import (
     PowerSpectrumMultipoles,
     PowerSpectrumMultipolesCovariance,
