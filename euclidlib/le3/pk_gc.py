@@ -148,7 +148,7 @@ def write_PowerSpectrumMultipoleShifts(
     k: NDArray[np.float64],
     pk: dict[_DictKey, NDArray[np.float64]],
     zeff: float,
-    cosmology: dict[str, float]
+    cosmology: dict[str, float],
 ) -> None:
     """
     Writes power spectrum multipoles to a FITS file with a structure
@@ -189,16 +189,18 @@ def write_PowerSpectrumMultipoleShifts(
     }
     header.update(cosmology)
 
-    header.update({
-        "TUNIT1": "Bin 1d k scale",
-        "TUNIT2": "Effective k bin 1D scale",
-        "TUNIT3": "Blinding shift for multipole ell=0",
-        "TUNIT4": "Blinding shift for multipole ell=1",
-        "TUNIT5": "Blinding shift for multipole ell=2",
-        "TUNIT6": "Blinding shift for multipole ell=3",
-        "TUNIT7": "Blinding shift for multipole ell=4",
-        "TUNIT8": "Number of modes averaged",
-    })
+    header.update(
+        {
+            "TUNIT1": "Bin 1d k scale",
+            "TUNIT2": "Effective k bin 1D scale",
+            "TUNIT3": "Blinding shift for multipole ell=0",
+            "TUNIT4": "Blinding shift for multipole ell=1",
+            "TUNIT5": "Blinding shift for multipole ell=2",
+            "TUNIT6": "Blinding shift for multipole ell=3",
+            "TUNIT7": "Blinding shift for multipole ell=4",
+            "TUNIT8": "Number of modes averaged",
+        }
+    )
 
     if os.path.exists(path):
         os.remove(path)

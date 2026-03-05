@@ -166,7 +166,7 @@ def write_TwoPointCorrelationMultipoles(
     s: NDArray[np.float64],
     xi: NDArray[np.float64],
     zeff: float,
-    cosmology: dict[str, float] = None
+    cosmology: dict[str, float] = None,
 ) -> None:
     """
     Writes two-point correlation function multipoles to a FITS file with a structure
