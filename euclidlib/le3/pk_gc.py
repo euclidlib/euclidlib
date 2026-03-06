@@ -143,7 +143,7 @@ def get_PowerSpectrumMultipolesMixingMatrix(
     return result
 
 
-def write_PowerSpectrumMultipoleShifts(
+def write_PowerSpectrumMultipoles(
     path: Union[str, PathLike[str]],
     k: NDArray[np.float64],
     pk: NDArray[np.float64],
