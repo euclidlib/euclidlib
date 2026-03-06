@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+import os
 from warnings import warn
 from os import PathLike
 
 from typing import Optional
 
 import numpy as np
+import fitsio  # type: ignore [import-not-found]
 from cosmolib.data import (
     PowerSpectrumMultipoles,
     PowerSpectrumMultipolesCovariance,
     PowerSpectrumMultipolesMixingMatrix,
 )
+from numpy.typing import NDArray
 
 from ._common import (
     check_input,
@@ -138,3 +141,70 @@ def get_PowerSpectrumMultipolesMixingMatrix(
         )
 
     return result
+
+
+def write_PowerSpectrumMultipoles(
+    path: Union[str, PathLike[str]],
+    k: NDArray[np.float64],
+    pk: NDArray[np.float64],
+    zeff: float,
+    cosmology: dict[str, float],
+) -> None:
+    """
+    Writes power spectrum multipoles to a FITS file with a structure
+    consistent with Euclid LE3 GC products.
+    """
+    nrows = len(k)
+    dtype = [
+        ("K", "f8"),
+        ("K_EFF", "f8"),
+        ("PK0", "f8"),
+        ("PK1", "f8"),
+        ("PK2", "f8"),
+        ("PK3", "f8"),
+        ("PK4", "f8"),
+        ("NUM_MOD", "f8"),
+    ]
+    data = np.zeros(nrows, dtype=dtype)
+    data["K"] = data["K_EFF"] = k
+    for ell in range(min(5, pk.shape[0])):
+        data[f"PK{ell}"] = pk[ell]
+
+    header = {
+        "TELESCOP": "EUCLID  ",
+        "INSTRUME": "LE3_GC_PK",
+        "RUNTYPE": "AUTO    ",
+        "Z_EFF": zeff,
+        "STAT": None,
+        "USE_NBAR": None,
+        "MAS": None,
+        "MAS_CORR": None,
+        "FKP_CORR": None,
+        "P_EST": None,
+        "INTERLAC": None,
+        "SN_CORR": None,
+        "SN_VALUE": None,
+        "ALPHA": None,
+        "SCALE": "LIN     ",
+    }
+    header.update(cosmology)
+
+    header.update(
+        {
+            "TUNIT1": "Bin 1d k scale",
+            "TUNIT2": "Effective k bin 1D scale",
+            "TUNIT3": "Blinding shift for multipole ell=0",
+            "TUNIT4": "Blinding shift for multipole ell=1",
+            "TUNIT5": "Blinding shift for multipole ell=2",
+            "TUNIT6": "Blinding shift for multipole ell=3",
+            "TUNIT7": "Blinding shift for multipole ell=4",
+            "TUNIT8": "Number of modes averaged",
+        }
+    )
+
+    if os.path.exists(path):
+        os.remove(path)
+
+    with fitsio.FITS(path, "rw") as f:
+        f.write(None, header={"EXTNAME": "PRIMARY"})
+        f.write(data, header=header, extname="SPECTRUM")

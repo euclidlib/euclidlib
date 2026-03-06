@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import os
 import numpy as np
+import fitsio  # type: ignore [import-not-found]
 from os import PathLike
 
 from typing import Optional
+from numpy.typing import NDArray
 
 from cosmolib.data import (
     TwoPointCorrelationCartesian,
@@ -156,3 +159,56 @@ def get_TwoPointCorrelationMultipolesCovariance(
         )
 
     return result
+
+
+def write_TwoPointCorrelationMultipoles(
+    path: Union[str, PathLike[str]],
+    s: NDArray[np.float64],
+    xi: NDArray[np.float64],
+    zeff: float,
+    cosmology: dict[str, float],
+) -> None:
+    """
+    Writes two-point correlation function multipoles to a FITS file with a structure
+    consistent with Euclid LE3 GC products.
+    """
+    nrows = len(s)
+    dtype = [
+        ("SCALE", "f8"),
+        ("XI0", "f8"),
+        ("XI1", "f8"),
+        ("XI2", "f8"),
+        ("XI3", "f8"),
+        ("XI4", "f8"),
+    ]
+    data = np.zeros(nrows, dtype=dtype)
+    data["SCALE"] = s
+    for ell in range(min(5, xi.shape[0])):
+        data[f"XI{ell}"] = xi[ell]
+
+    header = {
+        "TELESCOP": "EUCLID  ",
+        "INSTRUME": "LE3GC   ",
+        "RUNTYPE": "AUTO    ",
+        "Z_EFF": zeff,
+        "STAT": "MULTIPOLE",
+        "BIN1TYPE": "LIN     ",
+        "BIN1NUM": nrows,
+        "BIN1MIN": np.min(s) if nrows > 0 else 0.0,
+        "BIN1MAX": np.max(s) if nrows > 0 else 0.0,
+        "TUNIT1": "Mpc/h   ",
+        "TUNIT2": "        ",
+        "TUNIT3": "        ",
+        "TUNIT4": "        ",
+        "TUNIT5": "        ",
+        "TUNIT6": "        ",
+    }
+
+    header.update(cosmology)
+
+    if os.path.exists(path):
+        os.remove(path)
+
+    with fitsio.FITS(path, "rw") as f:
+        f.write(None, header={"EXTNAME": "PRIMARY"})
+        f.write(data, header=header, extname="CORRELATION")
