@@ -55,7 +55,7 @@ def _get_hdu_header(hdu: fitsio.TableHDU) -> Dict[str, Any]:
     """
     Reads header from fits file HDU
     """
-    head: Dict[str, Any] = dict(hdu.read_header())
+    head: Dict[str, Any] = hdu.read_header()
     return head
 
 
@@ -68,7 +68,7 @@ def _get_hdu_data(hdu: fitsio.TableHDU) -> NDArray[Any]:
 
 
 def get_cosmology_from_header(
-    header: Dict[str, Any], get_fiducial: bool = True
+    header: fitsio.TableHDU, get_fiducial: bool = True
 ) -> Tuple[float, Dict[str, float]]:
     """
     Extracts redshift and fiducial cosmology from a FITS header.
@@ -79,23 +79,24 @@ def get_cosmology_from_header(
         warn("Effective redshift not specified in fits file header. Setting it to 0.")
         zeff = 0.0
 
-    fiducial_cosmology = (
-        {
-            "OMEGA_M": header["OMEGA_M"],
-            "OMEGA_R": header["OMEGA_R"],
-            "OMEGA_B": header["OMEGA_B"],
-            "OMEGA_V": header["OMEGA_V"],
-            "OMEGA_K": header["OMEGA_K"],
-            "HUBBLE": header["HUBBLE"],
-            "INDEX_N": header["INDEX_N"],
-            "SIGMA_8": header["SIGMA_8"],
-            "W_STATE": header["W_STATE"],
-            "N_EFF": header["N_EFF"],
-            "T_CMB": header["T_CMB"],
-        }
-        if get_fiducial
-        else {}
-    )
+    fiducial_cosmology = {}
+
+    if get_fiducial:
+        in_section = False
+
+        for r in header.records():
+            if r["name"] == "COMMENT":
+                txt = str(r["value"])
+
+                if "COSMOLOGICAL PARAMETERS USED" in txt:
+                    in_section = True
+                    continue
+
+                if in_section and "-----------" in txt:
+                    break
+
+            elif in_section and r["name"] != "COSMO_ID":
+                fiducial_cosmology[r["name"]] = r["value"]
 
     return zeff, fiducial_cosmology
 

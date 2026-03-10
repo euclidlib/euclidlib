@@ -1,20 +1,22 @@
 from __future__ import annotations
 
+# Standard library imports
 import os
-from warnings import warn
 from os import PathLike
+from typing import TYPE_CHECKING, Optional
+from warnings import warn
 
-from typing import Optional
-
-import numpy as np
+# Third-party imports
 import fitsio  # type: ignore [import-not-found]
+import numpy as np
 from cosmolib.data import (
     PowerSpectrumMultipoles,
     PowerSpectrumMultipolesCovariance,
     PowerSpectrumMultipolesMixingMatrix,
 )
-from numpy.typing import NDArray
 
+# Local library imports
+from .._util import writer
 from ._common import (
     check_input,
     get_cosmology_from_header,
@@ -23,7 +25,6 @@ from ._common import (
     read_mixing_matrix,
 )
 
-TYPE_CHECKING = True
 if TYPE_CHECKING:
     from typing import Union
 
@@ -35,18 +36,38 @@ if TYPE_CHECKING:
     _DictKey: TypeAlias = Union[str, int, tuple["_DictKey", ...]]
 
 
-def get_PowerSpectrumMultipoles(
+def power_spectrum_multipoles(
     path: Union[str, PathLike[str]], *redshifts: str
-) -> dict[_DictKey, PowerSpectrumMultipoles]:
+) -> dict[_DictKey, Optional[PowerSpectrumMultipoles]]:
     """
-    Returns power spectrum data in the cloe-compatible euclidlib data format
+    Reads the power spectrum Legendre multipoles from a LE3-format fits file
+    and returns it as a cosmolib data structure.
+
+    Parameters
+    ----------
+    path : str or PathLike
+        Path to the input FITS file. If the string contains a `{}` placeholder,
+        it will be formatted using the provided redshift labels.
+    *redshifts: str
+        Redshift labels used to format the input file name. Each value replaces
+        the `{}` placeholder in `path`, generating one input file per redshift.
+        If no labels are provided, `path` is assumed to be already complete.
+
+    Returns
+    -------
+    results : dict[_DictKey, Optional[PowerSpectrumMultipoles]]
+        Dictionary containing the power spectrum multipoles for each redshift
+        bin pair. Keys are tuples of the form ``("SPE", "SPE", i, j)``. For
+        diagonal pairs (``i == j``) the value is a `PowerSpectrumMultipoles`
+        instance read from the corresponding FITS file, while off-diagonal
+        entries are set to ``None``.
     """
     redshifts, nz = check_input(redshifts)
-    result: dict[_DictKey, Optional[PowerSpectrumMultipoles]] = {}
+    results: dict[_DictKey, Optional[PowerSpectrumMultipoles]] = {}
 
     for i in range(nz):
         for j in range(nz):
-            result[("SPE", "SPE", i, j)] = None
+            results[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
         header, data = read_data_vectors(str(path).format(zlab), "SPECTRUM")
@@ -54,7 +75,7 @@ def get_PowerSpectrumMultipoles(
         nbar = 1.0 / header["SN_VALUE"]
         multipoles = np.array([data[f"PK{ell}"] for ell in range(5)])
 
-        result[("SPE", "SPE", i, i)] = PowerSpectrumMultipoles(
+        results[("SPE", "SPE", i, i)] = PowerSpectrumMultipoles(
             k=data["K"],
             keff=data["K_EFF"],
             Nmodes=data["NUM_MOD"],
@@ -65,53 +86,173 @@ def get_PowerSpectrumMultipoles(
             Psn=header["SN_VALUE"],
         )
 
-    return result
+    return results
 
 
-def get_PowerSpectrumMultipolesCovariance(
-    path: Union[str, PathLike[str]], *redshifts: str
-) -> dict[_DictKey, PowerSpectrumMultipolesCovariance]:
+@writer(power_spectrum_multipoles)
+def _(
+    results: dict[_DictKey, PowerSpectrumMultipoles],
+    path: Union[str, PathLike[str]],
+    *redshifts: str,
+) -> None:
     """
-    Returns a single Cov_PS_ell object containing the full,
-    combined covariance matrix for even multipoles (0, 2, 4), the k-axis,
-    and the effective redshift.
+    Writes power spectrum Legendre multipoles from a cosmolib data structure to
+    the LE3 FITS format.
+
+    Parameters
+    ----------
+    results : dict
+        Dictionary mapping keys in the euclidlib format ``("SPE", "SPE", i, j)``
+        to cosmolib objects containing the data to write to FITS files.
+    path : str or PathLike
+        Path to the output FITS file. If the string contains a `{}` placeholder,
+        it will be formatted using the provided redshift labels.
+    *redshifts: str
+        Redshift labels used to format the output file name. Each value replaces
+        the `{}` placeholder in `path`, generating one output file per redshift.
+        If no labels are provided, `path` is assumed to be already finalised.
+    """
+    dtype = [
+        ("K", "f8"),
+        ("K_EFF", "f8"),
+        ("PK0", "f8"),
+        ("PK1", "f8"),
+        ("PK2", "f8"),
+        ("PK3", "f8"),
+        ("PK4", "f8"),
+        ("NUM_MOD", "f8"),
+    ]
+
+    redshifts, nz = check_input(redshifts)
+
+    for i, zlab in enumerate(redshifts):
+        obj = results[("SPE", "SPE", i, i)]
+        out_path = str(path).format(zlab)
+
+        nk = len(obj.k)
+        data = np.zeros(nk, dtype=dtype)
+
+        data["K"] = obj.k
+        data["K_EFF"] = obj.keff if obj.keff is not None else obj.k
+        for ell in range(5):
+            data[f"PK{ell}"] = obj.multipoles[ell]
+        if obj.Nmodes is not None:
+            data["NUM_MOD"] = obj.Nmodes
+
+        header = {
+            "TELESCOP": "EUCLID  ",
+            "INSTRUME": "LE3_GC_PK",
+            "RUNTYPE": "AUTO    ",
+            "Z_EFF": obj.zeff,
+            "STAT": "YBCFFT  ",
+            "USE_NBAR": None,
+            "MAS": None,
+            "MAS_CORR": None,
+            "FKP_CORR": None,
+            "P_EST": None,
+            "INTERLAC": None,
+            "SN_CORR": None,
+            "SN_VALUE": obj.Psn,
+            "ALPHA": None,
+            "SCALE": "LIN     ",
+            "TUNIT1": "Center of the k bin",
+            "TUNIT2": "Effective k of the bin",
+            "TUNIT3": "Multipole ell=0",
+            "TUNIT4": "Multipole ell=1",
+            "TUNIT5": "Multipole ell=2",
+            "TUNIT6": "Multipole ell=3",
+            "TUNIT7": "Multipole ell=4",
+            "TUNIT8": "Number of independent modes in the k bin",
+            "COMMENT": "----------- COSMOLOGICAL PARAMETERS USED ----------",
+        }
+        header.update(obj.fiducial_cosmology)
+
+        if os.path.exists(out_path):
+            os.remove(out_path)
+        with fitsio.FITS(out_path, "rw") as f:
+            f.write(None, header={"EXTNAME": "PRIMARY"})
+            f.write(data, header=header, extname="SPECTRUM")
+
+
+def power_spectrum_multipole_covariance(
+    path: Union[str, PathLike[str]], *redshifts: str
+) -> dict[_DictKey, Optional[PowerSpectrumMultipolesCovariance]]:
+    """
+    Reads the covariance matrix of the power spectrum Legendre multipoles from
+    a LE3-format fits file and returns it as a cosmolib data structure.
+
+    Parameters
+    ----------
+    path : str or PathLike
+        Path to the input FITS file. If the string contains a `{}` placeholder,
+        it will be formatted using the provided redshift labels.
+    *redshifts: str
+        Redshift labels used to format the input file name. Each value replaces
+        the `{}` placeholder in `path`, generating one input file per redshift.
+        If no labels are provided, `path` is assumed to be already complete.
+
+    Returns
+    -------
+    results : dict[_DictKey, Optional[PowerSpectrumMultipolesCovariance]]
+        Dictionary containing the covariance matrix of the power spectrum
+        multipoles for each redshift bin pair. Keys are tuples of the form
+        ``("SPE", "SPE", i, j)``. For diagonal pairs (``i == j``) the value is
+        a `PowerSpectrumMultipolesCovariance` instance read from the
+        corresponding FITS file, while off-diagonal entries are set to ``None``.
     """
     redshifts, nz = check_input(redshifts)
-    result: dict[_DictKey, Optional[PowerSpectrumMultipolesCovariance]] = {}
+    results: dict[_DictKey, Optional[PowerSpectrumMultipolesCovariance]] = {}
 
     for i in range(nz):
         for j in range(nz):
-            result[("SPE", "SPE", i, j)] = None
+            results[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
         k_values, covariance_blocks, zeff = read_and_reshape_covariance_matrix(
             path=str(path).format(zlab),
             type="SPECTRUM",
         )
-
-        result[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesCovariance(
-            k=k_values,
-            covariance=covariance_blocks,
-            zeff=zeff,
+        results[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesCovariance(
+            k=k_values, covariance=covariance_blocks, zeff=zeff
         )
 
-    return result
+    return results
 
 
-def get_PowerSpectrumMultipolesMixingMatrix(
+def power_spectrum_multipole_mixing_matrix(
     path: Union[str, PathLike[str]], *redshifts: str
-) -> dict[_DictKey, PowerSpectrumMultipolesMixingMatrix]:
+) -> dict[_DictKey, Optional[PowerSpectrumMultipolesMixingMatrix]]:
     """
-    Reads the mixing matrix for power spectrum multipoles from a FITS file.
+    Reads the mixing matrix of the power spectrum Legendre multipoles from
+    a LE3-format fits file and returns it as a cosmolib data structure.
+
+    Parameters
+    ----------
+    path : str or PathLike
+        Path to the input FITS file. If the string contains a `{}` placeholder,
+        it will be formatted using the provided redshift labels.
+    *redshifts: str
+        Redshift labels used to format the input file name. Each value replaces
+        the `{}` placeholder in `path`, generating one input file per redshift.
+        If no labels are provided, `path` is assumed to be already complete.
+
+    Returns
+    -------
+    results : dict[_DictKey, Optional[PowerSpectrumMultipolesMixingMatrix]]
+        Dictionary containing the mixing matrix of the power spectrum multipoles
+        for each redshift bin pair. Keys are tuples of the form
+        ``("SPE", "SPE", i, j)``. For diagonal pairs (``i == j``) the value is
+        a `PowerSpectrumMultipolesMixingMatrix` instance read from the
+        corresponding FITS file, while off-diagonal entries are set to ``None``.
     """
     even_multipoles = [0, 2, 4]
 
     redshifts, nz = check_input(redshifts)
-    result: dict[_DictKey, Optional[PowerSpectrumMultipolesMixingMatrix]] = {}
+    results: dict[_DictKey, Optional[PowerSpectrumMultipolesMixingMatrix]] = {}
 
     for i in range(nz):
         for j in range(nz):
-            result[("SPE", "SPE", i, j)] = None
+            results[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
         header, data = read_mixing_matrix(str(path).format(zlab))
@@ -133,78 +274,8 @@ def get_PowerSpectrumMultipolesMixingMatrix(
             )
             zeff = 0.0
 
-        result[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesMixingMatrix(
-            kout=kout,
-            kin=kin,
-            mixing=mixing_matrix_blocks,
-            zeff=zeff,
+        results[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesMixingMatrix(
+            kout=kout, kin=kin, mixing=mixing_matrix_blocks, zeff=zeff
         )
 
-    return result
-
-
-def write_PowerSpectrumMultipoles(
-    path: Union[str, PathLike[str]],
-    k: NDArray[np.float64],
-    pk: NDArray[np.float64],
-    zeff: float,
-    cosmology: dict[str, float],
-) -> None:
-    """
-    Writes power spectrum multipoles to a FITS file with a structure
-    consistent with Euclid LE3 GC products.
-    """
-    nrows = len(k)
-    dtype = [
-        ("K", "f8"),
-        ("K_EFF", "f8"),
-        ("PK0", "f8"),
-        ("PK1", "f8"),
-        ("PK2", "f8"),
-        ("PK3", "f8"),
-        ("PK4", "f8"),
-        ("NUM_MOD", "f8"),
-    ]
-    data = np.zeros(nrows, dtype=dtype)
-    data["K"] = data["K_EFF"] = k
-    for ell in range(min(5, pk.shape[0])):
-        data[f"PK{ell}"] = pk[ell]
-
-    header = {
-        "TELESCOP": "EUCLID  ",
-        "INSTRUME": "LE3_GC_PK",
-        "RUNTYPE": "AUTO    ",
-        "Z_EFF": zeff,
-        "STAT": None,
-        "USE_NBAR": None,
-        "MAS": None,
-        "MAS_CORR": None,
-        "FKP_CORR": None,
-        "P_EST": None,
-        "INTERLAC": None,
-        "SN_CORR": None,
-        "SN_VALUE": None,
-        "ALPHA": None,
-        "SCALE": "LIN     ",
-    }
-    header.update(cosmology)
-
-    header.update(
-        {
-            "TUNIT1": "Bin 1d k scale",
-            "TUNIT2": "Effective k bin 1D scale",
-            "TUNIT3": "Blinding shift for multipole ell=0",
-            "TUNIT4": "Blinding shift for multipole ell=1",
-            "TUNIT5": "Blinding shift for multipole ell=2",
-            "TUNIT6": "Blinding shift for multipole ell=3",
-            "TUNIT7": "Blinding shift for multipole ell=4",
-            "TUNIT8": "Number of modes averaged",
-        }
-    )
-
-    if os.path.exists(path):
-        os.remove(path)
-
-    with fitsio.FITS(path, "rw") as f:
-        f.write(None, header={"EXTNAME": "PRIMARY"})
-        f.write(data, header=header, extname="SPECTRUM")
+    return results
