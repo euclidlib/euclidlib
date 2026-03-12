@@ -11,7 +11,7 @@ from numpy.typing import NDArray
 
 TYPE_CHECKING = True
 if TYPE_CHECKING:
-    from typing import Any, Dict, Tuple, Union
+    from typing import Any, Dict, Tuple, Union, Optional
 
     try:
         from typing import TypeAlias
@@ -69,7 +69,7 @@ def _get_hdu_data(hdu: fitsio.TableHDU) -> NDArray[Any]:
 
 def get_cosmology_from_header(
     header: fitsio.TableHDU, get_fiducial: bool = True
-) -> Tuple[float, Dict[str, float]]:
+) -> Tuple[float, Dict[str, Optional[float]]]:
     """
     Extracts redshift and fiducial cosmology from a FITS header.
     """
