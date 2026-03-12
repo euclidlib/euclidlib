@@ -85,7 +85,7 @@ def get_cosmology_from_header(
         fiducial_cosmology["H0"] = next(
             (header[k] for k in ("HUBBLE", "H0") if k in header), None
         )
-        if fiducial_cosmology["H0"] == None:
+        if fiducial_cosmology["H0"] is None:
             raise KeyError(
                 "Missing Hubble constant in header (expected 'HUBBLE' or 'H0')."
             )
@@ -101,7 +101,7 @@ def get_cosmology_from_header(
         fiducial_cosmology["Omega_b0"] = next(
             (header[k] for k in ("OMEGA_B", "OMEGA_B0") if k in header), None
         )
-        if fiducial_cosmology["Omega_b0"] == None:
+        if fiducial_cosmology["Omega_b0"] is None:
             raise KeyError(
                 "Missing baryon density in header (expected 'OMEGA_B' or 'OMEGA_B0')."
             )
