@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from os import PathLike
-
+from typing import TYPE_CHECKING, Optional
 from cosmolib.data import BaryonAcousticOscillations
 
 
@@ -11,7 +11,6 @@ from ._common import (
     read_data_vectors,
 )
 
-TYPE_CHECKING = True
 if TYPE_CHECKING:
     from typing import Union
 
@@ -30,7 +29,7 @@ def BAO_alphas(
     Returns alphas from BAO in cloe-compatible euclidlib data format
     """
     redshifts, nz = check_input(redshifts)
-    result: dict[_DictKey] = {}
+    result: dict[_DictKey, Optional[BaryonAcousticOscillations]] = {}
 
     for i in range(nz):
         for j in range(nz):
