@@ -235,31 +235,40 @@ def _(
         for ell in range(5):
             data[f"XI{ell}"] = obj.multipoles[ell]
 
-        header = {
-            "TELESCOP": "EUCLID  ",
-            "INSTRUME": "LE3GC   ",
-            "RUNTYPE": "AUTO    ",
-            "Z_EFF": obj.zeff,
-            "STAT": "MULTIPOLE",
-            "BIN1TYPE": "LIN     ",
-            "BIN1NUM": ns,
-            "BIN1MIN": np.min(obj.s) if ns > 0 else 0.0,
-            "BIN1MAX": np.max(obj.s) if ns > 0 else 0.0,
-            "TUNIT1": "Center of the s bin (Mpc/h)",
-            "TUNIT2": "Multipole ell=0",
-            "TUNIT3": "Multipole ell=1",
-            "TUNIT4": "Multipole ell=2",
-            "TUNIT5": "Multipole ell=3",
-            "TUNIT6": "Multipole ell=4",
-            "COMMENT": "----------- COSMOLOGICAL PARAMETERS USED ----------",
-        }
-        header.update(obj.fiducial_cosmology)
+        header = [
+            {"name": "COMMENT", "value": " "},
+            {"name": "COMMENT", "value": "----------- TwoPointCorrelation HDU ----------"},
+            {"name": "COMMENT", "value": " "},
+            {"name": "TELESCOP", "value": "EUCLID  "},
+            {"name": "INSTRUME", "value": "cloelib + euclidlib"},
+            {"name": "RUNTYPE", "value": "AUTO    "},
+            {"name": "TUNIT1", "value": "Center of the s bin [Mpc/h]"},
+            {"name": "TUNIT2", "value": "Multipole ell=0"},
+            {"name": "TUNIT3", "value": "Multipole ell=1"},
+            {"name": "TUNIT4", "value": "Multipole ell=2"},
+            {"name": "TUNIT5", "value": "Multipole ell=3"},
+            {"name": "TUNIT6", "value": "Multipole ell=4"},
+            {"name": "COMMENT", "value": " "},
+            {"name": "COMMENT", "value": "----------- Correlation parameters ----------"},
+            {"name": "COMMENT", "value": " "},
+            {"name": "STAT", "value": "MULTIPOLE"},
+            {"name": "Z_EFF", "value": obj.zeff},
+            {"name": "BIN1TYPE", "value": "LINEAR  "},
+            {"name": "BIN1NUM", "value": ns},
+            {"name": "BIN1MIN", "value": np.min(obj.s)},
+            {"name": "BIN1MAX", "value": np.max(obj.s)},
+            {"name": "COMMENT", "value": " "},
+            {"name": "COMMENT", "value": "----------- COSMOLOGICAL PARAMETERS USED ----------"},
+            {"name": "COMMENT", "value": " "},
+        ]
+        for key, value in obj.fiducial_cosmology.items():
+            header.append({"name": key, "value": value})
 
         if os.path.exists(out_path):
             os.remove(out_path)
         with fitsio.FITS(out_path, "rw") as f:
             f.write(None, header={"EXTNAME": "PRIMARY"})
-            f.write(data, header=header, extname="SPECTRUM")
+            f.write(data, header=header, extname="CORRELATION")
 
 
 def twopoint_correlation_multipole_covariance(
