@@ -82,32 +82,42 @@ def get_cosmology_from_header(
     fiducial_cosmology = {}
 
     if get_fiducial:
-        fiducial_cosmology["H0"] = \
-            next((header[k] for k in ("HUBBLE", "H0") if k in header), None)
+        fiducial_cosmology["H0"] = next(
+            (header[k] for k in ("HUBBLE", "H0") if k in header), None
+        )
         if fiducial_cosmology["H0"] == None:
-            raise KeyError("Missing Hubble constant in header (expected "
-                           "'HUBBLE' or 'H0').")
+            raise KeyError(
+                "Missing Hubble constant in header (expected 'HUBBLE' or 'H0')."
+            )
         if "OMEGA_M" in header:
             fiducial_cosmology["Omega_m0"] = header["OMEGA_M"]
         elif "OMEGA_CDM0" in header:
             fiducial_cosmology["Omega_cdm0"] = header["OMEGA_CDM0"]
         else:
-            raise KeyError("Missing total / CDM density in header (expected "
-                           "'OMEGA_M' or 'OMEGA_CDM0').")
+            raise KeyError(
+                "Missing total / CDM density in header (expected "
+                "'OMEGA_M' or 'OMEGA_CDM0')."
+            )
         fiducial_cosmology["Omega_b0"] = next(
-            (header[k] for k in ("OMEGA_B", "OMEGA_B0") if k in header), None)
+            (header[k] for k in ("OMEGA_B", "OMEGA_B0") if k in header), None
+        )
         if fiducial_cosmology["Omega_b0"] == None:
-            raise KeyError("Missing baryon density in header (expected "
-                           "'OMEGA_B' or 'OMEGA_B0').")
+            raise KeyError(
+                "Missing baryon density in header (expected 'OMEGA_B' or 'OMEGA_B0')."
+            )
         fiducial_cosmology["Omega_k0"] = next(
-            (header[k] for k in ("OMEGA_K", "OMEGA_K0") if k in header), 0.0)
-        fiducial_cosmology["ns"] = \
-            next((header[k] for k in ("INDEX_N", "NS") if k in header), None)
+            (header[k] for k in ("OMEGA_K", "OMEGA_K0") if k in header), 0.0
+        )
+        fiducial_cosmology["ns"] = next(
+            (header[k] for k in ("INDEX_N", "NS") if k in header), None
+        )
         fiducial_cosmology["sigma_8"] = (
-            header["SIGMA_8"] if "SIGMA_8" in header else None)
+            header["SIGMA_8"] if "SIGMA_8" in header else None
+        )
         fiducial_cosmology["As"] = header["AS"] if "AS" in header else None
-        fiducial_cosmology["w0"] = \
-            next((header[k] for k in ("W_STATE", "W0") if k in header), -1.0)
+        fiducial_cosmology["w0"] = next(
+            (header[k] for k in ("W_STATE", "W0") if k in header), -1.0
+        )
         fiducial_cosmology["wa"] = header["WA"] if "WA" in header else 0.0
         fiducial_cosmology["N_mnu"] = header["N_MNU"] if "N_MNU" in header else 0
         fiducial_cosmology["mnu"] = header["MNU"] if "MNU" in header else 0.0

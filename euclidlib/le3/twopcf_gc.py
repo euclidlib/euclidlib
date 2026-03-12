@@ -237,7 +237,10 @@ def _(
 
         header = [
             {"name": "COMMENT", "value": " "},
-            {"name": "COMMENT", "value": "----------- TwoPointCorrelation HDU ----------"},
+            {
+                "name": "COMMENT",
+                "value": "----------- TwoPointCorrelation HDU ----------",
+            },
             {"name": "COMMENT", "value": " "},
             {"name": "TELESCOP", "value": "EUCLID  "},
             {"name": "INSTRUME", "value": "cloelib + euclidlib"},
@@ -249,7 +252,10 @@ def _(
             {"name": "TUNIT5", "value": "Multipole ell=3"},
             {"name": "TUNIT6", "value": "Multipole ell=4"},
             {"name": "COMMENT", "value": " "},
-            {"name": "COMMENT", "value": "----------- Correlation parameters ----------"},
+            {
+                "name": "COMMENT",
+                "value": "----------- Correlation parameters ----------",
+            },
             {"name": "COMMENT", "value": " "},
             {"name": "STAT", "value": "MULTIPOLE"},
             {"name": "Z_EFF", "value": obj.zeff},
@@ -258,7 +264,10 @@ def _(
             {"name": "BIN1MIN", "value": np.min(obj.s)},
             {"name": "BIN1MAX", "value": np.max(obj.s)},
             {"name": "COMMENT", "value": " "},
-            {"name": "COMMENT", "value": "----------- COSMOLOGICAL PARAMETERS USED ----------"},
+            {
+                "name": "COMMENT",
+                "value": "----------- COSMOLOGICAL PARAMETERS USED ----------",
+            },
             {"name": "COMMENT", "value": " "},
         ]
         for key, value in obj.fiducial_cosmology.items():
