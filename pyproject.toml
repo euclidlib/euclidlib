@@ -49,3 +49,7 @@ preview = true
 exclude_also = [
     "if TYPE_CHECKING:",
 ]
+
+[[tool.mypy.overrides]]
+module = "cosmolib.*"
+ignore_missing_imports = true

@@ -19,7 +19,7 @@
 
 ## Introduction
 
-`euclidlib` is an unofficial Python package designed to access official Euclid mission products provided by the Science Ground Segment. Its goal is to offer the Euclid community a user-friendly, ready-to-use library that enables immediate work with science-ready Euclid data.
+`euclidlib` is an unofficial Python library for accessing and reading cosmology-ready data products from the ESA Euclid mission. Its goal is to offer the Euclid community a user-friendly, ready-to-use library that enables immediate work with science-ready Euclid data.
 
 The package is maintained on a best-effort basis by volunteers and contributors within the Euclid community. See the contributor list below.
 
@@ -39,23 +39,27 @@ pip install euclidlib
 
 ## Structure and Format of `euclidlib`
 
-The design of the `euclidlib` package closely follows the organisation of the [Euclid Data Product Description Documentation](http://st-dm.pages.euclid-sgs.uk/data-product-doc/dm10/) and reflects the structure of the Euclid Science Ground Segment.
+The design of the `euclidlib` package closely follows the organisation of the [Euclid Data Product Description Documentation](http://st-dm.pages.euclid-sgs.uk/data-product-doc/dmdr1/) and reflects the structure of the Euclid Science Ground Segment.
 
 ```mermaid
 graph TD
     EUCLIDLIB[euclidlib]
 
     LE3[le3]
-    PK[pk_wl]
-    TWOPCF[twopcf_wl]
+    PK_WL[pk_wl]
+    TWOPCF_WL[twopcf_wl]
+    PK_GC[pk_gc]
+    TWOPCF_GC[twopcf_gc]
 
     PHZ[phz]
 
     EUCLIDLIB --> LE3
     EUCLIDLIB --> PHZ
 
-    LE3 --> PK
-    LE3 --> TWOPCF
+    LE3 --> PK_WL
+    LE3 --> TWOPCF_WL
+    LE3 --> PK_GC
+    LE3 --> TWOPCF_GC
 ```
 
 `euclidlib` provides all data products in a unified, Pythonic format based on dataclasses, ensuring consistent, intuitive, and easy-to-use interfaces across all supported products. Please consult the full documentation for additional details.
@@ -106,6 +110,9 @@ To discover the meaning of each icon, hover your mouse over it.
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/FlorianDubath"><img src="https://avatars.githubusercontent.com/u/9742907?v=4?s=100" width="100px;" alt="FlorianDubath"/><br /><sub><b>FlorianDubath</b></sub></a><br /><a href="#ideas-FlorianDubath" title="Ideas, Planning, & Feedback">🤔</a> <a href="#data-FlorianDubath" title="Data">🔣</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jacopo-salvalaggio"><img src="https://avatars.githubusercontent.com/u/99494103?v=4?s=100" width="100px;" alt="Jacopo Salvalaggio"/><br /><sub><b>Jacopo Salvalaggio</b></sub></a><br /><a href="#code-jacopo-salvalaggio" title="Code">💻</a> <a href="#ideas-jacopo-salvalaggio" title="Ideas, Planning, & Feedback">🤔</a> <a href="#data-jacopo-salvalaggio" title="Data">🔣</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AndreaPezzotta"><img src="https://avatars.githubusercontent.com/u/29603598?v=4?s=100" width="100px;" alt="AndreaPezzotta"/><br /><sub><b>AndreaPezzotta</b></sub></a><br /><a href="#code-AndreaPezzotta" title="Code">💻</a> <a href="#ideas-AndreaPezzotta" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/chiaramoretti"><img src="https://avatars.githubusercontent.com/u/12472732?v=4?s=100" width="100px;" alt="Chiara Moretti"/><br /><sub><b>Chiara Moretti</b></sub></a><br /><a href="#review-chiaramoretti" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://sfarrens.github.io"><img src="https://avatars.githubusercontent.com/u/6851839?v=4?s=100" width="100px;" alt="Samuel Farrens"/><br /><sub><b>Samuel Farrens</b></sub></a><br /><a href="#code-sfarrens" title="Code">💻</a> <a href="#review-sfarrens" title="Reviewed Pull Requests">👀</a> <a href="#ideas-sfarrens" title="Ideas, Planning, & Feedback">🤔</a> <a href="#mentoring-sfarrens" title="Mentoring">🧑‍🏫</a></td>
     </tr>
   </tbody>
 </table>

@@ -7,7 +7,7 @@ import fitsio  # type: ignore [import-not-found]
 from numpy.typing import NDArray
 from .._util import writer
 
-from cosmolib.data import TwoPointCorrelationFunction, COSEBI  # type: ignore [import-not-found]
+from cosmolib.data import TwoPointCorrelationFunction, COSEBI
 
 
 TYPE_CHECKING = True
@@ -76,8 +76,7 @@ def correlation_functions(
     Notes
     -----
     - Only HDUs whose EXTNAME contains ``'2D'`` are read.
-    - The mapping of FITS columns to TPCF components follows the official
-      Euclid naming conventions:
+    - The mapping of FITS columns to TPCF components follows the official Euclid naming conventions:
         * SHE–SHE → (XI_P, XI_M, XI_X)
         * POS–SHE → (GAMMA_T, GAMMA_X)
         * POS–POS → (WTHETA)

@@ -82,6 +82,27 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/99494103?v=4",
       "profile": "https://github.com/jacopo-salvalaggio",
       "contributions": ["code", "ideas", "data"]
+    },
+    {
+      "login": "AndreaPezzotta",
+      "name": "AndreaPezzotta",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29603598?v=4",
+      "profile": "https://github.com/AndreaPezzotta",
+      "contributions": ["code", "ideas"]
+    },
+    {
+      "login": "chiaramoretti",
+      "name": "Chiara Moretti",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12472732?v=4",
+      "profile": "https://github.com/chiaramoretti",
+      "contributions": ["review"]
+    },
+    {
+      "login": "sfarrens",
+      "name": "Samuel Farrens",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6851839?v=4",
+      "profile": "http://sfarrens.github.io",
+      "contributions": ["code", "review", "ideas", "mentoring"]
     }
   ]
 }
