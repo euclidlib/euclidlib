@@ -55,7 +55,7 @@ def _get_hdu_header(hdu: fitsio.TableHDU) -> Dict[str, Any]:
     """
     Reads header from fits file HDU
     """
-    head: Dict[str, Any] = dict(hdu.read_header())
+    head: Dict[str, Any] = hdu.read_header()
     return head
 
 
@@ -68,7 +68,7 @@ def _get_hdu_data(hdu: fitsio.TableHDU) -> NDArray[Any]:
 
 
 def get_cosmology_from_header(
-    header: Dict[str, Any], get_fiducial: bool = True
+    header: fitsio.TableHDU, get_fiducial: bool = True
 ) -> Tuple[float, Dict[str, float]]:
     """
     Extracts redshift and fiducial cosmology from a FITS header.
@@ -79,23 +79,24 @@ def get_cosmology_from_header(
         warn("Effective redshift not specified in fits file header. Setting it to 0.")
         zeff = 0.0
 
-    fiducial_cosmology = (
-        {
-            "OMEGA_M": header["OMEGA_M"],
-            "OMEGA_B": header["OMEGA_B"],
-            "HUBBLE": header["HUBBLE"],
-            **({"OMEGA_R": header["OMEGA_R"]} if "OMEGA_R" in header else {}),
-            **({"OMEGA_V": header["OMEGA_V"]} if "OMEGA_V" in header else {}),
-            **({"OMEGA_K": header["OMEGA_K"]} if "OMEGA_K" in header else {}),
-            **({"INDEX_N": header["INDEX_N"]} if "INDEX_N" in header else {}),
-            **({"SIGMA_8": header["SIGMA_8"]} if "SIGMA_8" in header else {}),
-            **({"W_STATE": header["W_STATE"]} if "W_STATE" in header else {}),
-            **({"N_EFF": header["N_EFF"]} if "N_EFF" in header else {}),
-            **({"T_CMB": header["T_CMB"]} if "T_CMB" in header else {}),
-        }
-        if get_fiducial
-        else {}
-    )
+    fiducial_cosmology = {}
+
+    if get_fiducial:
+        in_section = False
+
+        for r in header.records():
+            if r["name"] == "COMMENT":
+                txt = str(r["value"])
+
+                if "COSMOLOGICAL PARAMETERS USED" in txt:
+                    in_section = True
+                    continue
+
+                if in_section and "-----------" in txt:
+                    break
+
+            elif in_section and r["name"] != "COSMO_ID":
+                fiducial_cosmology[r["name"]] = r["value"]
 
     return zeff, fiducial_cosmology
 

@@ -1,0 +1,25 @@
+# Core
+sphinx>=7,<8
+myst-parser>=2.0
+myst-nb>=1.1
+
+# Jupyter Book stack
+jupyter-book>=1.0,<1.2
+sphinx-book-theme>=1.1,<1.2
+
+# Extensions
+sphinx-design>=0.5.0
+sphinx-togglebutton>=0.3.2
+sphinx-copybutton>=0.5.2
+sphinx-thebe>=0.2.2
+sphinx-external-toc>=0.4.1
+sphinxcontrib-bibtex>=2.6.2
+
+# Utilities
+linkify-it-py
+pyyaml
+
+# Scientific stack
+numpy
+matplotlib
+euclidlib
