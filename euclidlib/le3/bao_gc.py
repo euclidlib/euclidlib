@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 def BAO_alphas(
     path: Union[str, PathLike[str]], *redshifts: str
-) -> dict[_DictKey, TwoPointCorrelationCartesian]:
+) -> dict[_DictKey, BaryonAcousticOscillations]:
     """
     Returns alphas from BAO in cloe-compatible euclidlib data format
     """
