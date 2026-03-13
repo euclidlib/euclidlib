@@ -1,4 +1,4 @@
-# 📚 PI Reference
+# 📚 API Reference
 
 This page documents the public API of `euclidlib`.
 
