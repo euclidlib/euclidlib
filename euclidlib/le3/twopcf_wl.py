@@ -395,7 +395,7 @@ def _(path: str | PathLike[str], results: dict[_DictKey, COSEBI]) -> None:
                 raise ValueError("COSEBI writer supports only SHE-SHE components.")
 
             # EXTNAME like SHEARSHEAR2D_COSEBI_1_1
-            extname = f"SHEARSHEAR2D_COSEBI_{bin1}_{bin2}"
+            extname = f"    {bin1}_{bin2}"
 
             # Extract arrays
             mode = np.asarray(cosebi.mode, dtype="i8")
