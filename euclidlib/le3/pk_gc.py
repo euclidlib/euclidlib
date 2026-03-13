@@ -139,33 +139,39 @@ def _(
         if obj.Nmodes is not None:
             data["NUM_MOD"] = obj.Nmodes
 
-        header = {
-            "TELESCOP": "EUCLID  ",
-            "INSTRUME": "LE3_GC_PK",
-            "RUNTYPE": "AUTO    ",
-            "Z_EFF": obj.zeff,
-            "STAT": "YBCFFT  ",
-            "USE_NBAR": None,
-            "MAS": None,
-            "MAS_CORR": None,
-            "FKP_CORR": None,
-            "P_EST": None,
-            "INTERLAC": None,
-            "SN_CORR": None,
-            "SN_VALUE": obj.Psn,
-            "ALPHA": None,
-            "SCALE": "LIN     ",
-            "TUNIT1": "Center of the k bin",
-            "TUNIT2": "Effective k of the bin",
-            "TUNIT3": "Multipole ell=0",
-            "TUNIT4": "Multipole ell=1",
-            "TUNIT5": "Multipole ell=2",
-            "TUNIT6": "Multipole ell=3",
-            "TUNIT7": "Multipole ell=4",
-            "TUNIT8": "Number of independent modes in the k bin",
-            "COMMENT": "----------- COSMOLOGICAL PARAMETERS USED ----------",
-        }
-        header.update(obj.fiducial_cosmology)
+        header = [
+            {"name": "COMMENT", "value": " "},
+            {"name": "COMMENT", "value": "----------- PowerSpectrum HDU ----------"},
+            {"name": "COMMENT", "value": " "},
+            {"name": "TELESCOP", "value": "EUCLID  "},
+            {"name": "INSTRUME", "value": "cloelib + euclidlib"},
+            {"name": "RUNTYPE", "value": "AUTO    "},
+            {"name": "TUNIT1", "value": "Center of the k bin [h/Mpc]"},
+            {"name": "TUNIT2", "value": "Effective k [h/Mpc]"},
+            {"name": "TUNIT3", "value": "Multipole ell=0 [(Mpc/h)^3]"},
+            {"name": "TUNIT4", "value": "Multipole ell=1 [(Mpc/h)^3]"},
+            {"name": "TUNIT5", "value": "Multipole ell=2 [(Mpc/h)^3]"},
+            {"name": "TUNIT6", "value": "Multipole ell=3 [(Mpc/h)^3]"},
+            {"name": "TUNIT7", "value": "Multipole ell=4 [(Mpc/h)^3]"},
+            {"name": "TUNIT8", "value": "Number of modes"},
+            {"name": "COMMENT", "value": " "},
+            {"name": "COMMENT", "value": "----------- Spectrum parameters ----------"},
+            {"name": "COMMENT", "value": " "},
+            {"name": "STAT", "value": "MULTIPOLES"},
+            {"name": "Z_EFF", "value": obj.zeff},
+            {"name": "NBAR", "value": obj.nbar},
+            {"name": "SN_VALUE", "value": obj.Psn},
+            {"name": "SCALE", "value": "LINEAR  "},
+            {"name": "N_BIN", "value": nk},
+            {"name": "K_MIN", "value": np.min(obj.k)},
+            {"name": "K_MAX", "value": np.max(obj.k)},
+            {"name": "DELTA_K", "value": obj.k[1] - obj.k[0]},
+            {"name": "COMMENT", "value": " "},
+            {"name": "COMMENT", "value": "----------- Fiducial cosmology ----------"},
+            {"name": "COMMENT", "value": " "},
+        ]
+        for key, value in obj.fiducial_cosmology.items():
+            header.append({"name": key, "value": value})
 
         if os.path.exists(out_path):
             os.remove(out_path)
