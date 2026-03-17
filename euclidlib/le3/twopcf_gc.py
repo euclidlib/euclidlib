@@ -142,6 +142,95 @@ def twopoint_correlation_polar(
     return results
 
 
+@writer(twopoint_correlation_polar)
+def _(
+    results: dict[_DictKey, TwoPointCorrelationPolar],
+    path: Union[str, PathLike[str]],
+    *redshifts: str,
+) -> None:
+    """
+    Writes polar 2PCF from a cosmolib data structure to the LE3 FITS format.
+
+    Parameters
+    ----------
+    results : dict
+        Dictionary mapping keys in the euclidlib format ``("SPE", "SPE", i, j)``
+        to cosmolib objects containing the data to write to FITS files.
+    path : str or PathLike
+        Path to the output FITS file. If the string contains a `{}` placeholder,
+        it will be formatted using the provided redshift labels.
+    *redshifts: str
+        Redshift labels used to format the output file name. Each value replaces
+        the `{}` placeholder in `path`, generating one output file per redshift.
+        If no labels are provided, `path` is assumed to be already finalised.
+    """
+    dtype = [
+        ("SCALE_1D", "f8"),
+        ("SCALE_2D", "f8"),
+        ("XI", "f8"),
+    ]
+
+    redshifts, nz = check_input(redshifts)
+
+    for i, zlab in enumerate(redshifts):
+        obj = results[("SPE", "SPE", i, i)]
+        out_path = str(path).format(zlab)
+
+        ns = len(obj.s)
+        nmu = len(obj.mu)
+
+        data = np.zeros(ns * nmu, dtype=dtype)
+        S, MU = np.meshgrid(obj.s, obj.mu, indexing="ij")
+        data["SCALE_1D"] = S.ravel()
+        data["SCALE_2D"] = MU.ravel()
+        data["XI"] = obj.correlation.ravel()
+
+        header = [
+            {"name": "COMMENT", "value": " "},
+            {
+                "name": "COMMENT",
+                "value": "----------- TwoPointCorrelation HDU ----------",
+            },
+            {"name": "COMMENT", "value": " "},
+            {"name": "TELESCOP", "value": "EUCLID  "},
+            {"name": "INSTRUME", "value": "cloelib + euclidlib"},
+            {"name": "RUNTYPE", "value": "AUTO    "},
+            {"name": "TUNIT1", "value": "Center of the s bin [Mpc/h]"},
+            {"name": "TUNIT2", "value": "Center of the mu bin"},
+            {"name": "TUNIT3", "value": "Correlation function"},
+            {"name": "COMMENT", "value": " "},
+            {
+                "name": "COMMENT",
+                "value": "----------- Correlation parameters ----------",
+            },
+            {"name": "COMMENT", "value": " "},
+            {"name": "STAT", "value": "TWO_DIM_POL"},
+            {"name": "Z_EFF", "value": obj.zeff},
+            {"name": "BIN1TYPE", "value": "LINEAR  "},
+            {"name": "BIN1NUM", "value": ns},
+            {"name": "BIN1MIN", "value": np.min(obj.s)},
+            {"name": "BIN1MAX", "value": np.max(obj.s)},
+            {"name": "BIN2TYPE", "value": "LINEAR  "},
+            {"name": "BIN2NUM", "value": nmu},
+            {"name": "BIN2MIN", "value": np.min(obj.mu)},
+            {"name": "BIN2MAX", "value": np.max(obj.mu)},
+            {"name": "COMMENT", "value": " "},
+            {
+                "name": "COMMENT",
+                "value": "----------- COSMOLOGICAL PARAMETERS USED ----------",
+            },
+            {"name": "COMMENT", "value": " "},
+        ]
+        for key, value in obj.fiducial_cosmology.items():
+            header.append({"name": key, "value": value})
+
+        if os.path.exists(out_path):
+            os.remove(out_path)
+        with fitsio.FITS(out_path, "rw") as f:
+            f.write(None, header={"EXTNAME": "PRIMARY"})
+            f.write(data, header=header, extname="CORRELATION")
+
+
 def twopoint_correlation_multipoles(
     path: Union[str, PathLike[str]], *redshifts: str
 ) -> dict[_DictKey, TwoPointCorrelationMultipoles]:
