@@ -277,9 +277,9 @@ def _(path: str | PathLike[str], results: dict[_DictKey, AngularPowerSpectrum]) 
                     val = np.stack([np.asarray(v) for v in val], axis=-1)
                 return val.reshape(nrows).astype(default_dtype)
 
-            ell = get_tuple_or_default("ell", np.dtype(np.int64))
-            lower = get_tuple_or_default("lower", np.dtype(np.int64))
-            upper = get_tuple_or_default("upper", np.dtype(np.int64))
+            ell = get_tuple_or_default("ell", np.dtype(np.float64))
+            lower = get_tuple_or_default("lower", np.dtype(np.float64))
+            upper = get_tuple_or_default("upper", np.dtype(np.float64))
             weight = get_tuple_or_default("weight", np.dtype(np.float64))
 
             array_shape = (
@@ -290,9 +290,9 @@ def _(path: str | PathLike[str], results: dict[_DictKey, AngularPowerSpectrum]) 
 
             dtype = [
                 ("ARRAY", "f8", array_shape),
-                ("ELL", "i8"),
-                ("LOWER", "i8"),
-                ("UPPER", "i8"),
+                ("ELL", "f8"),
+                ("LOWER", "f8"),
+                ("UPPER", "f8"),
                 ("WEIGHT", "f8"),
             ]
 
