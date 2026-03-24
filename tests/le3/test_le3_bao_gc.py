@@ -10,6 +10,7 @@ def test_bao_gc_with_dummy_data(data_path):
     assert ("SPE", "SPE", 0, 0) in data, "Data should contain ('SPE', 'SPE', 0, 0)"
     assert data[("SPE", "SPE", 0, 0)] is not None, "BAO alphas should not be None"
 
+
 def test_bao_gc_covariance(data_path):
     data = el.le3.bao_gc.BAO_alphas_covariance(data_path / "EUC_BAO_COV_Z1.0.fits")
 
