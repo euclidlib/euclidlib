@@ -267,7 +267,7 @@ def power_spectrum_multipole_mixing_matrix(
         mixing_matrix_blocks = {
             "ELL_{}-{}".format(ell1, ell2): data["MIXING_MATRIX"][
                 "W{}{}".format(ell1, ell2)
-            ]
+            ].squeeze()
             for ell2 in even_multipoles
             for ell1 in even_multipoles
         }
