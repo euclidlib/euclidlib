@@ -59,7 +59,7 @@ def BAO_alphas(
         zeff, fiducial_cosmology = get_cosmology_from_header(header)
 
         alpha_par = data["ALPHA_PAR"]
-        alpha_perp = data["ALPHA_PER"]
+        alpha_perp = data["ALPHA_PERP"]
         alpha_iso = data["ALPHA_ISO"]
         alpha_ap = data["ALPHA_AP"]
 
