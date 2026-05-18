@@ -194,6 +194,12 @@ def read_and_reshape_covariance_matrix(
         If True, also includes auto covariance of AP parameters
         and their cross-covariances with FS multipoles
     """
+    def normalize_obs(x):
+        s = str(x).strip()
+        try:
+            return str(int(float(s)))
+        except ValueError:
+            return s
 
     header, data = read_covariance_matrix(path)
     zeff, _ = get_cosmology_from_header(header, get_fiducial=False)
@@ -203,8 +209,8 @@ def read_and_reshape_covariance_matrix(
 
     ell_labels = ["0", "2", "4"]
 
-    data_i = data["MULTIPOLE-I"].astype(str)
-    data_j = data["MULTIPOLE-J"].astype(str)
+    data_i = np.array([normalize_obs(x) for x in data["MULTIPOLE-I"]])
+    data_j = np.array([normalize_obs(x) for x in data["MULTIPOLE-J"]])
 
     if include_BAO:
         ap_labels = sorted(
@@ -247,7 +253,7 @@ def read_and_reshape_covariance_matrix(
 
                 block[i, j] = row["COVARIANCE"]
 
-            covariance_blocks[f"{oi}-{oj}"] = block
+            covariance_blocks[f"ELL_{oi}-{oj}"] = block
 
     return scale_values, covariance_blocks, zeff, correction_factor
 
