@@ -184,7 +184,7 @@ def read_and_reshape_covariance_matrix(
     path: Union[str, PathLike[str]],
     type: str,
     include_BAO: bool = False,
-) -> Tuple[NDArray[Any], Dict[str, NDArray[Any]], float]:
+) -> Tuple[NDArray[Any], Dict[str, NDArray[Any]], float, float]:
     """
     Read covariance matrix and reshape into blocks.
 
