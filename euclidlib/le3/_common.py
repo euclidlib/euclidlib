@@ -194,7 +194,8 @@ def read_and_reshape_covariance_matrix(
         If True, also includes auto covariance of AP parameters
         and their cross-covariances with FS multipoles
     """
-    def normalize_obs(x):
+
+    def normalize_obs(x: Any) -> str:
         s = str(x).strip()
         try:
             return str(int(float(s)))
@@ -253,7 +254,7 @@ def read_and_reshape_covariance_matrix(
 
                 block[i, j] = row["COVARIANCE"]
 
-            covariance_blocks[f"ELL_{oi}-{oj}"] = block
+            covariance_blocks[f"{oi}-{oj}"] = block
 
     return scale_values, covariance_blocks, zeff, correction_factor
 
