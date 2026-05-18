@@ -216,11 +216,11 @@ def power_spectrum_multipole_covariance(
             results[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        k_values, covariance_blocks, zeff, correction_factor = \
+        k_values, covariance_blocks, zeff, correction_factor = (
             read_and_reshape_covariance_matrix(
-                path=str(path).format(zlab),
-                type="SPECTRUM", include_BAO=include_BAO
+                path=str(path).format(zlab), type="SPECTRUM", include_BAO=include_BAO
             )
+        )
         results[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesCovariance(
             k=k_values, covariance=covariance_blocks, zeff=zeff
         )

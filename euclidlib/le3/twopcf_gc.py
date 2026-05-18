@@ -405,11 +405,11 @@ def twopoint_correlation_multipole_covariance(
             results[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        s_values, covariance_blocks, zeff, correction_factor = \
+        s_values, covariance_blocks, zeff, correction_factor = (
             read_and_reshape_covariance_matrix(
-                path=str(path).format(zlab), type="CORRELATION",
-                include_BAO=include_BAO
+                path=str(path).format(zlab), type="CORRELATION", include_BAO=include_BAO
             )
+        )
 
         results[("SPE", "SPE", i, i)] = TwoPointCorrelationMultipolesCovariance(
             s=s_values, covariance=covariance_blocks, zeff=zeff

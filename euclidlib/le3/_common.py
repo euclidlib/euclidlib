@@ -208,8 +208,10 @@ def read_and_reshape_covariance_matrix(
 
     if include_BAO:
         ap_labels = sorted(
-            set([x for x in np.unique(data_i) if "ALPHA" in x] +
-                [x for x in np.unique(data_j) if "ALPHA" in x])
+            set(
+                [x for x in np.unique(data_i) if "ALPHA" in x]
+                + [x for x in np.unique(data_j) if "ALPHA" in x]
+            )
         )
         observables = ell_labels + ap_labels
     else:
@@ -225,7 +227,6 @@ def read_and_reshape_covariance_matrix(
 
     for oi in observables:
         for oj in observables:
-
             mask = (data_i == oi) & (data_j == oj)
             block_data = data[mask]
 
@@ -241,7 +242,6 @@ def read_and_reshape_covariance_matrix(
             block = np.zeros((ni, nj))
 
             for row in block_data:
-
                 i = scale_to_idx[row[f"{scale_label}I"]] if is_i_ell else 0
                 j = scale_to_idx[row[f"{scale_label}J"]] if is_j_ell else 0
 
