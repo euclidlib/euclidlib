@@ -190,6 +190,10 @@ def read_and_reshape_covariance_matrix(
 
     Parameters
     ----------
+    path: Union[str, PathLike[str]]
+        Path to the covariance matrix data file
+    type: str
+        Key to identify Fourier- and configuration-space files
     include_BAO : bool
         If True, also includes auto covariance of AP parameters
         and their cross-covariances with FS multipoles
