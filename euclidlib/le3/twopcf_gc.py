@@ -370,7 +370,7 @@ def _(
 
 
 def twopoint_correlation_multipole_covariance(
-    path: Union[str, PathLike[str]], *redshifts: str
+    path: Union[str, PathLike[str]], *redshifts: str, include_BAO: bool = False
 ) -> dict[_DictKey, Optional[TwoPointCorrelationMultipolesCovariance]]:
     """
     Reads the covariance matrix of the 2PCF Legendre multipoles from a
@@ -385,6 +385,8 @@ def twopoint_correlation_multipole_covariance(
         Redshift labels used to format the input file name. Each value replaces
         the `{}` placeholder in `path`, generating one input file per redshift.
         If no labels are provided, `path` is assumed to be already complete.
+    include_BAO: bool
+        Flag to include or not auto-BAO and cross FS-BAO covariance.
 
     Returns
     -------
@@ -403,8 +405,10 @@ def twopoint_correlation_multipole_covariance(
             results[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        s_values, covariance_blocks, zeff = read_and_reshape_covariance_matrix(
-            path=str(path).format(zlab), type="CORRELATION"
+        s_values, covariance_blocks, zeff, correction_factor = (
+            read_and_reshape_covariance_matrix(
+                path=str(path).format(zlab), type="CORRELATION", include_BAO=include_BAO
+            )
         )
 
         results[("SPE", "SPE", i, i)] = TwoPointCorrelationMultipolesCovariance(

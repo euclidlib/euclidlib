@@ -6,7 +6,6 @@ import os
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 
-
 from numpy.typing import NDArray
 
 TYPE_CHECKING = True
@@ -184,46 +183,84 @@ def read_covariance_matrix(
 def read_and_reshape_covariance_matrix(
     path: Union[str, PathLike[str]],
     type: str,
-) -> Tuple[NDArray[Any], Dict[str, NDArray[Any]], float]:
+    include_BAO: bool = False,
+) -> Tuple[NDArray[Any], Dict[str, NDArray[Any]], float, float]:
     """
-    Helper function to get multipoles covariance data
+    Read covariance matrix and reshape into blocks.
+
+    Parameters
+    ----------
+    path: Union[str, PathLike[str]]
+        Path to the covariance matrix data file
+    type: str
+        Key to identify Fourier- and configuration-space files
+    include_BAO : bool
+        If True, also includes auto covariance of AP parameters
+        and their cross-covariances with FS multipoles
     """
+
+    def normalize_obs(x: Any) -> str:
+        s = str(x).strip()
+        try:
+            return str(int(float(s)))
+        except ValueError:
+            return s
+
     header, data = read_covariance_matrix(path)
     zeff, _ = get_cosmology_from_header(header, get_fiducial=False)
-    mask = np.isin(data["MULTIPOLE-I"], range(5)) & np.isin(
-        data["MULTIPOLE-J"], range(5)
-    )
-    data = data[mask]
+    correction_factor = header["CORR_FAC"] if "CORR_FAC" in header else 1.0
 
-    if type == "SPECTRUM":
-        scale_label = "K"
-    elif type == "CORRELATION":
-        scale_label = "S"
+    scale_label = "K" if type == "SPECTRUM" else "S"
 
-    scale_values = np.unique(data[scale_label + "I"])
-    n_scale_values = len(scale_values)
+    ell_labels = ["0", "2", "4"]
 
-    covariance_blocks: dict[str, NDArray[Any]] = {}
-    for ell_i in range(5):
-        for ell_j in range(5):
-            block_mask = (data["MULTIPOLE-I"] == ell_i) & (data["MULTIPOLE-J"] == ell_j)
-            block_data = data[block_mask]
+    data_i = np.array([normalize_obs(x) for x in data["MULTIPOLE-I"]])
+    data_j = np.array([normalize_obs(x) for x in data["MULTIPOLE-J"]])
+
+    if include_BAO:
+        ap_labels = sorted(
+            set(
+                [x for x in np.unique(data_i) if "ALPHA" in x]
+                + [x for x in np.unique(data_j) if "ALPHA" in x]
+            )
+        )
+        observables = ell_labels + ap_labels
+    else:
+        observables = ell_labels
+
+    mask_ell = np.isin(data_i, ell_labels)
+
+    scale_values = np.unique(data[f"{scale_label}I"][mask_ell])
+    n_scale = len(scale_values)
+    scale_to_idx = {v: i for i, v in enumerate(scale_values)}
+
+    covariance_blocks: Dict[str, NDArray[Any]] = {}
+
+    for oi in observables:
+        for oj in observables:
+            mask = (data_i == oi) & (data_j == oj)
+            block_data = data[mask]
 
             if len(block_data) == 0:
                 continue
 
-            current_block = np.zeros((n_scale_values, n_scale_values))
+            is_i_ell = oi in ell_labels
+            is_j_ell = oj in ell_labels
 
-            scale_to_idx = {scale_val: i for i, scale_val in enumerate(scale_values)}
+            ni = n_scale if is_i_ell else 1
+            nj = n_scale if is_j_ell else 1
+
+            block = np.zeros((ni, nj))
 
             for row in block_data:
-                scale_idx_i = scale_to_idx[row[scale_label + "I"]]
-                scale_idx_j = scale_to_idx[row[scale_label + "J"]]
-                current_block[scale_idx_i, scale_idx_j] = row["COVARIANCE"]
+                i = scale_to_idx[row[f"{scale_label}I"]] if is_i_ell else 0
+                j = scale_to_idx[row[f"{scale_label}J"]] if is_j_ell else 0
 
-            covariance_blocks[f"ELL_{ell_i}-{ell_j}"] = current_block
+                block[i, j] = row["COVARIANCE"]
 
-    return scale_values, covariance_blocks, zeff
+            covariance_blocks[f"{oi}-{oj}"] = block
+
+    return scale_values, covariance_blocks, zeff, correction_factor
 
 
 def read_mixing_matrix(
