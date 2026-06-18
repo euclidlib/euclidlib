@@ -266,8 +266,10 @@ def power_spectrum_multipole_mixing_matrix(
     for i, zlab in enumerate(redshifts):
         header, data = read_mixing_matrix(str(path).format(zlab))
         out = data["BINS_OUTPUT"]
+        names = out.dtype.names
         kout = out["k"]
-        kcenter = out["kcenter"] if "kcenter" in out.dtype.names else kout
+        has_kcenter = names is not None and "kcenter" in names
+        kcenter = out["kcenter"] if has_kcenter else kout
         kin = {ell: data["BINS_INPUT"]["kp{}".format(ell)] for ell in even_multipoles}
         mixing_matrix_blocks = {
             "ELL_{}-{}".format(ell1, ell2): data["MIXING_MATRIX"][
