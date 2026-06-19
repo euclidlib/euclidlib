@@ -287,12 +287,25 @@ def power_spectrum_multipole_mixing_matrix(
             )
             zeff = 0.0
 
-        Psn = header["MIXING_MATRIX"]["SN_VALUE"] if "SN_VALUE" in header["MIXING_MATRIX"] else None
-        nbar = 1.0 / header["MIXING_MATRIX"]["SN_VALUE"] if "SN_VALUE" in header["MIXING_MATRIX"] else None
+        Psn = (
+            header["MIXING_MATRIX"]["SN_VALUE"]
+            if "SN_VALUE" in header["MIXING_MATRIX"]
+            else None
+        )
+        nbar = (
+            1.0 / header["MIXING_MATRIX"]["SN_VALUE"]
+            if "SN_VALUE" in header["MIXING_MATRIX"]
+            else None
+        )
 
         results[("SPE", "SPE", i, i)] = PowerSpectrumMultipolesMixingMatrix(
-            kout=kout, kcenter=kcenter, kin=kin, mixing=mixing_matrix_blocks,
-            zeff=zeff, nbar=nbar, Psn=Psn
+            kout=kout,
+            kcenter=kcenter,
+            kin=kin,
+            mixing=mixing_matrix_blocks,
+            zeff=zeff,
+            nbar=nbar,
+            Psn=Psn,
         )
 
     return results
