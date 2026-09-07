@@ -1,11 +1,13 @@
 from __future__ import annotations
-import re
+
 import os
+import re
+
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
-from .._util import writer
-
 from cosmolib.data import AngularPowerSpectrum
+
+from .._util import writer
 
 TYPE_CHECKING = True
 if TYPE_CHECKING:
