@@ -20,8 +20,8 @@ from .._util import writer
 from ._common import (
     check_input,
     get_cosmology_from_header,
-    read_data_vectors,
     read_and_reshape_covariance_matrix,
+    read_data_vectors,
     read_mixing_matrix,
 )
 
@@ -270,11 +270,9 @@ def power_spectrum_multipole_mixing_matrix(
         kout = out["k"]
         has_kcenter = names is not None and "kcenter" in names
         kcenter = out["kcenter"] if has_kcenter else kout
-        kin = {ell: data["BINS_INPUT"]["kp{}".format(ell)] for ell in even_multipoles}
+        kin = {ell: data["BINS_INPUT"][f"kp{ell}"] for ell in even_multipoles}
         mixing_matrix_blocks = {
-            "ELL_{}-{}".format(ell1, ell2): data["MIXING_MATRIX"][
-                "W{}{}".format(ell1, ell2)
-            ].squeeze()
+            f"ELL_{ell1}-{ell2}": data["MIXING_MATRIX"][f"W{ell1}{ell2}"].squeeze()
             for ell2 in even_multipoles
             for ell1 in even_multipoles
         }
