@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import os
 from os import PathLike
-import numpy as np
+
 import fitsio  # type: ignore [import-not-found]
+import numpy as np
+from cosmolib.data import COSEBI, TwoPointCorrelationFunction
 from numpy.typing import NDArray
+
 from .._util import writer
-
-from cosmolib.data import TwoPointCorrelationFunction, COSEBI
-
 
 TYPE_CHECKING = True
 if TYPE_CHECKING:
@@ -265,9 +265,7 @@ def bandpowers(path: str | PathLike[str]) -> dict[_DictKey, NDArray[Any]]:
             data = hdu.read()
             if key[:2] == ("POS", "POS"):
                 data.dtype.names = ["L", "CL", "LMIN", "LMAX"]
-            elif key[:2] == ("POS", "SHE"):
-                data.dtype.names = ["L", "CL_E", "CL_B", "LMIN", "LMAX"]
-            elif key[:2] == ("SHE", "SHE"):
+            elif key[:2] == ("POS", "SHE") or key[:2] == ("SHE", "SHE"):
                 data.dtype.names = ["L", "CL_E", "CL_B", "LMIN", "LMAX"]
             bandp[key] = data
     return bandp
