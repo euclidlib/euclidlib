@@ -11,6 +11,7 @@ from ._util import writer
 
 if TYPE_CHECKING:
     from typing import Any
+
     from numpy.typing import ArrayLike, NDArray
 
 if np.lib.NumpyVersion(np.__version__) >= "2.0.0b1":
@@ -105,9 +106,12 @@ def _(
         raise ValueError("z array must be 1D")
     if nz.ndim == 0:
         raise ValueError("nz array must be at least 1D")
-    if not hist and z.shape[-1] == nz.shape[-1]:
-        pass
-    elif hist and z.shape[-1] == nz.shape[-1] + 1:
+    if (
+        not hist
+        and z.shape[-1] == nz.shape[-1]
+        or hist
+        and z.shape[-1] == nz.shape[-1] + 1
+    ):
         pass
     else:
         raise ValueError("shape mismatch between redshifts and values")
