@@ -286,6 +286,9 @@ def cosebis(path: str | PathLike[str]) -> dict[_DictKey, COSEBI]:
     -------
     dict[_DictKey, COSEBI]
         Mapping from decoded EXTNAME keys to ``COSEBI`` dataclass instances.
+        Each ``array`` has shape ``(2, 2, n_modes)`` following the SHE-SHE
+        spin convention: ``array[0, 0]`` is EE, ``array[1, 1]`` is BB and
+        ``array[0, 1] == array[1, 0]`` is EB.
 
     Notes
     -----
@@ -293,7 +296,7 @@ def cosebis(path: str | PathLike[str]) -> dict[_DictKey, COSEBI]:
         ``THMIN``, ``THMAX``, ``NMODES``.
     - Each extension HDU must have EXTNAME formatted as:
         ``SHEARSHEAR2D_COSEBI_j_k``.
-    - Columns read: MODE, EE, EB, BB (Euclid ordering).
+    - Columns read: MODE, EE, BB, EB.
     """
 
     raw = {}
@@ -317,18 +320,18 @@ def cosebis(path: str | PathLike[str]) -> dict[_DictKey, COSEBI]:
 
             raw[key] = hdu.read()
 
-            # Build float array (EE, EB, BB)
+            # Build (2, 2, n_modes) array: [[EE, EB], [EB, BB]]
             arr = np.array(
                 [
-                    raw[key]["EE"],
-                    raw[key]["EB"],
-                    raw[key]["BB"],
+                    [raw[key]["EE"], raw[key]["EB"]],
+                    [raw[key]["EB"], raw[key]["BB"]],
                 ]
             )
 
             # Create COSEBI dataclass
             cb[key] = COSEBI(
                 array=arr,
+                axis=(2,),
                 mode=raw[key]["MODE"].astype(int),
                 thmin=thmin,
                 thmax=thmax,
@@ -397,19 +400,17 @@ def _(path: str | PathLike[str], results: dict[_DictKey, COSEBI]) -> None:
             # EXTNAME like SHEARSHEAR2D_COSEBI_1_1
             extname = f"SHEARSHEAR2D_COSEBI_{bin1}_{bin2}"
 
-            # Extract arrays
+            # Extract arrays, arr shape: (2, 2, n_modes)
             mode = np.asarray(cosebi.mode, dtype="i8")
-            EE = np.asarray(cosebi.array[0], dtype="f8")
-            EB = (
-                np.asarray(cosebi.array[1], dtype="f8")
-                if cosebi.array.shape[0] > 1
-                else np.zeros_like(mode)
-            )
-            BB = (
-                np.asarray(cosebi.array[2], dtype="f8")
-                if cosebi.array.shape[0] > 2
-                else np.zeros_like(mode)
-            )
+            arr = np.asarray(cosebi.array, dtype="f8")
+            if arr.shape != (2, 2, len(mode)):
+                raise ValueError(
+                    f"COSEBI array for {key} must have shape (2, 2, n_modes), "
+                    f"got {arr.shape}."
+                )
+            EE = arr[0, 0]
+            EB = arr[0, 1]
+            BB = arr[1, 1]
 
             # Structured dtype
             dtype = [
