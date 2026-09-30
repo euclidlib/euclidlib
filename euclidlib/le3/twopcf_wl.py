@@ -287,8 +287,8 @@ def cosebis(path: str | PathLike[str]) -> dict[_DictKey, COSEBI]:
     dict[_DictKey, COSEBI]
         Mapping from decoded EXTNAME keys to ``COSEBI`` dataclass instances.
         Each ``array`` has shape ``(2, 2, n_modes)`` following the SHE-SHE
-        spin convention: ``array[0, 0]`` is EE, ``array[1, 1]`` is BB and
-        ``array[0, 1] == array[1, 0]`` is EB.
+        spin convention: ``array[0, 0]`` is EE, ``array[0, 1]`` is EB and
+        ``array[1, 1]`` is BB. ``array[1, 0]`` (BE) is a copy of EB (see Notes).
 
     Notes
     -----
@@ -297,6 +297,10 @@ def cosebis(path: str | PathLike[str]) -> dict[_DictKey, COSEBI]:
     - Each extension HDU must have EXTNAME formatted as:
         ``SHEARSHEAR2D_COSEBI_j_k``.
     - Columns read: MODE, EE, BB, EB.
+    - The products store a single mixed E/B column (EB) and only the bin
+      pairs ``j <= k``, so BE is not available. When reading, EB is copied
+      into BE (``array[1, 0] = array[0, 1]``). This is exact for auto pairs
+      (``j == k``); for cross pairs it is an assumption, not a measurement.
     """
 
     raw = {}
@@ -320,7 +324,8 @@ def cosebis(path: str | PathLike[str]) -> dict[_DictKey, COSEBI]:
 
             raw[key] = hdu.read()
 
-            # Build (2, 2, n_modes) array: [[EE, EB], [EB, BB]]
+            # Build (2, 2, n_modes) array: [[EE, EB], [BE, BB]].
+            # There is no BE column in the product, so EB is copied into BE.
             arr = np.array(
                 [
                     [raw[key]["EE"], raw[key]["EB"]],
@@ -362,6 +367,8 @@ def _(path: str | PathLike[str], results: dict[_DictKey, COSEBI]) -> None:
     - EXTNAME is set to ``SHEARSHEAR2D_COSEBI_j_k``.
     - Columns written per HDU:
         ``MODE``, ``EE``, ``BB``, ``EB``.
+    - EB is taken from ``array[0, 1]``; ``array[1, 0]`` (BE) is not written,
+      since the product has no BE column.
     """
 
     # Overwrite existing file

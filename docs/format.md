@@ -104,7 +104,7 @@ Cross-correlations obey the same rule: shape = (components of field A) × (compo
 # ('SHE', 'SHE', 1, 1).array[0, 0] will have lenght equal to ('SHE', 'SHE', 1, 1).ell
 ('POS', 'SHE', 1, 2).array       → shape = (1, 2)
 # ('SHE', 'SHE', 1, 1).array[0, 0] will have lenght equal to ('SHE', 'SHE', 1, 1).ell
-('SHE', 'SHE', 1, 1).array       → shape = (2, 2, Nmodes) # COSEBIs: [[EE, EB], [EB, BB]], indexed by .mode
+('SHE', 'SHE', 1, 1).array       → shape = (2, 2, Nmodes) # COSEBIs: [[EE, EB], [BE, BB]], indexed by .mode; BE is a copy of EB (no BE column in the product)
 ('SPE', 'SPE', 1, 1).multipoles  → shape = (5, Nk)
 # ('SPE', 'SPE', 1, 1).multipoles will have lenght
 ```
