@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from warnings import warn
-from os import PathLike
 import os
+from os import PathLike
+from warnings import warn
+
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
-
 from numpy.typing import NDArray
 
 TYPE_CHECKING = True
 if TYPE_CHECKING:
-    from typing import Any, Dict, Tuple, Union, Optional
+    from typing import Any, Union
 
     try:
         from typing import TypeAlias
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 def _verify_input_file(
-    path: Union[str, PathLike[str]], check_extra_hdu: bool = False
+    path: str | PathLike[str], check_extra_hdu: bool = False
 ) -> None:
     """
     Verifies that input file is a compatible LE3-GC fits file
@@ -46,15 +46,15 @@ def _verify_input_file(
         raise ValueError(
             "Provided fits file does not match the structure of a valid LE3-GC product."
         )
-    except Exception:
+    except Exception:  # noqa: BLE001
         raise RuntimeError("Invalid file provided.")
 
 
-def _get_hdu_header(hdu: fitsio.TableHDU) -> Dict[str, Any]:
+def _get_hdu_header(hdu: fitsio.TableHDU) -> dict[str, Any]:
     """
     Reads header from fits file HDU
     """
-    head: Dict[str, Any] = hdu.read_header()
+    head: dict[str, Any] = hdu.read_header()
     return head
 
 
@@ -68,7 +68,7 @@ def _get_hdu_data(hdu: fitsio.TableHDU) -> NDArray[Any]:
 
 def get_cosmology_from_header(
     header: fitsio.TableHDU, get_fiducial: bool = True
-) -> Tuple[float, Dict[str, Optional[float]]]:
+) -> tuple[float, dict[str, float | None]]:
     """
     Extracts redshift and fiducial cosmology from a FITS header.
     """
@@ -110,16 +110,14 @@ def get_cosmology_from_header(
         fiducial_cosmology["ns"] = next(
             (header[k] for k in ("INDEX_N", "NS") if k in header), None
         )
-        fiducial_cosmology["sigma_8"] = (
-            header["SIGMA_8"] if "SIGMA_8" in header else None
-        )
-        fiducial_cosmology["As"] = header["AS"] if "AS" in header else None
+        fiducial_cosmology["sigma_8"] = header.get("SIGMA_8", None)
+        fiducial_cosmology["As"] = header.get("AS", None)
         fiducial_cosmology["w0"] = next(
             (header[k] for k in ("W_STATE", "W0") if k in header), -1.0
         )
-        fiducial_cosmology["wa"] = header["WA"] if "WA" in header else 0.0
-        fiducial_cosmology["N_mnu"] = header["N_MNU"] if "N_MNU" in header else 0
-        fiducial_cosmology["mnu"] = header["MNU"] if "MNU" in header else 0.0
+        fiducial_cosmology["wa"] = header.get("WA", 0.0)
+        fiducial_cosmology["N_mnu"] = header.get("N_MNU", 0)
+        fiducial_cosmology["mnu"] = header.get("MNU", 0.0)
 
     return zeff, fiducial_cosmology
 
@@ -137,8 +135,8 @@ def check_input(
 
 
 def read_data_vectors(
-    path: Union[str, PathLike[str]], ext_name: str
-) -> Tuple[Dict[str, Any], NDArray[Any]]:
+    path: str | PathLike[str], ext_name: str
+) -> tuple[dict[str, Any], NDArray[Any]]:
     """
     Reads data from a Euclid LE3 fits file
     """
@@ -159,8 +157,8 @@ def read_data_vectors(
 
 
 def read_covariance_matrix(
-    path: Union[str, PathLike[str]],
-) -> Tuple[Dict[str, Any], NDArray[Any]]:
+    path: str | PathLike[str],
+) -> tuple[dict[str, Any], NDArray[Any]]:
     """
     Reads covariance matrix data from Euclid LE3-CM-GC fits file
     """
@@ -181,10 +179,10 @@ def read_covariance_matrix(
 
 
 def read_and_reshape_covariance_matrix(
-    path: Union[str, PathLike[str]],
+    path: str | PathLike[str],
     type: str,
     include_BAO: bool = False,
-) -> Tuple[NDArray[Any], Dict[str, NDArray[Any]], float, float]:
+) -> tuple[NDArray[Any], dict[str, NDArray[Any]], float, float]:
     """
     Read covariance matrix and reshape into blocks.
 
@@ -208,7 +206,7 @@ def read_and_reshape_covariance_matrix(
 
     header, data = read_covariance_matrix(path)
     zeff, _ = get_cosmology_from_header(header, get_fiducial=False)
-    correction_factor = header["CORR_FAC"] if "CORR_FAC" in header else 1.0
+    correction_factor = header.get("CORR_FAC", 1.0)
 
     scale_label = "K" if type == "SPECTRUM" else "S"
 
@@ -234,7 +232,7 @@ def read_and_reshape_covariance_matrix(
     n_scale = len(scale_values)
     scale_to_idx = {v: i for i, v in enumerate(scale_values)}
 
-    covariance_blocks: Dict[str, NDArray[Any]] = {}
+    covariance_blocks: dict[str, NDArray[Any]] = {}
 
     for oi in observables:
         for oj in observables:
@@ -264,13 +262,13 @@ def read_and_reshape_covariance_matrix(
 
 
 def read_mixing_matrix(
-    path: Union[str, PathLike[str]],
-) -> Tuple[Dict[str, Any], Dict[str, NDArray[Any]]]:
+    path: str | PathLike[str],
+) -> tuple[dict[str, Any], dict[str, NDArray[Any]]]:
     """
     Reads mixing matrix data from Euclid LE3-CM-GC fits file
     """
-    data: Dict[str, NDArray[Any]] = {}
-    header: Dict[str, Any] = {}
+    data: dict[str, NDArray[Any]] = {}
+    header: dict[str, Any] = {}
 
     required = ["BINS_OUTPUT", "BINS_INPUT", "MIXING_MATRIX"]
 
@@ -294,7 +292,7 @@ def build_2d_correlation(
     s_1d: NDArray[Any],
     mu_1d: NDArray[Any],
     correlation_1d: NDArray[Any],
-) -> Tuple[NDArray[Any], NDArray[Any], NDArray[Any]]:
+) -> tuple[NDArray[Any], NDArray[Any], NDArray[Any]]:
     """
     Reshapes a 1D correlation array into a 2D matrix based on s and mu values.
     """

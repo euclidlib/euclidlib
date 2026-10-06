@@ -1,7 +1,3 @@
-__all__ = ["pk_wl", "twopcf_wl", "pk_gc", "twopcf_gc", "bao_gc"]
+__all__ = ["bao_gc", "pk_gc", "pk_wl", "twopcf_gc", "twopcf_wl"]
 
-from . import pk_wl
-from . import twopcf_wl
-from . import pk_gc
-from . import twopcf_gc
-from . import bao_gc
+from . import bao_gc, pk_gc, pk_wl, twopcf_gc, twopcf_wl

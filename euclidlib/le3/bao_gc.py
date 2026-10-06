@@ -1,20 +1,20 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
+
 from cosmolib.data import (
     BaryonAcousticOscillations,
     BaryonAcousticOscillationsCovariance,
 )
+from numpy.typing import NDArray
 
 from ._common import (
     check_input,
     get_cosmology_from_header,
-    read_data_vectors,
     read_covariance_matrix,
+    read_data_vectors,
 )
-
-from numpy.typing import NDArray
 
 if TYPE_CHECKING:
     from typing import Any, Union
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 
 def BAO_alphas(
-    path: Union[str, PathLike[str]], *redshifts: str
+    path: str | PathLike[str], *redshifts: str
 ) -> dict[_DictKey, BaryonAcousticOscillations]:
     """
     Returns alphas from BAO in cloe-compatible euclidlib data format
@@ -48,7 +48,7 @@ def BAO_alphas(
     results : dict[_DictKey, Optional[BaryonAcousticOscillations]]
     """
     redshifts, nz = check_input(redshifts)
-    result: dict[_DictKey, Optional[BaryonAcousticOscillations]] = {}
+    result: dict[_DictKey, BaryonAcousticOscillations | None] = {}
 
     for i in range(nz):
         for j in range(nz):
@@ -76,7 +76,7 @@ def BAO_alphas(
 
 
 def BAO_alphas_covariance(
-    path: Union[str, PathLike[str]], *redshifts: str
+    path: str | PathLike[str], *redshifts: str
 ) -> dict[_DictKey, BaryonAcousticOscillationsCovariance]:
     """
     Returns the covariance for BAO alphas in cloe-compatible euclidlib data format
@@ -101,7 +101,7 @@ def BAO_alphas_covariance(
         corresponding FITS file, while off-diagonal entries are set to ``None``.
     """
     redshifts, nz = check_input(redshifts)
-    results: dict[_DictKey, Optional[BaryonAcousticOscillationsCovariance]] = {}
+    results: dict[_DictKey, BaryonAcousticOscillationsCovariance | None] = {}
 
     for i in range(nz):
         for j in range(nz):

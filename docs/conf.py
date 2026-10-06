@@ -1,10 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 
-from datetime import date
-from sphinx.application import Sphinx
 import os
-
 import sys
+from datetime import datetime, timezone
+
+from sphinx.application import Sphinx
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 project = "euclidlib"
 author = "the euclidlib team"
-copyright = f"{date.today().year}, {author}"
+copyright = f"{datetime.now(tz=timezone.utc).year}, {author}"
 
 # Master document
 language = "en"
@@ -89,4 +89,3 @@ else:
 # -- Optional: local Sphinx extensions setup --------------------------------
 def setup(app: Sphinx):
     """Custom Sphinx setup for euclidlib."""
-    pass
