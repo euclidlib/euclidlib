@@ -1,11 +1,13 @@
 from __future__ import annotations
-import re
+
 import os
+import re
+
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
-from .._util import writer
-
 from cosmolib.data import AngularPowerSpectrum
+
+from .._util import writer
 
 TYPE_CHECKING = True
 if TYPE_CHECKING:
@@ -267,7 +269,10 @@ def _(path: str | PathLike[str], results: dict[_DictKey, AngularPowerSpectrum]) 
                 raise ValueError(f"Unsupported array shape: {arr.shape}")
 
             def get_tuple_or_default(
-                attr: str, default_dtype: np.dtype[Any]
+                attr: str,
+                default_dtype: np.dtype[Any],
+                result: Any = result,
+                nrows: int = nrows,
             ) -> np.ndarray[Any, Any]:
                 val = getattr(result, attr, None)
                 if val is None:

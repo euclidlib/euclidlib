@@ -26,6 +26,17 @@ This page documents the public API of `euclidlib`.
 
 ---
 
+## `euclidlib.shecal` — Shear calibration (m and c bias) products
+
+```{eval-rst}
+.. automodule:: euclidlib.shecal
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```
+
+---
+
 ## `euclidlib.le3` — LE3 pipeline products
 
 ```{eval-rst}

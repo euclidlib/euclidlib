@@ -3,26 +3,26 @@ from __future__ import annotations
 # Standard library imports
 import os
 from os import PathLike
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 # Third-party imports
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
 from cosmolib.data import (
     TwoPointCorrelationCartesian,
-    TwoPointCorrelationPolar,
     TwoPointCorrelationMultipoles,
     TwoPointCorrelationMultipolesCovariance,
+    TwoPointCorrelationPolar,
 )
 
 # Local library imports
 from .._util import writer
 from ._common import (
+    build_2d_correlation,
     check_input,
     get_cosmology_from_header,
-    read_data_vectors,
     read_and_reshape_covariance_matrix,
-    build_2d_correlation,
+    read_data_vectors,
 )
 
 if TYPE_CHECKING:
@@ -37,8 +37,8 @@ if TYPE_CHECKING:
 
 
 def twopoint_correlation_cartesian(
-    path: Union[str, PathLike[str]], *redshifts: str
-) -> dict[_DictKey, Optional[TwoPointCorrelationCartesian]]:
+    path: str | PathLike[str], *redshifts: str
+) -> dict[_DictKey, TwoPointCorrelationCartesian | None]:
     """
     Reads the 2-dimensional cartesian 2PCF from a LE3-format fits file and
     returns it as a cosmolib data structure.
@@ -63,7 +63,7 @@ def twopoint_correlation_cartesian(
         set to ``None``.
     """
     redshifts, nz = check_input(redshifts)
-    results: dict[_DictKey, Optional[TwoPointCorrelationCartesian]] = {}
+    results: dict[_DictKey, TwoPointCorrelationCartesian | None] = {}
 
     for i in range(nz):
         for j in range(nz):
@@ -90,8 +90,8 @@ def twopoint_correlation_cartesian(
 
 
 def twopoint_correlation_polar(
-    path: Union[str, PathLike[str]], *redshifts: str
-) -> dict[_DictKey, Optional[TwoPointCorrelationPolar]]:
+    path: str | PathLike[str], *redshifts: str
+) -> dict[_DictKey, TwoPointCorrelationPolar | None]:
     """
     Reads the 2-dimensional polar 2PCF from a LE3-format fits file and
     returns it as a cosmolib data structure.
@@ -116,7 +116,7 @@ def twopoint_correlation_polar(
         set to ``None``.
     """
     redshifts, nz = check_input(redshifts)
-    results: dict[_DictKey, Optional[TwoPointCorrelationPolar]] = {}
+    results: dict[_DictKey, TwoPointCorrelationPolar | None] = {}
 
     for i in range(nz):
         for j in range(nz):
@@ -145,7 +145,7 @@ def twopoint_correlation_polar(
 @writer(twopoint_correlation_polar)
 def _(
     results: dict[_DictKey, TwoPointCorrelationPolar],
-    path: Union[str, PathLike[str]],
+    path: str | PathLike[str],
     *redshifts: str,
 ) -> None:
     """
@@ -170,7 +170,7 @@ def _(
         ("XI", "f8"),
     ]
 
-    redshifts, nz = check_input(redshifts)
+    redshifts, _nz = check_input(redshifts)
 
     for i, zlab in enumerate(redshifts):
         obj = results[("SPE", "SPE", i, i)]
@@ -232,7 +232,7 @@ def _(
 
 
 def twopoint_correlation_multipoles(
-    path: Union[str, PathLike[str]], *redshifts: str
+    path: str | PathLike[str], *redshifts: str
 ) -> dict[_DictKey, TwoPointCorrelationMultipoles]:
     """
     Reads the 2PCF Legendre multipoles from a LE3-format fits file and returns
@@ -258,7 +258,7 @@ def twopoint_correlation_multipoles(
         set to ``None``.
     """
     redshifts, nz = check_input(redshifts)
-    results: dict[_DictKey, Optional[TwoPointCorrelationMultipoles]] = {}
+    results: dict[_DictKey, TwoPointCorrelationMultipoles | None] = {}
 
     for i in range(nz):
         for j in range(nz):
@@ -282,7 +282,7 @@ def twopoint_correlation_multipoles(
 @writer(twopoint_correlation_multipoles)
 def _(
     results: dict[_DictKey, TwoPointCorrelationMultipoles],
-    path: Union[str, PathLike[str]],
+    path: str | PathLike[str],
     *redshifts: str,
 ) -> None:
     """
@@ -311,7 +311,7 @@ def _(
         ("XI4", "f8"),
     ]
 
-    redshifts, nz = check_input(redshifts)
+    redshifts, _nz = check_input(redshifts)
 
     for i, zlab in enumerate(redshifts):
         obj = results[("SPE", "SPE", i, i)]
@@ -370,8 +370,8 @@ def _(
 
 
 def twopoint_correlation_multipole_covariance(
-    path: Union[str, PathLike[str]], *redshifts: str, include_BAO: bool = False
-) -> dict[_DictKey, Optional[TwoPointCorrelationMultipolesCovariance]]:
+    path: str | PathLike[str], *redshifts: str, include_BAO: bool = False
+) -> dict[_DictKey, TwoPointCorrelationMultipolesCovariance | None]:
     """
     Reads the covariance matrix of the 2PCF Legendre multipoles from a
     LE3-format fits file and returns it as a cosmolib data structure.
@@ -398,14 +398,14 @@ def twopoint_correlation_multipole_covariance(
         file, while off-diagonal entries are set to ``None``.
     """
     redshifts, nz = check_input(redshifts)
-    results: dict[_DictKey, Optional[TwoPointCorrelationMultipolesCovariance]] = {}
+    results: dict[_DictKey, TwoPointCorrelationMultipolesCovariance | None] = {}
 
     for i in range(nz):
         for j in range(nz):
             results[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        s_values, covariance_blocks, zeff, correction_factor = (
+        s_values, covariance_blocks, zeff, _correction_factor = (
             read_and_reshape_covariance_matrix(
                 path=str(path).format(zlab), type="CORRELATION", include_BAO=include_BAO
             )
