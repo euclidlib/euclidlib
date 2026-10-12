@@ -2,19 +2,19 @@ from __future__ import annotations
 
 from os import PathLike
 from typing import TYPE_CHECKING, Optional
+
 from cosmolib.data import (
     BaryonAcousticOscillations,
     BaryonAcousticOscillationsCovariance,
 )
+from numpy.typing import NDArray
 
 from ._common import (
     check_input,
     get_cosmology_from_header,
-    read_data_vectors,
     read_covariance_matrix,
+    read_data_vectors,
 )
-
-from numpy.typing import NDArray
 
 if TYPE_CHECKING:
     from typing import Any, Union
