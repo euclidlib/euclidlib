@@ -10,8 +10,8 @@ import numpy as np
 from ._util import writer
 
 if TYPE_CHECKING:
-    from typing import Any
-    from numpy.typing import ArrayLike, NDArray
+    from typing import Any, Literal
+    from numpy.typing import NDArray
 
 if np.lib.NumpyVersion(np.__version__) >= "2.0.0b1":
     trapezoid = np.trapezoid
@@ -19,22 +19,11 @@ else:
     trapezoid = np.trapz  # type: ignore
 
 
-def _hist2dist(x: NDArray[Any], y: NDArray[Any]) -> NDArray[Any]:
-    """
-    Convert histogram to distribution.
-    """
-    *dims, n = y.shape
-    z = np.zeros((*dims, n + 1), dtype=y.dtype.base)
-    np.cumsum(y, axis=-1, out=z[..., 1:])
-    result: NDArray[Any] = np.gradient(z, x, axis=-1, edge_order=1)
-    return result
-
-
 def redshift_distributions(
     path: str | PathLike[str],
     *,
     ext: str | int | None = None,
-    hist: bool = False,
+    version: Literal["q1", "dr1"] = "dr1",
 ) -> tuple[NDArray[Any], Mapping[int, NDArray[Any]]]:
     """Read redshift distributions in Euclid format.
 
@@ -42,82 +31,106 @@ def redshift_distributions(
     ----------
     path : str
         Path to a FITS file in Euclid format.
-    ext : str or int or None, optional
-        The FITS extension to read.  If ``None``, the first extension
-        with data is used.
-    hist : bool, optional
-        By default, the histograms are converted to distributions.  If
-        true, return the redshift histograms unmodified.
 
     Returns
     -------
     z : ndarray
         Redshift values.
-    nz: dict of int and ndarray
+    nz : dict of int and ndarray
         Dictionary where keys are tomographic bin IDs and values are the
         redshift distributions.
+
+    Other Parameters
+    ----------------
+    ext : str or int or None, optional
+        The FITS extension to read.  If ``None``, the first extension
+        with data is used.
+    version : {"q1", "dr1"}, optional
+        File format version.  By default, the latest available version is used.
 
     """
 
     # data and header from file
-    data = fitsio.read(path, ext=ext, lower=True)
+    data, hdr = fitsio.read(path, ext=ext, lower=True, header=True)
 
-    # this is the fixed binning scheme used by PHZ
-    z = np.linspace(0.0, 6.0, 3001)
+    # check for new format
+    if version == "q1":
+        # this is the fixed binning scheme used by PHZ
+        z = np.linspace(0.0, 6.0, 3000, endpoint=False)
 
-    # check format
-    shape = (z.size - 1,)
-    if "n_z" not in data.dtype.fields or data.dtype.fields["n_z"][0].shape != shape:
-        msg = f"{path}: requires column N_Z of shape {shape}"
-        raise ValueError(msg)
+        # check format
+        shape = (z.size,)
+        if "n_z" not in data.dtype.fields or data.dtype.fields["n_z"][0].shape != shape:
+            msg = f"{path}: requires column N_Z of shape {shape}"
+            raise ValueError(msg)
 
-    # read each n(z) histogram into a dict
-    out = {}
-    for row in data:
-        bin_id, n_z = row["bin_id"], row["n_z"]
-        if not hist:
-            n_z = _hist2dist(z, n_z)
-        out[bin_id] = n_z
+        # load n(z) histogram as distribution
+        nz = {row["bin_id"]: row["n_z"] for row in data}
 
-    return z, out
+    elif version == "dr1":
+        # get redshift grid from file
+        z_step = hdr["Z_STEP"]
+        z_size = hdr["Z_STEP_NUMBER"]
+        z = z_step * np.arange(z_size)
+
+        # read n(z) and cut to size
+        nz = {row["bin_id"]: row["n_z"][:z_size] for row in data}
+
+    else:
+        raise ValueError(f"invalid version: {version}")
+
+    return z, nz
 
 
 @writer(redshift_distributions)
 def _(
     path: str | PathLike[str],
-    z: ArrayLike,
-    nz: ArrayLike,
+    z: NDArray[Any],
+    nz: Mapping[int, NDArray[Any]],
     *,
     weight_method: str = "NO_WEIGHT",
     bin_type: str = "TOM_BIN",
-    hist: bool = False,
+    version: Literal["dr1"] = "dr1",
 ) -> None:
     """
-    Write n(z) data in Euclid SGS format.  Supports both distributions
-    (when *hist* is false, the default) and histograms (when *hist* is
-    true).
+    Write n(z) data in Euclid SGS format.
+
+    Parameters
+    ----------
+    path : str
+        Path to a FITS file in Euclid format.
+    z : ndarray
+        Redshift values.
+    nz : dict of int and ndarray
+        Dictionary where keys are tomographic bin IDs and values are the
+        redshift distributions.
+
+    Other Parameters
+    ----------------
+    weight_method : str, optional
+        Set weight method in FITS header.
+    bin_type : str, optional
+        Set bin type in FITS header.
+    version : {"dr1"}, optional
+        File format version.  By default, the latest available version is used.
+
     """
 
-    z = np.asanyarray(z)
-    nz = np.asanyarray(nz)
+    if version not in ["dr1"]:
+        raise ValueError(f"invalid version: {version}")
 
     if z.ndim != 1:
         raise ValueError("z array must be 1D")
-    if nz.ndim == 0:
-        raise ValueError("nz array must be at least 1D")
-    if not hist and z.shape[-1] == nz.shape[-1]:
-        pass
-    elif hist and z.shape[-1] == nz.shape[-1] + 1:
-        pass
-    else:
-        raise ValueError("shape mismatch between redshifts and values")
+    if z.size < 2:
+        raise ValueError("z array must contain more than 1 value")
 
-    # PHZ uses a fixed binning scheme with z bins in [0, 6] and dz=0.002
-    zbinedges = np.linspace(0.0, 6.0, 3001)
+    # figure out the redshift spacing
+    z_step = z[1] - z[0]
+    if not np.allclose(z, z_step * np.arange(z.size)):
+        raise ValueError("z array is not a regular grid")
 
-    # turn nz into a 2D array with NBIN rows
-    nz = nz.reshape(-1, nz.shape[-1])
-    nbin = nz.shape[0]
+    # get number of bins from nz
+    nbin = len(nz)
 
     # create the output data in the correct format
     out = np.empty(
@@ -125,53 +138,42 @@ def _(
         dtype=[
             ("BIN_ID", ">i4"),
             ("MEAN_REDSHIFT", ">f4"),
-            ("N_Z", ">f4", (3000,)),
+            ("MEAN_REDSHIFT_ERR", ">f4"),
+            ("VAR_REDSHIFT", ">f4"),
+            ("VAR_REDSHIFT_ERR", ">f4"),
+            ("N_Z", ">f8", (z.size,)),
         ],
     )
 
-    # set increasing bin IDs
-    out["BIN_ID"] = np.arange(1, nbin + 1)
+    # go through nz and set each as row in output
+    for i, (bin_id, dist) in enumerate(nz.items()):
+        # check array shape
+        if dist.shape != z.shape:
+            raise ValueError(f"shape mismatch for bin {bin_id}")
 
-    # convert every nz into the PHZ format
-    if hist:
-        # rebin the histogram as necessary
+        # compute mean and variance of distribution
+        norm = trapezoid(dist, z, axis=-1)
+        mean = trapezoid(z * dist, z, axis=-1) / norm
+        var = trapezoid((z - mean) ** 2 * dist, z, axis=-1) / norm
 
-        # shorthand for the left and right z boundaries, respectively
-        zl, zr = z[:-1], z[1:]
-
-        # compute the mean redshifts
-        out["MEAN_REDSHIFT"] = np.sum((zl + zr) / 2 * nz, axis=-1) / np.sum(nz, axis=-1)
-
-        # compute resummed bin counts
-        for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
-            frac = (np.clip(z2, zl, zr) - np.clip(z1, zl, zr)) / (zr - zl)
-            out["N_Z"][:, j] = np.dot(nz, frac)
-    else:
-        # integrate the n(z) over each histogram bin
-
-        # compute mean redshifts
-        out["MEAN_REDSHIFT"] = trapezoid(z * nz, z, axis=-1) / trapezoid(nz, z, axis=-1)
-
-        # compute the combined set of z grid points from data and binning
-        zp = np.union1d(z, zbinedges)
-
-        # integrate over each bin
-        for i in range(nbin):
-            # interpolate dndz onto the unified grid
-            nzp = np.interp(zp, z, nz[i], left=0.0, right=0.0)
-
-            # integrate the distribution over each bin
-            for j, (z1, z2) in enumerate(zip(zbinedges, zbinedges[1:])):
-                sel = (z1 <= zp) & (zp <= z2)
-                out["N_Z"][i, j] = trapezoid(nzp[sel], zp[sel])
+        # set data for row
+        out[i]["BIN_ID"] = bin_id
+        out[i]["MEAN_REDSHIFT"] = mean
+        out[i]["MEAN_REDSHIFT_ERR"] = 0.0
+        out[i]["VAR_REDSHIFT"] = var
+        out[i]["VAR_REDSHIFT_ERR"] = 0.0
+        out[i]["N_Z"] = dist
 
     # metadata
     header = {
         "WEIGHT_METHOD": weight_method,
         "BIN_TYPE": bin_type,
         "NBIN": nbin,
+        "Z_STEP": z_step,
+        "Z_STEP_NUMBER": z.size,
     }
 
     # write output data to FITS
     with fitsio.FITS(path, "rw", clobber=True) as fits:
-        fits.write(out, extname="BIN_INFO", header=header)
+        fits.write(None)
+        fits.write_table(out, extname="BIN_INFO", header=header)
