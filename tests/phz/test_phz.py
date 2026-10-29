@@ -1,5 +1,5 @@
-import numpy as np  # type: ignore
 import fitsio
+import numpy as np  # type: ignore
 
 import euclidlib as el
 

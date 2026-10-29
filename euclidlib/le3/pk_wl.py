@@ -1,24 +1,26 @@
 from __future__ import annotations
-import re
+
 import os
+import re
+
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
-from .._util import writer
-
 from cosmolib.data import AngularPowerSpectrum
+
+from .._util import writer
 
 TYPE_CHECKING = True
 if TYPE_CHECKING:
     from os import PathLike
-    from typing import Any, Union
+    from typing import Any
 
     try:
         from typing import TypeAlias
     except ImportError:
-        from typing_extensions import TypeAlias
+        from typing import TypeAlias
     from numpy.typing import NDArray
 
-    _DictKey: TypeAlias = Union[str, int, tuple["_DictKey", ...]]
+    _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
 
 
 def normalize_result_axis(
@@ -267,7 +269,10 @@ def _(path: str | PathLike[str], results: dict[_DictKey, AngularPowerSpectrum]) 
                 raise ValueError(f"Unsupported array shape: {arr.shape}")
 
             def get_tuple_or_default(
-                attr: str, default_dtype: np.dtype[Any]
+                result: AngularPowerSpectrum,
+                nrows: int,
+                attr: str,
+                default_dtype: np.dtype[Any],
             ) -> np.ndarray[Any, Any]:
                 val = getattr(result, attr, None)
                 if val is None:
@@ -277,10 +282,10 @@ def _(path: str | PathLike[str], results: dict[_DictKey, AngularPowerSpectrum]) 
                     val = np.stack([np.asarray(v) for v in val], axis=-1)
                 return val.reshape(nrows).astype(default_dtype)
 
-            ell = get_tuple_or_default("ell", np.dtype(np.float64))
-            lower = get_tuple_or_default("lower", np.dtype(np.float64))
-            upper = get_tuple_or_default("upper", np.dtype(np.float64))
-            weight = get_tuple_or_default("weight", np.dtype(np.float64))
+            ell = get_tuple_or_default(result, nrows, "ell", np.dtype(np.float64))
+            lower = get_tuple_or_default(result, nrows, "lower", np.dtype(np.float64))
+            upper = get_tuple_or_default(result, nrows, "upper", np.dtype(np.float64))
+            weight = get_tuple_or_default(result, nrows, "weight", np.dtype(np.float64))
 
             array_shape = (
                 tuple(map(int, tdim.strip("()").split(",")))
