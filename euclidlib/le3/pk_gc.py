@@ -3,7 +3,7 @@ from __future__ import annotations
 # Standard library imports
 import os
 from os import PathLike
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from warnings import warn
 
 # Third-party imports
@@ -20,25 +20,23 @@ from .._util import writer
 from ._common import (
     check_input,
     get_cosmology_from_header,
-    read_data_vectors,
     read_and_reshape_covariance_matrix,
+    read_data_vectors,
     read_mixing_matrix,
 )
 
 if TYPE_CHECKING:
-    from typing import Union
-
     try:
         from typing import TypeAlias
     except ImportError:
-        from typing_extensions import TypeAlias
+        from typing import TypeAlias
 
-    _DictKey: TypeAlias = Union[str, int, tuple["_DictKey", ...]]
+    _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
 
 
 def power_spectrum_multipoles(
-    path: Union[str, PathLike[str]], *redshifts: str
-) -> dict[_DictKey, Optional[PowerSpectrumMultipoles]]:
+    path: str | PathLike[str], *redshifts: str
+) -> dict[_DictKey, PowerSpectrumMultipoles | None]:
     """
     Reads the power spectrum Legendre multipoles from a LE3-format fits file
     and returns it as a cosmolib data structure.
@@ -63,7 +61,7 @@ def power_spectrum_multipoles(
         entries are set to ``None``.
     """
     redshifts, nz = check_input(redshifts)
-    results: dict[_DictKey, Optional[PowerSpectrumMultipoles]] = {}
+    results: dict[_DictKey, PowerSpectrumMultipoles | None] = {}
 
     for i in range(nz):
         for j in range(nz):
@@ -92,7 +90,7 @@ def power_spectrum_multipoles(
 @writer(power_spectrum_multipoles)
 def _(
     results: dict[_DictKey, PowerSpectrumMultipoles],
-    path: Union[str, PathLike[str]],
+    path: str | PathLike[str],
     *redshifts: str,
 ) -> None:
     """
@@ -123,7 +121,7 @@ def _(
         ("NUM_MOD", "f8"),
     ]
 
-    redshifts, nz = check_input(redshifts)
+    redshifts, _ = check_input(redshifts)
 
     for i, zlab in enumerate(redshifts):
         obj = results[("SPE", "SPE", i, i)]
@@ -181,8 +179,8 @@ def _(
 
 
 def power_spectrum_multipole_covariance(
-    path: Union[str, PathLike[str]], *redshifts: str, include_BAO: bool = False
-) -> dict[_DictKey, Optional[PowerSpectrumMultipolesCovariance]]:
+    path: str | PathLike[str], *redshifts: str, include_BAO: bool = False
+) -> dict[_DictKey, PowerSpectrumMultipolesCovariance | None]:
     """
     Reads the covariance matrix of the power spectrum Legendre multipoles from
     a LE3-format fits file and returns it as a cosmolib data structure.
@@ -209,14 +207,14 @@ def power_spectrum_multipole_covariance(
         corresponding FITS file, while off-diagonal entries are set to ``None``.
     """
     redshifts, nz = check_input(redshifts)
-    results: dict[_DictKey, Optional[PowerSpectrumMultipolesCovariance]] = {}
+    results: dict[_DictKey, PowerSpectrumMultipolesCovariance | None] = {}
 
     for i in range(nz):
         for j in range(nz):
             results[("SPE", "SPE", i, j)] = None
 
     for i, zlab in enumerate(redshifts):
-        k_values, covariance_blocks, zeff, correction_factor = (
+        k_values, covariance_blocks, zeff, _correction_factor = (
             read_and_reshape_covariance_matrix(
                 path=str(path).format(zlab), type="SPECTRUM", include_BAO=include_BAO
             )
@@ -229,8 +227,8 @@ def power_spectrum_multipole_covariance(
 
 
 def power_spectrum_multipole_mixing_matrix(
-    path: Union[str, PathLike[str]], *redshifts: str
-) -> dict[_DictKey, Optional[PowerSpectrumMultipolesMixingMatrix]]:
+    path: str | PathLike[str], *redshifts: str
+) -> dict[_DictKey, PowerSpectrumMultipolesMixingMatrix | None]:
     """
     Reads the mixing matrix of the power spectrum Legendre multipoles from
     a LE3-format fits file and returns it as a cosmolib data structure.
@@ -257,7 +255,7 @@ def power_spectrum_multipole_mixing_matrix(
     even_multipoles = [0, 2, 4]
 
     redshifts, nz = check_input(redshifts)
-    results: dict[_DictKey, Optional[PowerSpectrumMultipolesMixingMatrix]] = {}
+    results: dict[_DictKey, PowerSpectrumMultipolesMixingMatrix | None] = {}
 
     for i in range(nz):
         for j in range(nz):
@@ -270,11 +268,9 @@ def power_spectrum_multipole_mixing_matrix(
         kout = out["k"]
         has_kcenter = names is not None and "kcenter" in names
         kcenter = out["kcenter"] if has_kcenter else kout
-        kin = {ell: data["BINS_INPUT"]["kp{}".format(ell)] for ell in even_multipoles}
+        kin = {ell: data["BINS_INPUT"][f"kp{ell}"] for ell in even_multipoles}
         mixing_matrix_blocks = {
-            "ELL_{}-{}".format(ell1, ell2): data["MIXING_MATRIX"][
-                "W{}{}".format(ell1, ell2)
-            ].squeeze()
+            f"ELL_{ell1}-{ell2}": data["MIXING_MATRIX"][f"W{ell1}{ell2}"].squeeze()
             for ell2 in even_multipoles
             for ell1 in even_multipoles
         }
@@ -287,11 +283,7 @@ def power_spectrum_multipole_mixing_matrix(
             )
             zeff = 0.0
 
-        Psn = (
-            header["MIXING_MATRIX"]["SN_VALUE"]
-            if "SN_VALUE" in header["MIXING_MATRIX"]
-            else None
-        )
+        Psn = header["MIXING_MATRIX"].get("SN_VALUE", None)
         nbar = (
             1.0 / header["MIXING_MATRIX"]["SN_VALUE"]
             if "SN_VALUE" in header["MIXING_MATRIX"]

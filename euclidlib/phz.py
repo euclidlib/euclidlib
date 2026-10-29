@@ -11,6 +11,7 @@ from ._util import writer
 
 if TYPE_CHECKING:
     from typing import Any, Literal
+
     from numpy.typing import NDArray
 
 if np.lib.NumpyVersion(np.__version__) >= "2.0.0b1":

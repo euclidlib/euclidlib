@@ -48,9 +48,7 @@ When a summary-statistics product is loaded, `euclidlib` returns a
 **Python dictionary** whose key are tuples:
 
 ```python
-{
-    ('FIELD1', 'FIELD2', zbin1, zbin2): dataclass_instance
-}
+{("FIELD1", "FIELD2", zbin1, zbin2): dataclass_instance}
 ```
 
 Each key uniquely identifies, for instance:
