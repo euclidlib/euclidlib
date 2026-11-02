@@ -1,4 +1,4 @@
-__all__ = ["__version__", "__version_tuple__", "phz", "le3", "_util"]
+__all__ = ["__version__", "__version_tuple__", "_util", "le3", "phz"]
 
 # generated version information
 try:
@@ -6,6 +6,4 @@ try:
 except ModuleNotFoundError:
     pass
 
-from . import phz
-from . import le3
-from . import _util
+from . import _util, le3, phz
