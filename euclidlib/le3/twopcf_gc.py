@@ -10,19 +10,19 @@ import fitsio  # type: ignore [import-not-found]
 import numpy as np
 from cosmolib.data import (
     TwoPointCorrelationCartesian,
-    TwoPointCorrelationPolar,
     TwoPointCorrelationMultipoles,
     TwoPointCorrelationMultipolesCovariance,
+    TwoPointCorrelationPolar,
 )
 
 # Local library imports
 from .._util import writer
 from ._common import (
+    build_2d_correlation,
     check_input,
     get_cosmology_from_header,
-    read_data_vectors,
     read_and_reshape_covariance_matrix,
-    build_2d_correlation,
+    read_data_vectors,
 )
 
 if TYPE_CHECKING:
