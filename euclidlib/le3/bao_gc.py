@@ -2,19 +2,19 @@ from __future__ import annotations
 
 from os import PathLike
 from typing import TYPE_CHECKING, Optional
+
 from cosmolib.data import (
     BaryonAcousticOscillations,
     BaryonAcousticOscillationsCovariance,
 )
+from numpy.typing import NDArray
 
 from ._common import (
     check_input,
     get_cosmology_from_header,
-    read_data_vectors,
     read_covariance_matrix,
+    read_data_vectors,
 )
-
-from numpy.typing import NDArray
 
 if TYPE_CHECKING:
     from typing import Any, Union
@@ -61,13 +61,13 @@ def BAO_alphas(
         alpha_par = data["ALPHA_PAR"]
         alpha_perp = data["ALPHA_PERP"]
         alpha_iso = data["ALPHA_ISO"]
-        alpha_ap = data["ALPHA_AP"]
+        alpha_AP = data["ALPHA_AP"]
 
         result[("SPE", "SPE", i, i)] = BaryonAcousticOscillations(
             alpha_par=alpha_par,
             alpha_perp=alpha_perp,
             alpha_iso=alpha_iso,
-            alpha_ap=alpha_ap,
+            alpha_AP=alpha_AP,
             fiducial_cosmology=fiducial_cosmology,
             zeff=zeff,
         )
