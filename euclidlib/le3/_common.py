@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from warnings import warn
-from os import PathLike
 import os
+from os import PathLike
+from warnings import warn
+
 import fitsio  # type: ignore [import-not-found]
 import numpy as np
-
 from numpy.typing import NDArray
 
 TYPE_CHECKING = True
 if TYPE_CHECKING:
-    from typing import Any, Dict, Tuple, Union, Optional
+    from typing import Any, Dict, Optional, Tuple, Union
 
     try:
         from typing import TypeAlias
