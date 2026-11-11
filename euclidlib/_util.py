@@ -2,8 +2,9 @@
 Module for internal utility functions.
 """
 
+from collections.abc import Callable
 from datetime import datetime, timezone
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 # Define these at runtime, not only in type-checking
 AnyT = TypeVar("AnyT", bound=Any)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from cosmolib.data import (
     BaryonAcousticOscillations,
@@ -17,18 +17,18 @@ from ._common import (
 )
 
 if TYPE_CHECKING:
-    from typing import Any, Union
+    from typing import Any
 
     try:
         from typing import TypeAlias
     except ImportError:
-        from typing_extensions import TypeAlias
+        from typing import TypeAlias
 
-    _DictKey: TypeAlias = Union[str, int, tuple["_DictKey", ...]]
+    _DictKey: TypeAlias = str | int | tuple["_DictKey", ...]
 
 
 def BAO_alphas(
-    path: Union[str, PathLike[str]], *redshifts: str
+    path: str | PathLike[str], *redshifts: str
 ) -> dict[_DictKey, BaryonAcousticOscillations]:
     """
     Returns alphas from BAO in cloe-compatible euclidlib data format
@@ -45,10 +45,10 @@ def BAO_alphas(
 
     Returns
     -------
-    results : dict[_DictKey, Optional[BaryonAcousticOscillations]]
+    results : dict[_DictKey, BaryonAcousticOscillations | None]
     """
     redshifts, nz = check_input(redshifts)
-    result: dict[_DictKey, Optional[BaryonAcousticOscillations]] = {}
+    result: dict[_DictKey, BaryonAcousticOscillations | None] = {}
 
     for i in range(nz):
         for j in range(nz):
@@ -76,7 +76,7 @@ def BAO_alphas(
 
 
 def BAO_alphas_covariance(
-    path: Union[str, PathLike[str]], *redshifts: str
+    path: str | PathLike[str], *redshifts: str
 ) -> dict[_DictKey, BaryonAcousticOscillationsCovariance]:
     """
     Returns the covariance for BAO alphas in cloe-compatible euclidlib data format
@@ -93,7 +93,7 @@ def BAO_alphas_covariance(
 
     Returns
     -------
-    results : dict[_DictKey, Optional[BaryonAcousticOscillationsCovariance]]
+    results : dict[_DictKey, BaryonAcousticOscillationsCovariance | None]
         Dictionary containing the covariance matrix of the BAO alphas for each
         redshift bin pair. Keys are tuples of the form ``("SPE", "SPE", i, j)``.
         For diagonal pairs (``i == j``) the value is a
@@ -101,7 +101,7 @@ def BAO_alphas_covariance(
         corresponding FITS file, while off-diagonal entries are set to ``None``.
     """
     redshifts, nz = check_input(redshifts)
-    results: dict[_DictKey, Optional[BaryonAcousticOscillationsCovariance]] = {}
+    results: dict[_DictKey, BaryonAcousticOscillationsCovariance | None] = {}
 
     for i in range(nz):
         for j in range(nz):

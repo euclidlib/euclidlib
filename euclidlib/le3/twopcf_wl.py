@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     try:
         from typing import TypeAlias
     except ImportError:
-        from typing_extensions import TypeAlias
+        from typing import TypeAlias
 
     _DictKey: TypeAlias = tuple[str, str, int, int]
 
