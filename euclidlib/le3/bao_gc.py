@@ -61,13 +61,13 @@ def BAO_alphas(
         alpha_par = data["ALPHA_PAR"]
         alpha_perp = data["ALPHA_PERP"]
         alpha_iso = data["ALPHA_ISO"]
-        alpha_ap = data["ALPHA_AP"]
+        alpha_AP = data["ALPHA_AP"]
 
         result[("SPE", "SPE", i, i)] = BaryonAcousticOscillations(
             alpha_par=alpha_par,
             alpha_perp=alpha_perp,
             alpha_iso=alpha_iso,
-            alpha_ap=alpha_ap,
+            alpha_AP=alpha_AP,
             fiducial_cosmology=fiducial_cosmology,
             zeff=zeff,
         )
