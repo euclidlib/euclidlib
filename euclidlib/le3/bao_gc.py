@@ -45,7 +45,7 @@ def BAO_alphas(
 
     Returns
     -------
-    results : dict[_DictKey, Optional[BaryonAcousticOscillations]]
+    results : dict[_DictKey, BaryonAcousticOscillations | None]
     """
     redshifts, nz = check_input(redshifts)
     result: dict[_DictKey, BaryonAcousticOscillations | None] = {}
@@ -93,7 +93,7 @@ def BAO_alphas_covariance(
 
     Returns
     -------
-    results : dict[_DictKey, Optional[BaryonAcousticOscillationsCovariance]]
+    results : dict[_DictKey, BaryonAcousticOscillationsCovariance | None]
         Dictionary containing the covariance matrix of the BAO alphas for each
         redshift bin pair. Keys are tuples of the form ``("SPE", "SPE", i, j)``.
         For diagonal pairs (``i == j``) the value is a

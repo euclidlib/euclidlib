@@ -188,7 +188,7 @@ def read_and_reshape_covariance_matrix(
 
     Parameters
     ----------
-    path: Union[str, PathLike[str]]
+    path: str | PathLike[str]
         Path to the covariance matrix data file
     type: str
         Key to identify Fourier- and configuration-space files
